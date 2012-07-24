@@ -121,7 +121,7 @@ class Point(_Feature):
 
     @property
     def coords(self):
-        return tuple(self._coordinates)
+        return (tuple(self._coordinates),)
 
     @coords.setter
     def coords(self, coordinates):
@@ -169,12 +169,12 @@ class LineString(_Feature):
             coords = []
             for coord in coordinates:
                 p = Point(coord)
-                l = len(p.coords)
+                l = len(p.coords[0])
                 if coords:
                     if l != l2:
                         raise ValueError
                 l2 = l
-                coords.append(tuple(p.coords))
+                coords.append(tuple(p.coords[0]))
             self._coordinates = coords
         else:
             raise ValueError
@@ -190,12 +190,12 @@ class LineString(_Feature):
             coords = []
             for coord in coordinates:
                 p = Point(coord)
-                l = len(p.coords)
+                l = len(p.coords[0])
                 if coords:
                     if l != l2:
                         raise ValueError
                 l2 = l
-                coords.append(tuple(p.coords))
+                coords.append(tuple(p.coords[0]))
             self._coordinates = coords
         else:
             raise ValueError
@@ -331,8 +331,9 @@ class Polygon(_Feature):
             if isinstance(shell[0][0], (list, tuple)):
                 # we passed shell and holes in the first parameter
                 self._exterior = LinearRing(shell[0])
-                for hole in shell[1]:
-                    self._interiors.append(LinearRing(hole))
+                if len(shell) == 2:
+                    for hole in shell[1]:
+                        self._interiors.append(LinearRing(hole))
             else:
                 self._exterior = LinearRing(shell)
         else:
@@ -404,6 +405,7 @@ class MultiPoint(_Feature):
                     p = Point(point)
                     self._geoms.append(p)
                 else:
+                    import ipdb; ipdb.set_trace()
                     raise ValueError
         elif hasattr(points, '__geo_interface__'):
             self._from_geo_interface(points)
@@ -444,7 +446,7 @@ class MultiPoint(_Feature):
         coords = list(set(coords))
         self._geoms = []
         for coord in coords:
-            p = Point(coord)
+            p = Point(coord[0])
             self._geoms.append(p)
 
     def to_wkt(self):

@@ -13,12 +13,12 @@ class BasicTestCase(unittest.TestCase):
             {'type': 'Point', 'coordinates': (0.0, 1.0)})
         self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
         #self.assertRaises(ValueError, p.z)
-        self.assertEqual(p.coords, (0.0, 1.0))
+        self.assertEqual(p.coords[0], (0.0, 1.0))
         p1 = geometry.Point(0, 1, 2)
         self.assertEqual(p1.x, 0.0)
         self.assertEqual(p1.y, 1.0)
         self.assertEqual(p1.z, 2.0)
-        self.assertEqual(p1.coords, (0.0, 1.0, 2.0))
+        self.assertEqual(p1.coords[0], (0.0, 1.0, 2.0))
         self.assertEqual(p1.__geo_interface__,
             {'type': 'Point', 'coordinates': (0.0, 1.0, 2.0)})
         p2 = geometry.Point([0, 1])
@@ -167,6 +167,8 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(len(mp4.geoms), 5)
         mp4.unique()
         self.assertEqual(len(mp4.geoms), 3)
+        mp5 = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
+        self.assertEqual(len(mp5.geoms), 2)
 
 
     def testMultiLineString(self):
@@ -244,11 +246,56 @@ class WKTTestCase(unittest.TestCase):
     def test_multipolygon(self):
         pass
 
+class AsShapeTestCase(unittest.TestCase):
+
+    def test_point(self):
+        f = geometry.Point(0, 1)
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_linestring(self):
+        f = geometry.LineString([(0, 0), (1, 1)])
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+
+    def test_linearring(self):
+        f = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_polygon(self):
+        f = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_multipoint(self):
+        f = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_multilinestring(self):
+        f = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_multipolygon(self):
+        f = geometry.MultiPolygon( [
+               (
+               ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+               [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+               )
+           ] )
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BasicTestCase))
     suite.addTest(unittest.makeSuite(WKTTestCase))
+    suite.addTest(unittest.makeSuite(AsShapeTestCase))
     return suite
 
 if __name__ == '__main__':
