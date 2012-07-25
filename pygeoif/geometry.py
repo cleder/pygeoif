@@ -16,13 +16,6 @@
 
 import re
 
-wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
-    r'(?P<wkt>'
-    r'(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|GEOMETRYCOLLECTION)'
-    r'[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$',
-    re.I)
-
-
 
 class _Feature(object):
     """ Base class """
@@ -631,6 +624,7 @@ def as_shape(feature):
         elif ft == 'MultiLineString':
             return MultiLineString(coords)
         elif ft == 'MultiPolygon':
+            import ipdb; ipdb.set_trace()
             return MultiPolygon(coords)
         else:
             raise NotImplementedError
@@ -638,18 +632,64 @@ def as_shape(feature):
         return TypeError('Object does not implement __geo_interface__')
 
 
+wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
+    r'(?P<wkt>'
+    r'(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|GEOMETRYCOLLECTION)'
+    r'[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$',
+    re.I)
+
+
+outer = re.compile("\((.+)\)")
+innerre = re.compile("\([^)]*\)")
+
 def from_wkt(geo_str):
     wkt = geo_str.strip()
-    if wkt.startswith('POINT'):
-        coords = wkt[wkt.find('(') + 1 : wkt.find(')')].split()
+    wkt = ' '.join(wkt.splitlines())
+    wkt = wkt_regex.match(wkt).group('wkt')
+    ftype = wkt_regex.match(wkt).group('type')
+    if ftype == 'POINT':
+        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split()
+        #import ipdb; ipdb.set_trace()
+        #coords = regExes['spaces'].split(wkt)
         return Point(coords)
-    elif wkt.startswith('LINESTRING'):
-        coords = wkt[wkt.find('(') + 1 : wkt.find(')')].split(',')
+    elif ftype == 'LINESTRING':
+        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
         return LineString([c.split() for c in coords])
-    elif wkt.startswith('LINEARRING'):
-        coords = wkt[wkt.find('(') + 1 : wkt.find(')')].split(',')
+    elif ftype == 'LINEARRING':
+        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
         return LinearRing([c.split() for c in coords])
-    #elif wkt.startswith('POLYGON'):
+    elif ftype == 'POLYGON':
+        #coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')]
+        m = outer.search(wkt)
+        inner_str = m.group(1)
+        coords = []
+        for inner in innerre.findall(inner_str):
+            coords.append((inner[1:-1]).split(','))
+        if len(coords) > 1:
+            # we have a polygon with holes
+            exteriors = []
+            for ext in coords[1:]:
+                exteriors.append([c.split() for c in ext])
+        else:
+            exteriors = None
+        return Polygon([c.split() for c in coords[0]], exteriors)
+
+    elif ftype == 'MULTIPOINT':
+        coords1 = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
+        coords = []
+        for coord in coords1:
+            if '(' in coord:
+                coord = coord[coord.find('(') +1 : coord.rfind(')')]
+            coords.append(coord.strip())
+        return MultiPoint([c.split() for c in coords])
+    elif ftype == 'MULTILINESTRING':
+        m = outer.search(wkt)
+        inner_str = m.group(1)
+        coords = []
+        for inner in innerre.findall(inner_str):
+            coords.append([c.split() for c in inner[1:-1].split(',')])
+        return MultiLineString(coords)
+    #elif ftype == 'MULTIPOLYGON':
     #    pass
     else:
         raise NotImplementedError
