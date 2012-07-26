@@ -147,7 +147,17 @@ class Point(_Feature):
 
 
 class LineString(_Feature):
-    """A one-dimensional figure comprising one or more line segments """
+    """
+    A one-dimensional figure comprising one or more line segments
+
+    A LineString has non-zero length and zero area. It may approximate a curve
+    and need not be straight. Unlike a LinearRing, a LineString is not closed.
+
+        Attributes
+    ----------
+    geoms : sequence
+        A sequence of Points
+    """
     _type = 'LineString'
     _geoms = None
 
@@ -240,7 +250,7 @@ class LinearRing(LineString):
     A LinearRing that crosses itself or touches itself at a single point is
     invalid and operations on it may fail.
 
-    A Linear Ring is self closing: self._coordinates[0] == self._coordinates[-1]
+    A Linear Ring is self closing
     """
     _type = 'LinearRing'
 
