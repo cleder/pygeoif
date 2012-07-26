@@ -7,6 +7,11 @@ except ImportError:
 
 class BasicTestCase(unittest.TestCase):
 
+    def test_Feature(self):
+        f = geometry._Feature()
+        self.assertRaises(NotImplementedError, lambda: f.bounds)
+
+
     def testPoint(self):
         self.assertRaises(ValueError, geometry.Point)
         p = geometry.Point(0, 1)
@@ -15,7 +20,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p.y, 1.0)
         self.assertEqual(p.__geo_interface__,
             {'type': 'Point', 'coordinates': (0.0, 1.0)})
-        #self.assertRaises(ValueError, p.z)
+        self.assertRaises(ValueError, lambda: p.z)
         self.assertEqual(p.coords[0], (0.0, 1.0))
         p1 = geometry.Point(0, 1, 2)
         self.assertEqual(p1.x, 0.0)
@@ -147,7 +152,9 @@ class BasicTestCase(unittest.TestCase):
                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
                [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
                ))
-
+        r1 = geometry.LinearRing([(0, 0), (2, 2), (2, 0), (0, 0)])
+        r2 = geometry.LinearRing([(0.5, 0.5), (1, 1), (1, 0), (0.5, 0.5)])
+        p6 = geometry.Polygon(r1, [r2])
 
     def testMultiPoint(self):
         p0 = geometry.Point(0, 0)
@@ -176,7 +183,13 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(len(mp4.geoms), 3)
         mp5 = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
         self.assertEqual(len(mp5.geoms), 2)
-
+        p = geometry.Polygon(
+               (
+               ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+               [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+               ))
+        mp6 = geometry.MultiPoint(p)
+        self.assertEqual(mp6.bounds, (0.0, 0.0, 1.0, 1.0))
 
     def testMultiLineString(self):
         ml = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
@@ -210,6 +223,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertTrue(isinstance(mp.geoms[0], geometry.Polygon))
         mp1 = geometry.MultiPolygon(mp)
         self.assertEqual(mp.__geo_interface__, mp1.__geo_interface__)
+        mp2 = geometry.MultiPolygon(ph1)
 
 
 
@@ -240,6 +254,8 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.x, 0.0)
         self.assertEqual(p.y, 1.0)
         self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
+        self.assertEqual(str(p), 'POINT (0.0 1.0)')
+        self.assertEqual(p.geom_type, 'Point')
 
     def test_linestring(self):
         l = geometry.from_wkt('LINESTRING(-72.991 46.177,-73.079 46.16,-73.146 46.124,-73.177 46.071,-73.164 46.044)')

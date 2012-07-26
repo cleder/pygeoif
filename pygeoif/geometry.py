@@ -400,8 +400,6 @@ class Polygon(_Feature):
             if self._interiors:
                 for interior in self._interiors:
                     yield interior
-        else:
-            yield None
 
     @property
     def bounds(self):
@@ -467,7 +465,6 @@ class MultiPoint(_Feature):
                     p = Point(point)
                     self._geoms.append(p)
                 else:
-                    import ipdb; ipdb.set_trace()
                     raise ValueError
         elif hasattr(points, '__geo_interface__'):
             self._from_geo_interface(points)
@@ -485,14 +482,14 @@ class MultiPoint(_Feature):
                 p = Point(coord)
                 self._geoms.append(p)
         elif gi['type'] == 'Polygon':
-            p = Polygon(gi['coordinates'])
+            p = Polygon(point)
             for coord in p.exterior.coords:
-                p = Point(coord)
-                self._geoms.append(p)
+                p1 = Point(coord)
+                self._geoms.append(p1)
             for interior in p.interiors:
                 for coord in interior.coords:
-                    p = Point(coord)
-                    self._geoms.append(p)
+                    p1 = Point(coord)
+                    self._geoms.append(p1)
         else:
             raise ValueError
 
@@ -604,10 +601,6 @@ class MultiLineString(_Feature):
         return (minx, miny, maxx, maxy)
 
 
-
-    def to_wkt(self):
-        wc = [ ' '.join([str(x) for x in c]) for c in self.coords]
-        return self._type.upper() + ' (' + ', '.join(wc) + ')'
 
     def to_wkt(self):
         wc = '(' + ', '.join(
