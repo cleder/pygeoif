@@ -241,7 +241,19 @@ class LineString(_Feature):
         wc = [ ' '.join([str(x) for x in c]) for c in self.coords]
         return self._type.upper() + ' (' + ', '.join(wc) + ')'
 
-
+    @property
+    def bounds(self):
+        if self.coords:
+            minx = self.coords[0][0]
+            miny = self.coords[0][1]
+            maxx = self.coords[0][0]
+            maxy = self.coords[0][1]
+            for coord in self.coords:
+                minx = min(coord[0], minx)
+                miny = min(coord[1], miny)
+                maxx = max(coord[0], maxx)
+                maxy = max(coord[1], maxy)
+        return (minx, miny, maxx, maxy)
 
 class LinearRing(LineString):
     """
@@ -391,6 +403,12 @@ class Polygon(_Feature):
         else:
             yield None
 
+    @property
+    def bounds(self):
+        if self.exterior:
+            return self.exterior.bounds
+
+
     def to_wkt(self):
         ec = '(' + ', '.join(
             [ ' '.join([str(x) for x in c]) for c in self.exterior.coords]
@@ -480,7 +498,22 @@ class MultiPoint(_Feature):
 
     @property
     def geoms(self):
-        return self._geoms
+        return tuple(self._geoms)
+
+    @property
+    def bounds(self):
+        if self._geoms:
+            minx = self.geoms[0].coords[0][0]
+            miny = self.geoms[0].coords[0][1]
+            maxx = self.geoms[0].coords[0][0]
+            maxy = self.geoms[0].coords[0][1]
+            for geom in self.geoms:
+                minx = min(geom.coords[0][0], minx)
+                miny = min(geom.coords[0][1], miny)
+                maxx = max(geom.coords[0][0], maxx)
+                maxy = max(geom.coords[0][1], maxy)
+        return (minx, miny, maxx, maxy)
+
 
     def unique(self):
         """ Make Points unique, delete duplicates """
@@ -554,7 +587,23 @@ class MultiLineString(_Feature):
 
     @property
     def geoms(self):
-        return self._geoms
+        return tuple(self._geoms)
+
+    @property
+    def bounds(self):
+        if self._geoms:
+            minx = self.geoms[0].bounds[0]
+            miny = self.geoms[0].bounds[1]
+            maxx = self.geoms[0].bounds[2]
+            maxy = self.geoms[0].bounds[3]
+            for geom in self.geoms:
+                minx = min(geom.bounds[0], minx)
+                miny = min(geom.bounds[1], miny)
+                maxx = max(geom.bounds[2], maxx)
+                maxy = max(geom.bounds[3], maxy)
+        return (minx, miny, maxx, maxy)
+
+
 
     def to_wkt(self):
         wc = [ ' '.join([str(x) for x in c]) for c in self.coords]
@@ -650,7 +699,22 @@ class MultiPolygon(_Feature):
 
     @property
     def geoms(self):
-        return self._geoms
+        return tuple(self._geoms)
+
+    @property
+    def bounds(self):
+        if self._geoms:
+            minx = self.geoms[0].bounds[0]
+            miny = self.geoms[0].bounds[1]
+            maxx = self.geoms[0].bounds[2]
+            maxy = self.geoms[0].bounds[3]
+            for geom in self.geoms:
+                minx = min(geom.bounds[0], minx)
+                miny = min(geom.bounds[1], miny)
+                maxx = max(geom.bounds[2], maxx)
+                maxy = max(geom.bounds[3], maxy)
+        return (minx, miny, maxx, maxy)
+
 
     def to_wkt(self):
         pc = ''

@@ -52,6 +52,7 @@ class BasicTestCase(unittest.TestCase):
         l = geometry.LineString([(0, 0), (1, 1)])
         self.assertEqual(l.coords, ((0.0, 0.0), (1.0, 1.0)))
         self.assertEqual(l.coords[:1], ((0.0, 0.0),))
+        self.assertEqual(l.bounds, (0.0, 0.0, 1.0, 1.0))
         self.assertEqual(l.__geo_interface__, {'type': 'LineString',
                             'coordinates': ((0.0, 0.0), (1.0, 1.0))})
         self.assertEqual(l.to_wkt(), 'LINESTRING (0.0 0.0, 1.0 1.0)')
@@ -76,6 +77,7 @@ class BasicTestCase(unittest.TestCase):
     def testLinearRing(self):
         r = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
         self.assertEqual(r.coords,((0, 0), (1, 1), (1, 0), (0, 0)))
+        self.assertEqual(r.bounds,(0.0, 0.0, 1.0, 1.0))
         l = geometry.LineString(r)
         self.assertEqual(l.coords,((0, 0), (1, 1), (1, 0), (0, 0)))
         self.assertEqual(r.__geo_interface__, {'type': 'LinearRing',
@@ -104,6 +106,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p.__geo_interface__, {'type': 'Polygon',
                             'coordinates': (((0.0, 0.0), (1.0, 1.0),
                             (1.0, 0.0), (0.0, 0.0)),)})
+        self.assertEqual(p.bounds,(0.0, 0.0, 1.0, 1.0))
         r = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
         p1 = geometry.Polygon(r)
         self.assertEqual(p1.exterior.coords, r.coords)
@@ -159,6 +162,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(mp1.geoms[0].x, 0)
         self.assertEqual(mp1.geoms[1].x, 1)
         self.assertEqual(mp1.geoms[2].x, 2)
+        self.assertEqual(mp1.bounds,(0.0, 0.0, 2.0, 2.0))
         l1 = geometry.LineString([p0, p1, p2])
         mp2 =  geometry.MultiPoint(l1)
         self.assertEqual(len(mp2.geoms), 3)
@@ -178,6 +182,7 @@ class BasicTestCase(unittest.TestCase):
         ml = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
         ml1 = geometry.MultiLineString(ml)
         self.assertEqual(ml.geoms[0].coords, ((0.0, 0.0), (1.0, 2.0)))
+        self.assertEqual(ml.bounds, (0.0, 0.0, 1.0, 2.0))
         l = geometry.LineString([(0, 0), (1, 1)])
         l1 = geometry.LineString([(0.0, 0.0), (1.0, 1.0), (2.0, 2.0)])
         ml2 = geometry.MultiLineString([l, l1])
@@ -194,6 +199,7 @@ class BasicTestCase(unittest.TestCase):
         mp = geometry.MultiPolygon([p,ph1])
         self.assertTrue(isinstance(mp.geoms[0], geometry.Polygon))
         self.assertTrue(isinstance(mp.geoms[1], geometry.Polygon))
+        self.assertEqual(mp.bounds, (0.0, 0.0, 2.0, 2.0))
         mp = geometry.MultiPolygon( [
                (
                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
