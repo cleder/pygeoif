@@ -16,7 +16,6 @@
 
 import re
 
-
 class _Feature(object):
     """ Base class """
     _type = None
@@ -35,6 +34,16 @@ class _Feature(object):
 
     def to_wkt(self):
         return self._type.upper() + ' ' + str(tuple(self._coordinates)).replace(',','')
+
+    @property
+    def geom_type(self):
+        return self._type
+
+    @property
+    def bounds(self):
+        raise NotImplementedError
+
+
 
 
 class Point(_Feature):
@@ -61,6 +70,7 @@ class Point(_Feature):
     """
 
     _type = 'Point'
+    _coordinates = None
 
     def __init__(self, *args):
         """
@@ -128,10 +138,28 @@ class Point(_Feature):
             raise TypeError
 
 
+    @property
+    def bounds(self):
+        return tuple(self._coordinates + self._coordinates)
+
+
+
+
 
 class LineString(_Feature):
     """A one-dimensional figure comprising one or more line segments """
     _type = 'LineString'
+    _geoms = None
+
+    @property
+    def __geo_interface__(self):
+        if self._type and self._geoms:
+            return {
+                    'type': self._type,
+                    'coordinates': tuple(self.coords)
+                    }
+
+
 
     def __init__(self, coordinates):
         """
@@ -149,47 +177,53 @@ class LineString(_Feature):
 
           >>> a = LineString([[0, 0], [1, 0], [1, 1]])
         """
-
+        self._geoms = []
         if hasattr(coordinates, '__geo_interface__'):
             gi = coordinates.__geo_interface__
             if (gi['type'] == 'LineString') or (gi['type'] == 'LinearRing'):
-                self._coordinates = gi['coordinates']
+                self.coords = gi['coordinates']
             elif gi['type'] == 'Polygon':
                 raise ValueError('Use poligon.exterior or polygon.interiors[x]')
             else:
                 raise NotImplementedError
         elif isinstance(coordinates, (list, tuple)):
-            coords = []
+            geoms = []
             for coord in coordinates:
                 p = Point(coord)
                 l = len(p.coords[0])
-                if coords:
+                if geoms:
                     if l != l2:
                         raise ValueError
                 l2 = l
-                coords.append(tuple(p.coords[0]))
-            self._coordinates = coords
+                geoms.append(p)
+            self._geoms = geoms
         else:
             raise ValueError
 
+    @property
+    def geoms(self):
+        return tuple(self._geoms)
 
     @property
     def coords(self):
-        return tuple(self._coordinates)
+        coordinates = []
+        for point in self.geoms:
+            coordinates.append(tuple(point.coords[0]))
+        return tuple(coordinates)
 
     @coords.setter
     def coords(self, coordinates):
         if isinstance(coordinates, (list, tuple)):
-            coords = []
+            geoms = []
             for coord in coordinates:
                 p = Point(coord)
                 l = len(p.coords[0])
-                if coords:
+                if geoms:
                     if l != l2:
                         raise ValueError
                 l2 = l
-                coords.append(tuple(p.coords[0]))
-            self._coordinates = coords
+                geoms.append(p)
+            self._geoms = geoms
         else:
             raise ValueError
 
@@ -212,23 +246,25 @@ class LinearRing(LineString):
 
     def __init__(self, coordinates=None):
         super(LinearRing, self).__init__(coordinates)
-        if self._coordinates[0] != self._coordinates[-1]:
-            self._coordinates.append(self._coordinates[0])
+        if self._geoms[0].coords != self._geoms[-1].coords:
+            self._geoms.append(self._geoms[0])
 
 
     @property
     def coords(self):
-        if self._coordinates[0] == self._coordinates[-1]:
-            return tuple(self._coordinates)
+        if self._geoms[0].coords == self._geoms[-1].coords:
+            coordinates = []
+            for point in self.geoms:
+                coordinates.append(tuple(point.coords[0]))
+            return tuple(coordinates)
         else:
             raise ValueError
 
     @coords.setter
     def coords(self, coordinates):
         LineString.coords.fset(self, coordinates)
-        if self._coordinates[0] != self._coordinates[-1]:
-            self._coordinates.append(self._coordinates[0])
-
+        if self._geoms[0].coords != self._geoms[-1].coords:
+            self._geoms.append(self._geoms[0])
 
 
 
@@ -267,8 +303,6 @@ class Polygon(_Feature):
                 'coordinates': (self._exterior.coords,)
 
                 }
-
-
 
     def __init__(self, shell, holes=None):
         """
@@ -377,7 +411,6 @@ class MultiPoint(_Feature):
             'coordinates': tuple([g.coords[0] for g in self._geoms])
             }
 
-
     def __init__(self, points):
         """
         Parameters
@@ -454,6 +487,7 @@ class MultiPoint(_Feature):
         wc = [ ' '.join([str(x) for x in c.coords[0]]) for c in self.geoms]
         return self._type.upper() + '(' + ', '.join(wc) + ')'
 
+
 class MultiLineString(_Feature):
     """
     A collection of one or more line strings
@@ -474,8 +508,6 @@ class MultiLineString(_Feature):
             'type': self._type,
             'coordinates': tuple(tuple(c for c in g.coords) for g in self.geoms)
             }
-
-
 
     def __init__(self, lines):
         """
@@ -529,7 +561,6 @@ class MultiLineString(_Feature):
         return self._type.upper() + '(' + wc + ')'
 
 
-
 class MultiPolygon(_Feature):
     """A collection of one or more polygons
 
@@ -557,9 +588,6 @@ class MultiPolygon(_Feature):
             'type': self._type,
             'coordinates': allcoords
             }
-
-
-
 
     def __init__(self, polygons):
         """

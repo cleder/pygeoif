@@ -10,11 +10,11 @@ class BasicTestCase(unittest.TestCase):
     def testPoint(self):
         self.assertRaises(ValueError, geometry.Point)
         p = geometry.Point(0, 1)
+        self.assertEqual(p.bounds, (0.0, 1.0, 0.0, 1.0))
         self.assertEqual(p.x, 0.0)
         self.assertEqual(p.y, 1.0)
         self.assertEqual(p.__geo_interface__,
             {'type': 'Point', 'coordinates': (0.0, 1.0)})
-        self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
         #self.assertRaises(ValueError, p.z)
         self.assertEqual(p.coords[0], (0.0, 1.0))
         p1 = geometry.Point(0, 1, 2)
@@ -233,6 +233,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(isinstance(p, geometry.Point), True)
         self.assertEqual(p.x, 0.0)
         self.assertEqual(p.y, 1.0)
+        self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
 
     def test_linestring(self):
         l = geometry.from_wkt('LINESTRING(-72.991 46.177,-73.079 46.16,-73.146 46.124,-73.177 46.071,-73.164 46.044)')
