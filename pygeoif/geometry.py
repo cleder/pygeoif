@@ -348,7 +348,15 @@ class Polygon(_Feature):
             yield None
 
     def to_wkt(self):
-        raise NotImplementedError
+        ec = '(' + ', '.join(
+            [ ' '.join([str(x) for x in c]) for c in self.exterior.coords]
+                            ) + ')'
+        ic = ''
+        for interior in self.interiors:
+            ic += ',(' + ', '.join(
+            [ ' '.join([str(x) for x in c]) for c in interior.coords]
+                            ) + ')'
+        return self._type.upper() + '(' + ec + ic + ')'
 
 class MultiPoint(_Feature):
     """A collection of one or more points
@@ -443,7 +451,8 @@ class MultiPoint(_Feature):
             self._geoms.append(p)
 
     def to_wkt(self):
-        raise NotImplementedError
+        wc = [ ' '.join([str(x) for x in c.coords[0]]) for c in self.geoms]
+        return self._type.upper() + '(' + ', '.join(wc) + ')'
 
 class MultiLineString(_Feature):
     """
@@ -506,7 +515,19 @@ class MultiLineString(_Feature):
         return self._geoms
 
     def to_wkt(self):
-        raise NotImplementedError
+        wc = [ ' '.join([str(x) for x in c]) for c in self.coords]
+        return self._type.upper() + ' (' + ', '.join(wc) + ')'
+
+    def to_wkt(self):
+        wc = '(' + ', '.join(
+            [ ' '.join([str(x) for x in c]) for c in self.geoms[0].coords]
+                            ) + ')'
+        for lx in self.geoms[1:]:
+            wc += ',(' + ', '.join(
+            [ ' '.join([str(x) for x in c]) for c in lx.coords]
+                            ) + ')'
+        return self._type.upper() + '(' + wc + ')'
+
 
 
 class MultiPolygon(_Feature):
@@ -536,6 +557,8 @@ class MultiPolygon(_Feature):
             'type': self._type,
             'coordinates': allcoords
             }
+
+
 
 
     def __init__(self, polygons):
@@ -569,6 +592,7 @@ class MultiPolygon(_Feature):
                     p = Polygon(polygon[0], polygon[1])
                     self._geoms.append(p)
                 elif hasattr(polygon, '__geo_interface__'):
+                    gi = polygon.__geo_interface__
                     p = Polygon(polygon)
                     self._geoms.append(p)
                 else:
@@ -579,7 +603,10 @@ class MultiPolygon(_Feature):
                 p = Polygon(polygons)
                 self._geoms.append(p)
             elif gi['type'] == 'MultiPolygon':
-                raise NotImplementedError
+                for coords in gi['coordinates']:
+                    self._geoms.append(Polygon(coords[0], coords[1:]))
+            else:
+                raise TypeError
         else:
             raise ValueError
 
@@ -588,7 +615,19 @@ class MultiPolygon(_Feature):
         return self._geoms
 
     def to_wkt(self):
-        raise NotImplementedError
+        pc = ''
+        for geom in self.geoms:
+            ec = '(' + ', '.join(
+                [ ' '.join([str(x) for x in c]) for c in geom.exterior.coords]
+                                ) + ')'
+            ic = ''
+            for interior in geom.interiors:
+                ic += ',(' + ', '.join(
+                [ ' '.join([str(x) for x in c]) for c in interior.coords]
+                                ) + ')'
+            pc += '(' + ec + ic + ')'
+        return self._type.upper() + '(' + pc + ')'
+
 
 class GeometryCollection(_Feature):
     """A heterogenous collection of geometries
@@ -597,8 +636,21 @@ class GeometryCollection(_Feature):
     ----------
     geoms : sequence
         A sequence of geometry instances
+
+    Please note:
+    GEOMETRYCOLLECTION isn't supported by the Shapefile format.
+    And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
+    So it's very rarely used in the real GIS professional world.
     """
+    @property
+    def __geo_interface__(self):
+        raise NotImplementedError
+
     def __init__(self):
+        raise NotImplementedError
+
+    @property
+    def geoms(self):
         raise NotImplementedError
 
     def to_wkt(self):
@@ -624,8 +676,10 @@ def as_shape(feature):
         elif ft == 'MultiLineString':
             return MultiLineString(coords)
         elif ft == 'MultiPolygon':
-            import ipdb; ipdb.set_trace()
-            return MultiPolygon(coords)
+            polygons = []
+            for icoords in coords:
+                polygons.append(Polygon(icoords[0], icoords[1:]))
+            return MultiPolygon(polygons)
         else:
             raise NotImplementedError
     else:
@@ -640,31 +694,29 @@ wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
 
 
 outer = re.compile("\((.+)\)")
-innerre = re.compile("\([^)]*\)")
+inner = re.compile("\([^)]*\)")
+mpre = re.compile("\(\((.+?)\)\)")
 
 def from_wkt(geo_str):
     wkt = geo_str.strip()
     wkt = ' '.join(wkt.splitlines())
     wkt = wkt_regex.match(wkt).group('wkt')
     ftype = wkt_regex.match(wkt).group('type')
+    outerstr = outer.search(wkt)
+    coordinates = outerstr.group(1)
     if ftype == 'POINT':
-        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split()
-        #import ipdb; ipdb.set_trace()
-        #coords = regExes['spaces'].split(wkt)
+        coords = coordinates.split()
         return Point(coords)
     elif ftype == 'LINESTRING':
-        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
+        coords = coordinates.split(',')
         return LineString([c.split() for c in coords])
     elif ftype == 'LINEARRING':
-        coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
+        coords = coordinates.split(',')
         return LinearRing([c.split() for c in coords])
     elif ftype == 'POLYGON':
-        #coords = wkt[wkt.find('(') + 1 : wkt.rfind(')')]
-        m = outer.search(wkt)
-        inner_str = m.group(1)
         coords = []
-        for inner in innerre.findall(inner_str):
-            coords.append((inner[1:-1]).split(','))
+        for interior in inner.findall(coordinates):
+            coords.append((interior[1:-1]).split(','))
         if len(coords) > 1:
             # we have a polygon with holes
             exteriors = []
@@ -675,7 +727,7 @@ def from_wkt(geo_str):
         return Polygon([c.split() for c in coords[0]], exteriors)
 
     elif ftype == 'MULTIPOINT':
-        coords1 = wkt[wkt.find('(') + 1 : wkt.rfind(')')].split(',')
+        coords1 = coordinates.split(',')
         coords = []
         for coord in coords1:
             if '(' in coord:
@@ -683,14 +735,28 @@ def from_wkt(geo_str):
             coords.append(coord.strip())
         return MultiPoint([c.split() for c in coords])
     elif ftype == 'MULTILINESTRING':
-        m = outer.search(wkt)
-        inner_str = m.group(1)
         coords = []
-        for inner in innerre.findall(inner_str):
-            coords.append([c.split() for c in inner[1:-1].split(',')])
+        for lines in inner.findall(coordinates):
+            coords.append([c.split() for c in lines[1:-1].split(',')])
         return MultiLineString(coords)
-    #elif ftype == 'MULTIPOLYGON':
-    #    pass
+    elif ftype == 'MULTIPOLYGON':
+        polygons = []
+        m = mpre.split(coordinates)
+        for polygon in m:
+            if len(polygon) < 3:
+                continue
+            coords = []
+            for interior in inner.findall('(' +polygon +')'):
+                coords.append((interior[1:-1]).split(','))
+            if len(coords) > 1:
+                # we have a polygon with holes
+                exteriors = []
+                for ext in coords[1:]:
+                    exteriors.append([c.split() for c in ext])
+            else:
+                exteriors = None
+            polygons.append(Polygon([c.split() for c in coords[0]], exteriors))
+        return MultiPolygon(polygons)
     else:
         raise NotImplementedError
 

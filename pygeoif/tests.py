@@ -202,28 +202,25 @@ class BasicTestCase(unittest.TestCase):
            ] )
         self.assertEqual(len(mp.geoms),1)
         self.assertTrue(isinstance(mp.geoms[0], geometry.Polygon))
-        #mp1 = geometry.MultiPolygon(mp)
+        mp1 = geometry.MultiPolygon(mp)
+        self.assertEqual(mp.__geo_interface__, mp1.__geo_interface__)
+
 
 
 class WKTTestCase(unittest.TestCase):
 
-    # these examples are taken from
-    # http://code.google.com/p/pysal/source/browse/trunk/pysal/core/util/wkt.py
-
-    p = 'POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2))'
-    pt = 'POINT(6 10)'
-    l = 'LINESTRING(3 4,10 50,20 25)'
-    wktExamples = ['POINT(6 10)',
+    wkt_examples = ['POINT(6 10)',
             'LINESTRING(3 4,10 50,20 25)',
             'LINESTRING (30 10, 10 30, 40 40)',
-            'MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))',
+            'MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)),((60 60, 70 70, 80 60, 60 60 )))',
             '''MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)),
             ((20 35, 45 20, 30 5, 10 10, 10 30, 20 35),
             (30 20, 20 25, 20 15, 30 20)))''',
             '''MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),
             ((15 5, 40 10, 10 20, 5 10, 15 5)))''',
-
+            'MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))',
             'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))',
+            'GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))',
             'POINT ZM (1 1 5 60)', #??
             'POINT M (1 1 80)', #??
             'POINT EMPTY', #??
@@ -258,6 +255,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(len(list(p.interiors)), 1)
         self.assertEqual(list(p.interiors)[0].coords,
             ((2.0, 2.0), (3.0, 2.0), (3.0, 3.0), (2.0, 3.0), (2.0, 2.0)))
+        self.assertEqual(p.to_wkt(), 'POLYGON((1.0 1.0, 5.0 1.0, 5.0 5.0, 1.0 5.0, 1.0 1.0),(2.0 2.0, 3.0 2.0, 3.0 3.0, 2.0 3.0, 2.0 2.0))')
         p = geometry.from_wkt('POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))')
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         p = geometry.from_wkt('''POLYGON ((35 10, 10 20, 15 40, 45 45, 35 10),
@@ -270,6 +268,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
         self.assertEqual(p.geoms[0].x, 3.5)
         self.assertEqual(p.geoms[1].y, 10.5)
+        self.assertEqual(p.to_wkt(), 'MULTIPOINT(3.5 5.6, 4.8 10.5)')
         p = geometry.from_wkt('MULTIPOINT ((10 40), (40 30), (20 20), (30 10))')
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
         self.assertEqual(p.geoms[0].x, 10.0)
@@ -284,11 +283,24 @@ class WKTTestCase(unittest.TestCase):
         p = geometry.from_wkt('MULTILINESTRING((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))')
         self.assertEqual(p.geoms[0].coords, (((3, 4),(10, 50),(20, 25))))
         self.assertEqual(p.geoms[1].coords, (((-5, -8),(-10, -8),(-15, -4))))
+        self.assertEqual(p.to_wkt(),'MULTILINESTRING((3.0 4.0, 10.0 50.0, 20.0 25.0),(-5.0 -8.0, -10.0 -8.0, -15.0 -4.0))')
         p = geometry.from_wkt('''MULTILINESTRING ((10 10, 20 20, 10 40),
             (40 40, 30 30, 40 20, 30 10))''')
 
     def test_multipolygon(self):
-        pass
+        p = geometry.from_wkt('MULTIPOLYGON(((0 0,10 20,30 40,0 0),(1 1,2 2,3 3,1 1)),((100 100,110 110,120 120,100 100)))')
+        #two polygons: the first one has an interior ring
+        self.assertEqual(len(p.geoms), 2)
+        self.assertEqual(p.geoms[0].exterior.coords,
+                ((0.0, 0.0), (10.0, 20.0) , (30.0, 40.0), (0.0, 0.0)))
+        self.assertEqual(list(p.geoms[0].interiors)[0].coords,
+                ((1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (1.0, 1.0)))
+        self.assertEqual(p.geoms[1].exterior.coords,
+            ((100.0, 100.0), (110.0, 110.0), (120.0, 120.0), (100.0, 100.0)))
+        self.assertEqual(p.to_wkt(),
+            'MULTIPOLYGON(((0.0 0.0, 10.0 20.0, 30.0 40.0, 0.0 0.0),(1.0 1.0, 2.0 2.0, 3.0 3.0, 1.0 1.0))((100.0 100.0, 110.0 110.0, 120.0 120.0, 100.0 100.0)))')
+        p = geometry.from_wkt('MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))')
+        self.assertEqual(len(p.geoms), 2)
 
 class AsShapeTestCase(unittest.TestCase):
 
