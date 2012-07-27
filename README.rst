@@ -11,7 +11,7 @@ implement this protocol:
 * ArcPy http://help.arcgis.com/en/arcgisdesktop/
 * descartes https://bitbucket.org/sgillies/descartes/
 * geojson http://pypi.python.org/pypi/geojson/
-* PySAL ttp://pysal.geodacenter.org/
+* PySAL http://pysal.geodacenter.org/
 * Shapely https://github.com/Toblerity/Shapely
 
 So when you want to write your own geospatilal library with support
