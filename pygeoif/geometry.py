@@ -1,39 +1,41 @@
 # -*- coding: utf-8 -*-
-#       This program is free software; you can redistribute it and/or modify
-#       it under the terms of the GNU General Public License as published by
-#       the Free Software Foundation; either version 2 of the License, or
-#       (at your option) any later version.
 #
-#       This program is distributed in the hope that it will be useful,
-#       but WITHOUT ANY WARRANTY; without even the implied warranty of
-#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#       GNU General Public License for more details.
+#   Copyright (C) 2012  Christian Ledermann
 #
-#       You should have received a copy of the GNU General Public License
-#       along with this program; if not, write to the Free Software
-#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#       MA 02110-1301, USA.
+#   This library is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU Lesser General Public
+#   License as published by the Free Software Foundation; either
+#   version 2.1 of the License, or (at your option) any later version.
+
+#   This library is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   Lesser General Public License for more details.
+
+#   You should have received a copy of the GNU Lesser General Public
+#   License along with this library; if not, write to the Free Software
+#   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 
 import re
 
 class _Feature(object):
     """ Base class """
     _type = None
-    _coordinates = None
+    _coordinates = ()
 
     @property
     def __geo_interface__(self):
-        if self._type and self._coordinates:
-            return {
-                    'type': self._type,
-                    'coordinates': tuple(self._coordinates)
-                    }
+        return {
+                'type': self._type,
+                'coordinates': tuple(self._coordinates)
+                }
 
     def __str__(self):
         return self.to_wkt()
 
     def to_wkt(self):
-        return self._type.upper() + ' ' + str(tuple(self._coordinates)).replace(',','')
+        raise NotImplementedError
 
     @property
     def geom_type(self):
@@ -83,6 +85,7 @@ class Point(_Feature):
         2) 2 or more parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
+        self._coordinates = ()
         if len(args) == 1:
             if hasattr(args[0], '__geo_interface__'):
                 if args[0].__geo_interface__['type'] == 'Point':
@@ -143,7 +146,8 @@ class Point(_Feature):
         return tuple(self._coordinates + self._coordinates)
 
 
-
+    def to_wkt(self):
+        return self._type.upper() + ' ' + str(tuple(self._coordinates)).replace(',','')
 
 
 class LineString(_Feature):
@@ -193,9 +197,9 @@ class LineString(_Feature):
             if (gi['type'] == 'LineString') or (gi['type'] == 'LinearRing'):
                 self.coords = gi['coordinates']
             elif gi['type'] == 'Polygon':
-                raise ValueError('Use poligon.exterior or polygon.interiors[x]')
+                raise TypeError('Use poligon.exterior or polygon.interiors[x]')
             else:
-                raise NotImplementedError
+                raise TypeError
         elif isinstance(coordinates, (list, tuple)):
             geoms = []
             for coord in coordinates:
@@ -208,7 +212,7 @@ class LineString(_Feature):
                 geoms.append(p)
             self._geoms = geoms
         else:
-            raise ValueError
+            raise TypeError
 
     @property
     def geoms(self):
@@ -345,8 +349,6 @@ class Polygon(_Feature):
 
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
-          >>> polygon.area
-          1.0
         """
         if holes:
             self._interiors = []
@@ -356,7 +358,7 @@ class Polygon(_Feature):
                     if gi['type'] == 'LinearRing':
                         self._interiors.append(LinearRing(hole))
                     else:
-                        raise NotImplementedError
+                        raise TypeError
                 elif isinstance(hole, (list, tuple)):
                     self._interiors.append(LinearRing(hole))
         else:
@@ -374,7 +376,7 @@ class Polygon(_Feature):
                     for hole in gi['coordinates'][1:]:
                         self._interiors.append(LinearRing(hole))
             else:
-                raise NotImplementedError
+                raise TypeError
         elif isinstance(shell, (list, tuple)):
             assert isinstance(shell[0], (list, tuple))
             if isinstance(shell[0][0], (list, tuple)):
@@ -386,7 +388,7 @@ class Polygon(_Feature):
             else:
                 self._exterior = LinearRing(shell)
         else:
-            raise ValueError
+            raise TypeError
 
 
     @property
@@ -465,11 +467,11 @@ class MultiPoint(_Feature):
                     p = Point(point)
                     self._geoms.append(p)
                 else:
-                    raise ValueError
+                    raise TypeError
         elif hasattr(points, '__geo_interface__'):
             self._from_geo_interface(points)
         else:
-            raise ValueError
+            raise TypeError
 
     def _from_geo_interface(self, point):
         gi = point.__geo_interface__
@@ -491,7 +493,7 @@ class MultiPoint(_Feature):
                     p1 = Point(coord)
                     self._geoms.append(p1)
         else:
-            raise ValueError
+            raise TypeError
 
     @property
     def geoms(self):
@@ -578,10 +580,10 @@ class MultiLineString(_Feature):
                 for line in  gi['coordinates']:
                     l = LineString(line)
                     self._geoms.append(l)
-
+            else:
+                raise TypeError
         else:
-            raise ValueError
-
+            raise TypeError
     @property
     def geoms(self):
         return tuple(self._geoms)
@@ -737,19 +739,20 @@ class GeometryCollection(_Feature):
     And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
     So it's very rarely used in the real GIS professional world.
     """
-    @property
-    def __geo_interface__(self):
-        raise NotImplementedError
+    _type = 'GeometryCollection'
+#    @property
+#    def __geo_interface__(self):
+#        raise NotImplementedError
 
-    def __init__(self):
-        raise NotImplementedError
+#    def __init__(self):
+#        raise NotImplementedError
 
-    @property
-    def geoms(self):
-        raise NotImplementedError
+#    @property
+#    def geoms(self):
+#        raise NotImplementedError
 
-    def to_wkt(self):
-        raise NotImplementedError
+#    def to_wkt(self):
+#        raise NotImplementedError
 
 def as_shape(feature):
     """ creates a pygeoif feature from an object that
@@ -778,7 +781,7 @@ def as_shape(feature):
         else:
             raise NotImplementedError
     else:
-        return TypeError('Object does not implement __geo_interface__')
+        raise TypeError('Object does not implement __geo_interface__')
 
 
 wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
@@ -793,8 +796,12 @@ inner = re.compile("\([^)]*\)")
 mpre = re.compile("\(\((.+?)\)\)")
 
 def from_wkt(geo_str):
+    """
+    Create a geometry from its WKT representation
+    """
+
     wkt = geo_str.strip()
-    wkt = ' '.join(wkt.splitlines())
+    wkt = ' '.join([l.strip() for l in wkt.splitlines()])
     wkt = wkt_regex.match(wkt).group('wkt')
     ftype = wkt_regex.match(wkt).group('type')
     outerstr = outer.search(wkt)
@@ -855,7 +862,8 @@ def from_wkt(geo_str):
     else:
         raise NotImplementedError
 
-
+def mapping(ob):
+    return ob.__geo_interface__
 
 
 

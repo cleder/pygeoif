@@ -1,0 +1,6 @@
+include *.rst
+recursive-include docs *.txt
+recursive-exclude *.pyc *.pyo
+include docs/LICENSE.GPL
+exclude pygeoif/.*
+recursive-exclude *,cover

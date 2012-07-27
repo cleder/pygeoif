@@ -5,11 +5,13 @@ try:
 except ImportError:
     import geometry
 
+
 class BasicTestCase(unittest.TestCase):
 
     def test_Feature(self):
         f = geometry._Feature()
         self.assertRaises(NotImplementedError, lambda: f.bounds)
+        self.assertRaises(NotImplementedError, f.to_wkt)
 
 
     def testPoint(self):
@@ -52,6 +54,10 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p.__geo_interface__,p6.__geo_interface__)
         p6.coords = [0,1,2]
         self.assertEqual(p3.coords, p6.coords)
+        self.assertRaises(TypeError, p6.coords, 0)
+        self.assertRaises(TypeError, p6.coords, [0])
+        f = geometry._Feature()
+        self.assertRaises(TypeError, geometry.Point, f)
 
     def testLineString(self):
         l = geometry.LineString([(0, 0), (1, 1)])
@@ -75,8 +81,16 @@ class BasicTestCase(unittest.TestCase):
         int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
         int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
         po = geometry.Polygon(ext, [int_1, int_2])
-        self.assertRaises(ValueError, geometry.LineString, po)
-
+        self.assertRaises(TypeError, geometry.LineString, po)
+        pt = geometry.Point(0, 1)
+        self.assertRaises(TypeError, geometry.LineString, pt)
+        self.assertRaises(TypeError, geometry.LineString, 0)
+        try:
+            with self.assertRaises(ValueError):
+                l2.coords = ((0,0),(1,1,1))
+                l2.coords = 0
+        except:
+            pass
 
 
     def testLinearRing(self):
@@ -92,7 +106,7 @@ class BasicTestCase(unittest.TestCase):
         int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
         int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
         p = geometry.Polygon(ext, [int_1, int_2])
-        self.assertRaises(ValueError, geometry.LinearRing, p)
+        self.assertRaises(TypeError, geometry.LinearRing, p)
         # A LinearRing is self closing
         r2 = geometry.LinearRing([(0, 0), (1, 1), (1, 0)])
         self.assertEqual(r.__geo_interface__, r2.__geo_interface__)
@@ -155,6 +169,9 @@ class BasicTestCase(unittest.TestCase):
         r1 = geometry.LinearRing([(0, 0), (2, 2), (2, 0), (0, 0)])
         r2 = geometry.LinearRing([(0.5, 0.5), (1, 1), (1, 0), (0.5, 0.5)])
         p6 = geometry.Polygon(r1, [r2])
+        pt = geometry.Point(0, 1)
+        self.assertRaises(TypeError, geometry.Polygon, pt)
+        self.assertRaises(TypeError, geometry.Polygon, 0)
 
     def testMultiPoint(self):
         p0 = geometry.Point(0, 0)
@@ -176,7 +193,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(mp2.geoms[2].x, 2)
         mp3 =  geometry.MultiPoint([l1, p3])
         self.assertEqual(mp3.geoms[3].x, 3)
-        self.assertRaises(ValueError, geometry.MultiPoint, [mp1, mp3])
+        self.assertRaises(TypeError, geometry.MultiPoint, [mp1, mp3])
         mp4 =geometry.MultiPoint([p0, p1, p0, p1, p2])
         self.assertEqual(len(mp4.geoms), 5)
         mp4.unique()
@@ -190,6 +207,8 @@ class BasicTestCase(unittest.TestCase):
                ))
         mp6 = geometry.MultiPoint(p)
         self.assertEqual(mp6.bounds, (0.0, 0.0, 1.0, 1.0))
+        self.assertRaises(TypeError, geometry.MultiPoint, [0,0])
+        self.assertRaises(TypeError, geometry.MultiPoint, 0,)
 
     def testMultiLineString(self):
         ml = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
@@ -203,6 +222,9 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(ml2.geoms[1].coords, ((0.0, 0.0), (1.0, 1.0), (2.0, 2.0)))
         ml3 = geometry.MultiLineString(l)
         self.assertEqual(ml3.geoms[0].coords, ((0.0, 0.0), (1.0, 1.0)))
+        pt = geometry.Point(0, 1)
+        self.assertRaises(TypeError, geometry.MultiLineString, pt)
+        self.assertRaises(TypeError, geometry.MultiLineString, 0)
 
     def testMultiPolygon(self):
         p = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
@@ -224,12 +246,20 @@ class BasicTestCase(unittest.TestCase):
         mp1 = geometry.MultiPolygon(mp)
         self.assertEqual(mp.__geo_interface__, mp1.__geo_interface__)
         mp2 = geometry.MultiPolygon(ph1)
+        self.assertRaises(ValueError, geometry.MultiPolygon, 0)
+        self.assertRaises(ValueError, geometry.MultiPolygon, [0, 0])
+        pt = geometry.Point(0, 1)
+        self.assertRaises(TypeError, geometry.MultiPolygon, pt)
 
-
+    def test_mapping(self):
+        self.assertEqual(geometry.mapping(geometry.Point(1,1)),
+            {'type': 'Point', 'coordinates': (1.0, 1.0)})
 
 class WKTTestCase(unittest.TestCase):
 
-    wkt_examples = ['POINT(6 10)',
+    # valid and supported WKTs
+    wkt_ok = ['POINT(6 10)',
+            'POINT M (1 1 80)',
             'LINESTRING(3 4,10 50,20 25)',
             'LINESTRING (30 10, 10 30, 40 40)',
             'MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)),((60 60, 70 70, 80 60, 60 60 )))',
@@ -238,15 +268,15 @@ class WKTTestCase(unittest.TestCase):
             (30 20, 20 25, 20 15, 30 20)))''',
             '''MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),
             ((15 5, 40 10, 10 20, 5 10, 15 5)))''',
-            'MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))',
-            'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))',
-            'GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))',
-            'POINT ZM (1 1 5 60)', #??
-            'POINT M (1 1 80)', #??
-            'POINT EMPTY', #??
-            'MULTIPOLYGON EMPTY'] #??
+            'MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))',]
 
-    ###############################
+    # these are valid WKTs but not supported
+    wkt_fail = ['GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))',
+            'POINT ZM (1 1 5 60)',
+            'POINT EMPTY',
+            'MULTIPOLYGON EMPTY']
+
+
 
     def test_point(self):
         p = geometry.from_wkt('POINT (0.0 1.0)')
@@ -325,6 +355,20 @@ class WKTTestCase(unittest.TestCase):
         p = geometry.from_wkt('MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))')
         self.assertEqual(len(p.geoms), 2)
 
+    def test_geometrycollection(self):
+        self.assertRaises(NotImplementedError, geometry.from_wkt,
+            'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))')
+
+    def test_wkt_ok(self):
+        for wkt in self.wkt_ok:
+            geometry.from_wkt(wkt)
+
+    def test_wkt_fail(self):
+        for wkt in self.wkt_fail:
+            self.assertRaises(Exception, geometry.from_wkt, wkt)
+
+
+
 class AsShapeTestCase(unittest.TestCase):
 
     def test_point(self):
@@ -367,6 +411,13 @@ class AsShapeTestCase(unittest.TestCase):
            ] )
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_nongeo(self):
+        self.assertRaises(TypeError, geometry.as_shape, 'a')
+
+    def test_notimplemented(self):
+        f = geometry._Feature()
+        self.assertRaises(NotImplementedError, geometry.as_shape, f)
 
 
 
