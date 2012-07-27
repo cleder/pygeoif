@@ -26,6 +26,8 @@ polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with shapely
 you feel right at home with pygeoif
 
+It was written to provide clean and python only geometries for fastkml
+http://pypi.python.org/pypi/fastkml/
 
 Example
 ========
@@ -54,8 +56,8 @@ Example
 
 
 You find more examples in the tests.py file which cover every aspect of
-pygeoif
-
+pygeoif.
+https://github.com/cleder/pygeoif/blob/master/pygeoif/tests.py
 
 Classes
 ========
