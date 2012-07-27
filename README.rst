@@ -32,7 +32,7 @@ http://pypi.python.org/pypi/fastkml/
 Example
 ========
 
-::
+
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
     >>> p.__geo_interface__
@@ -64,9 +64,10 @@ Classes
 
 All classes implement the attributes:
 
-* __geo_interface__ as dicussed above
-* geom_type
-* bounds
+* __geo_interface__: as dicussed above
+* geom_type: Returns a string specifying the Geometry Type of the object
+* bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
+
 
 and the method:
 
@@ -84,7 +85,7 @@ x, y, z : float
 
 Example
 ~~~~~~~~
-::
+
       >>> p = Point(1.0, -1.0)
       >>> print p
       POINT (1.0000000000000000 -1.0000000000000000)
@@ -182,7 +183,7 @@ as_shape
 
 Create a pygeoif feature from an object that provides the __geo_interface__
 
-::
+
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry
     >>> geometry.as_shape(Point(0,0))
@@ -194,7 +195,7 @@ from_wkt
 
 Create a geometry from its WKT representation
 
-::
+
     >>> p = geometry.from_wkt('POINT (0.0 1.0)')
     >>> print p
     POINT (0.0 1.0)
