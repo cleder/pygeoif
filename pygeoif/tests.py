@@ -420,6 +420,12 @@ class AsShapeTestCase(unittest.TestCase):
         self.assertRaises(NotImplementedError, geometry.as_shape, f)
 
 
+    def test_dict_asshape(self):
+        f = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
+        s = geometry.as_shape(f.__geo_interface__)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+
 
 def test_suite():
     suite = unittest.TestSuite()

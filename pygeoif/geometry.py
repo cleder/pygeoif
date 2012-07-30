@@ -760,7 +760,7 @@ def as_shape(feature):
     is __geo_interface__ compatible"""
     gi = None
     if isinstance(feature, dict):
-        if ('coordinates' in dict) and 'type' in dict:
+        if ('coordinates' in feature) and ('type' in feature):
             gi = feature
     elif hasattr(feature, '__geo_interface__'):
         gi = feature.__geo_interface__
