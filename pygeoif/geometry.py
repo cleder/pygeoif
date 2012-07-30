@@ -756,9 +756,15 @@ class GeometryCollection(_Feature):
 
 def as_shape(feature):
     """ creates a pygeoif feature from an object that
-    provides the __geo_interface__ """
-    if hasattr(feature, '__geo_interface__'):
+    provides the __geo_interface__ or a dictionary that
+    is __geo_interface__ compatible"""
+    gi = None
+    if isinstance(feature, dict):
+        if ('coordinates' in dict) and 'type' in dict:
+            gi = feature
+    elif hasattr(feature, '__geo_interface__'):
         gi = feature.__geo_interface__
+    if gi:
         coords = gi['coordinates']
         ft = gi['type']
         if ft == 'Point':
