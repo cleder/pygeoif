@@ -284,6 +284,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.x, 0.0)
         self.assertEqual(p.y, 1.0)
         self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
+        self.assertEqual(p.to_wkt(), p.wkt)
         self.assertEqual(str(p), 'POINT (0.0 1.0)')
         self.assertEqual(p.geom_type, 'Point')
 

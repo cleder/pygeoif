@@ -34,6 +34,10 @@ class _Feature(object):
     def __str__(self):
         return self.to_wkt()
 
+    @property
+    def wkt(self):
+        return self.to_wkt()
+
     def to_wkt(self):
         raise NotImplementedError
 
@@ -257,7 +261,7 @@ class LineString(_Feature):
                 miny = min(coord[1], miny)
                 maxx = max(coord[0], maxx)
                 maxy = max(coord[1], maxy)
-        return (minx, miny, maxx, maxy)
+            return (minx, miny, maxx, maxy)
 
 class LinearRing(LineString):
     """
@@ -511,7 +515,7 @@ class MultiPoint(_Feature):
                 miny = min(geom.coords[0][1], miny)
                 maxx = max(geom.coords[0][0], maxx)
                 maxy = max(geom.coords[0][1], maxy)
-        return (minx, miny, maxx, maxy)
+            return (minx, miny, maxx, maxy)
 
 
     def unique(self):
@@ -600,7 +604,7 @@ class MultiLineString(_Feature):
                 miny = min(geom.bounds[1], miny)
                 maxx = max(geom.bounds[2], maxx)
                 maxy = max(geom.bounds[3], maxy)
-        return (minx, miny, maxx, maxy)
+            return (minx, miny, maxx, maxy)
 
 
 
@@ -708,7 +712,7 @@ class MultiPolygon(_Feature):
                 miny = min(geom.bounds[1], miny)
                 maxx = max(geom.bounds[2], maxx)
                 maxy = max(geom.bounds[3], maxy)
-        return (minx, miny, maxx, maxy)
+            return (minx, miny, maxx, maxy)
 
 
     def to_wkt(self):
