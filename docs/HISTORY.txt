@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2
+-----------------
+
+- change license to LGPL
+- add wkt as a property
+- as_shape also accepts a __geo_interface__ compliant dictionary
+- test with python3
+
+
 0.1 (2012/07/27)
 -----------------
 

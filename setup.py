@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1'
+version = '0.2'
 
 setup(name='pygeoif',
       version=version,
@@ -12,6 +12,8 @@ setup(name='pygeoif',
       classifiers=[
         "Topic :: Scientific/Engineering :: GIS",
         "Programming Language :: Python",
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
         'Development Status :: 4 - Beta',
