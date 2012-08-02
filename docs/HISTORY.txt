@@ -1,7 +1,15 @@
 Changelog
 =========
 
-0.2
+0.2.1 (2012/08/02)
+-------------------
+
+- as_shape also accepts an object that is neither a dictionary nor has
+    a __geo_interface__ but can be converted into a __geo_interface__
+    compliant dictionary
+
+
+0.2 (2012/08/01)
 -----------------
 
 - change license to LGPL
