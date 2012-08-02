@@ -768,6 +768,14 @@ def as_shape(feature):
             gi = feature
     elif hasattr(feature, '__geo_interface__'):
         gi = feature.__geo_interface__
+    else:
+        try:
+            # maybe we can convert it into a valid __geo_interface__ dict
+            cdict = dict(feature)
+            if ('coordinates' in cdict) and ('type' in cdict):
+                gi = cdict
+        except:
+            pass
     if gi:
         coords = gi['coordinates']
         ft = gi['type']
