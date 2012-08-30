@@ -791,7 +791,12 @@ def signed_area(coords):
     algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
     indicates a counter-clockwise oriented ring.
     """
-    xs, ys = map(list, zip(*coords))
+    if len(coords[0]) == 2:
+        xs, ys = map(list, zip(*coords))
+    elif len(coords[0]) == 3:
+        xs, ys, zs = map(list, zip(*coords))
+    else:
+        raise ValueError
     xs.append(xs[1])
     ys.append(ys[1])
     return sum(xs[i]*(ys[i+1]-ys[i-1]) for i in range(1, len(coords)))/2.0
