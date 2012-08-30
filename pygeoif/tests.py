@@ -420,12 +420,97 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry._Feature()
         self.assertRaises(NotImplementedError, geometry.as_shape, f)
 
-
     def test_dict_asshape(self):
         f = geometry.MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
         s = geometry.as_shape(f.__geo_interface__)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
 
+class OrientationTestCase(unittest.TestCase):
+
+    def testLinearRing(self):
+        f = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+        coords = f.coords
+        f._set_orientation(False)
+        self.assertEqual(f.coords,coords[::-1])
+        f._set_orientation(True)
+        self.assertEqual(f.coords,coords)
+
+    def testPolygon(self):
+        ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
+        int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
+        p = geometry.Polygon(ext, [int_1, int_2])
+        self.assertEqual(list(p.exterior.coords), ext)
+        interiors = list(p.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1)
+        self.assertEqual(list(interiors[1].coords), int_2)
+        p._set_orientation(False)
+        self.assertEqual(list(p.exterior.coords), ext[::-1])
+        interiors = list(p.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1)
+        self.assertEqual(list(interiors[1].coords), int_2)
+        p._set_orientation(True)
+        self.assertEqual(list(p.exterior.coords), ext)
+        interiors = list(p.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1[::-1])
+        self.assertEqual(list(interiors[1].coords), int_2[::-1])
+        p._set_orientation(False, interiors=False)
+        self.assertEqual(list(p.exterior.coords), ext[::-1])
+        interiors = list(p.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1[::-1])
+        self.assertEqual(list(interiors[1].coords), int_2[::-1])
+        p._set_orientation(True)
+        p._set_orientation(False, exterior=False)
+        self.assertEqual(list(p.exterior.coords), ext)
+        interiors = list(p.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1)
+        self.assertEqual(list(interiors[1].coords), int_2)
+
+
+    def testMultiPolygon(self):
+        e0 = ((0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0))
+        p = geometry.Polygon(e0)
+        e1 = ((0.0, 0.0), (0.0, 2.0), (2.0, 2.0), (2.0, 0.0), (0.0, 0.0))
+        i1 = ((1.0, 0.0), (0.5, 0.5), (1.0, 1.0), (1.5, 0.5), (1.0, 0.0))
+        ph1 = geometry.Polygon(e1, [i1])
+        mp = geometry.MultiPolygon([p,ph1])
+        self.assertEqual(mp.geoms[0].exterior.coords, e0)
+        self.assertEqual(mp.geoms[1].exterior.coords, e1)
+        self.assertEqual(list(mp.geoms[1].interiors)[0].coords, i1)
+        mp._set_orientation(True)
+        self.assertEqual(mp.geoms[0].exterior.coords, e0)
+        self.assertEqual(mp.geoms[1].exterior.coords, e1)
+        self.assertEqual(list(mp.geoms[1].interiors)[0].coords, i1)
+        mp._set_orientation(False)
+        self.assertEqual(mp.geoms[0].exterior.coords, e0[::-1])
+        self.assertEqual(mp.geoms[1].exterior.coords, e1[::-1])
+        self.assertEqual(list(mp.geoms[1].interiors)[0].coords, i1[::-1])
+        mp._set_orientation(True, exterior=False)
+        self.assertEqual(mp.geoms[0].exterior.coords, e0[::-1])
+        self.assertEqual(mp.geoms[1].exterior.coords, e1[::-1])
+        self.assertEqual(list(mp.geoms[1].interiors)[0].coords, i1)
+        mp._set_orientation(False)
+        mp._set_orientation(True, interiors=False)
+        self.assertEqual(list(mp.geoms[1].interiors)[0].coords, i1[::-1])
+        self.assertEqual(mp.geoms[0].exterior.coords, e0)
+        self.assertEqual(mp.geoms[1].exterior.coords, e1)
+
+
+    def test_orient(self):
+        ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
+        int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
+        p = geometry.Polygon(ext, [int_1, int_2])
+        p1 = geometry.orient(p, 1)
+        self.assertEqual(list(p1.exterior.coords), ext[::-1])
+        interiors = list(p1.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1[::-1])
+        self.assertEqual(list(interiors[1].coords), int_2[::-1])
+        p2 = geometry.orient(p, -1)
+        self.assertEqual(list(p2.exterior.coords), ext)
+        interiors = list(p2.interiors)
+        self.assertEqual(list(interiors[0].coords), int_1)
+        self.assertEqual(list(interiors[1].coords), int_2)
 
 
 def test_suite():
@@ -433,6 +518,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(BasicTestCase))
     suite.addTest(unittest.makeSuite(WKTTestCase))
     suite.addTest(unittest.makeSuite(AsShapeTestCase))
+    suite.addTest(unittest.makeSuite(OrientationTestCase))
     return suite
 
 if __name__ == '__main__':

@@ -296,6 +296,14 @@ class LinearRing(LineString):
         if self._geoms[0].coords != self._geoms[-1].coords:
             self._geoms.append(self._geoms[0])
 
+    def _set_orientation(self, clockwise=False):
+        """ sets the orientation of the coordinates in
+        clockwise or counterclockwise (default) order"""
+        area = signed_area(self.coords)
+        if (area >= 0) and clockwise:
+            self._geoms = self._geoms[::-1]
+        elif (area < 0) and not clockwise:
+            self._geoms = self._geoms[::-1]
 
 
 class Polygon(_Feature):
@@ -423,6 +431,18 @@ class Polygon(_Feature):
             [ ' '.join([str(x) for x in c]) for c in interior.coords]
                             ) + ')'
         return self._type.upper() + '(' + ec + ic + ')'
+
+
+    def _set_orientation(self, clockwise=False, exterior=True, interiors=True):
+        """ sets the orientation of the coordinates in
+        clockwise or counterclockwise (default) order"""
+        if exterior:
+            self.exterior._set_orientation(clockwise)
+        if interiors:
+            for interior in self.interiors:
+                interior._set_orientation(clockwise)
+
+
 
 class MultiPoint(_Feature):
     """A collection of one or more points
@@ -729,6 +749,14 @@ class MultiPolygon(_Feature):
             pc += '(' + ec + ic + ')'
         return self._type.upper() + '(' + pc + ')'
 
+    def _set_orientation(self, clockwise=False, exterior=True, interiors=True):
+        """ sets the orientation of the coordinates in
+        clockwise or counterclockwise (default) order for all
+        contained polygons"""
+        for geom in self.geoms:
+            geom._set_orientation(clockwise, exterior, interiors)
+
+
 
 class GeometryCollection(_Feature):
     """A heterogenous collection of geometries
@@ -757,6 +785,33 @@ class GeometryCollection(_Feature):
 
 #    def to_wkt(self):
 #        raise NotImplementedError
+
+def signed_area(coords):
+    """Return the signed area enclosed by a ring using the linear time
+    algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
+    indicates a counter-clockwise oriented ring.
+    """
+    xs, ys = map(list, zip(*coords))
+    xs.append(xs[1])
+    ys.append(ys[1])
+    return sum(xs[i]*(ys[i+1]-ys[i-1]) for i in range(1, len(coords)))/2.0
+
+
+def orient(polygon, sign=1.0):
+    s = float(sign)
+    rings = []
+    ring = polygon.exterior
+    if signed_area(ring.coords)/s >= 0.0:
+        rings.append(ring.coords)
+    else:
+        rings.append(list(ring.coords)[::-1])
+    for ring in polygon.interiors:
+        if signed_area(ring.coords)/s <= 0.0:
+            rings.append(ring.coords)
+        else:
+            rings.append(list(ring.coords)[::-1])
+    return Polygon(rings[0], rings[1:])
+
 
 def as_shape(feature):
     """ creates a pygeoif feature from an object that
