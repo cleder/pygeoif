@@ -67,6 +67,7 @@ All classes implement the attributes:
 * __geo_interface__: as dicussed above
 * geom_type: Returns a string specifying the Geometry Type of the object
 * bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
+* wkt: Returns the 'Well Known Text' representation of the object
 
 
 and the method:
@@ -174,6 +175,20 @@ geoms : sequence
     A sequence of `Polygon` instances
 
 
+GeometryCollection
+-------------------
+A heterogenous collection of geometries (Points, LineStrings, LinearRings,
+and Polygons)
+
+Attributes
+~~~~~~~~~~~
+geoms : sequence
+    A sequence of geometry instances
+
+Please note:
+GEOMETRYCOLLECTION isn't supported by the Shapefile format.
+And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
+So it's very rarely used in the real GIS professional world.
 
 Functions
 =========
@@ -201,4 +216,22 @@ Create a geometry from its WKT representation
     POINT (0.0 1.0)
 
 
+signed_area
+------------
 
+Return the signed area enclosed by a ring using the linear time
+algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
+indicates a counter-clockwise oriented ring.
+
+orient
+-------
+
+Returns a copy of the polygon with exterior in counter-clockwise and
+interiors in clockwise orientation for sign=1.0 and the other way round
+for sign=-1.0
+
+
+mapping
+-------
+
+Returns the __geo_interface__ dictionary
