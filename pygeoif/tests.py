@@ -251,6 +251,21 @@ class BasicTestCase(unittest.TestCase):
         pt = geometry.Point(0, 1)
         self.assertRaises(TypeError, geometry.MultiPolygon, pt)
 
+    def testGeometryCollection(self):
+        self.assertRaises(TypeError,geometry.GeometryCollection)
+        self.assertRaises(TypeError,geometry.GeometryCollection, None)
+        p = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+        e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+        i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+        ph = geometry.Polygon(e, [i])
+        p0 = geometry.Point(0, 0)
+        p1 = geometry.Point(-1, -1)
+        r = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+        l = geometry.LineString([(0, 0), (1, 1)])
+        gc = geometry.GeometryCollection([p,ph,p0,p1,r,l])
+        self.assertEqual(len(gc.geoms),6)
+        self.assertEqual(gc.bounds, (-1.0, -1.0, 2.0, 2.0))
+
     def test_mapping(self):
         self.assertEqual(geometry.mapping(geometry.Point(1,1)),
             {'type': 'Point', 'coordinates': (1.0, 1.0)})
@@ -268,10 +283,11 @@ class WKTTestCase(unittest.TestCase):
             (30 20, 20 25, 20 15, 30 20)))''',
             '''MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),
             ((15 5, 40 10, 10 20, 5 10, 15 5)))''',
-            'MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))',]
+            'MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))',
+            'GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))',]
 
     # these are valid WKTs but not supported
-    wkt_fail = ['GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))',
+    wkt_fail = [
             'POINT ZM (1 1 5 60)',
             'POINT EMPTY',
             'MULTIPOLYGON EMPTY']
@@ -357,8 +373,12 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(len(p.geoms), 2)
 
     def test_geometrycollection(self):
-        self.assertRaises(NotImplementedError, geometry.from_wkt,
-            'GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))')
+        gc = geometry.from_wkt('GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))')
+        self.assertEqual(len(gc.geoms), 2)
+        self.assertTrue(isinstance(gc.geoms[0], geometry.Point))
+        self.assertTrue(isinstance(gc.geoms[1], geometry.LineString))
+        self.assertEqual(gc.to_wkt(),
+            'GEOMETRYCOLLECTION (POINT (4.0 6.0), LINESTRING (4.0 6.0, 7.0 10.0))')
 
     def test_wkt_ok(self):
         for wkt in self.wkt_ok:
@@ -412,6 +432,17 @@ class AsShapeTestCase(unittest.TestCase):
            ] )
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+    def test_geometrycollection(self):
+        p = geometry.Point(0, 1)
+        l = geometry.LineString([(0, 0), (1, 1)])
+        f = geometry.GeometryCollection([p,l])
+        s = geometry.as_shape(f)
+        self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+        self.assertEqual(f.__geo_interface__['geometries'][0],
+            p.__geo_interface__)
+        self.assertEqual(f.__geo_interface__['geometries'][1],
+            l.__geo_interface__)
 
     def test_nongeo(self):
         self.assertRaises(TypeError, geometry.as_shape, 'a')

@@ -772,19 +772,55 @@ class GeometryCollection(_Feature):
     So it's very rarely used in the real GIS professional world.
     """
     _type = 'GeometryCollection'
-#    @property
-#    def __geo_interface__(self):
-#        raise NotImplementedError
+    _geoms = None
 
-#    def __init__(self):
-#        raise NotImplementedError
+    @property
+    def __geo_interface__(self):
+        gifs = []
+        for geom in self._geoms:
+            gifs.append(geom.__geo_interface__)
+        return {'type': self._type, 'geometries': gifs }
 
-#    @property
-#    def geoms(self):
-#        raise NotImplementedError
+    def __init__(self, features):
+        self._geoms = []
+        if isinstance(features, (list, tuple)):
+            for feature in features:
+                if isinstance(feature, (Point, LineString, LinearRing, Polygon)):
+                    self._geoms.append(feature)
+                elif isinstance(as_shape(feature), (Point, LineString, LinearRing, Polygon)):
+                    self._geoms.append(feature)
+                else:
+                    raise ValueError
+        else:
+            raise TypeError
 
-#    def to_wkt(self):
-#        raise NotImplementedError
+    @property
+    def geoms(self):
+        for geom in self._geoms:
+            return tuple(self._geoms)
+
+
+    @property
+    def bounds(self):
+        if self._geoms:
+            minx = self.geoms[0].bounds[0]
+            miny = self.geoms[0].bounds[1]
+            maxx = self.geoms[0].bounds[2]
+            maxy = self.geoms[0].bounds[3]
+            for geom in self.geoms:
+                minx = min(geom.bounds[0], minx)
+                miny = min(geom.bounds[1], miny)
+                maxx = max(geom.bounds[2], maxx)
+                maxy = max(geom.bounds[3], maxy)
+            return (minx, miny, maxx, maxy)
+
+
+    def to_wkt(self):
+        wkts = []
+        for geom in self._geoms:
+            wkts.append(geom.to_wkt())
+        return 'GEOMETRYCOLLECTION (%s)' % ', '.join(wkts)
+
 
 def signed_area(coords):
     """Return the signed area enclosed by a ring using the linear time
@@ -826,6 +862,8 @@ def as_shape(feature):
     if isinstance(feature, dict):
         if ('coordinates' in feature) and ('type' in feature):
             gi = feature
+        elif (feature['type'] == 'GeometryCollection') and ('geometries' in feature):
+            gi = feature
     elif hasattr(feature, '__geo_interface__'):
         gi = feature.__geo_interface__
     else:
@@ -834,11 +872,18 @@ def as_shape(feature):
             cdict = dict(feature)
             if ('coordinates' in cdict) and ('type' in cdict):
                 gi = cdict
+            elif (cdict['type'] == 'GeometryCollection') and ('geometries' in cdict):
+                gi = cdict
         except:
             pass
     if gi:
-        coords = gi['coordinates']
         ft = gi['type']
+        if ft == 'GeometryCollection':
+            features = []
+            for fi in gi['geometries']:
+                features.append(as_shape(fi))
+            return GeometryCollection(features)
+        coords = gi['coordinates']
         if ft == 'Point':
             return Point(coords)
         elif ft == 'LineString':
@@ -868,6 +913,7 @@ wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
     r'[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$',
     re.I)
 
+gcre = re.compile(r'POINT|LINESTRING|LINEARRING|POLYGON')
 
 outer = re.compile("\((.+)\)")
 inner = re.compile("\([^)]*\)")
@@ -937,6 +983,15 @@ def from_wkt(geo_str):
                 exteriors = None
             polygons.append(Polygon([c.split() for c in coords[0]], exteriors))
         return MultiPolygon(polygons)
+    elif ftype == 'GEOMETRYCOLLECTION':
+        gc_type = gcre.findall(coordinates)
+        gc_coords = gcre.split(coordinates)[1:]
+        assert(len(gc_type)==len(gc_coords))
+        features = []
+        for i in range(0,len(gc_type)):
+            gc_wkt = gc_type[i] + gc_coords[i][:gc_coords[i].rfind(')') +1]
+            features.append(from_wkt(gc_wkt))
+        return GeometryCollection(features)
     else:
         raise NotImplementedError
 
