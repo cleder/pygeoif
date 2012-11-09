@@ -797,7 +797,10 @@ class GeometryCollection(_Feature):
     @property
     def geoms(self):
         for geom in self._geoms:
-            return tuple(self._geoms)
+            if isinstance(geom, (Point, LineString, LinearRing, Polygon)):
+                yield geom
+            else:
+                raise ValueError("Illegal geometry type.")
 
 
     @property
