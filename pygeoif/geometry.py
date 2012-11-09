@@ -820,7 +820,7 @@ class GeometryCollection(_Feature):
 
     def to_wkt(self):
         wkts = []
-        for geom in self._geoms:
+        for geom in self.geoms:
             wkts.append(geom.to_wkt())
         return 'GEOMETRYCOLLECTION (%s)' % ', '.join(wkts)
 
