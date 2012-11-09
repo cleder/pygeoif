@@ -263,7 +263,7 @@ class BasicTestCase(unittest.TestCase):
         r = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
         l = geometry.LineString([(0, 0), (1, 1)])
         gc = geometry.GeometryCollection([p,ph,p0,p1,r,l])
-        self.assertEqual(len(gc.geoms),6)
+        self.assertEqual(len(list(gc.geoms)),6)
         self.assertEqual(gc.bounds, (-1.0, -1.0, 2.0, 2.0))
 
     def test_mapping(self):
@@ -374,9 +374,9 @@ class WKTTestCase(unittest.TestCase):
 
     def test_geometrycollection(self):
         gc = geometry.from_wkt('GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))')
-        self.assertEqual(len(gc.geoms), 2)
-        self.assertTrue(isinstance(gc.geoms[0], geometry.Point))
-        self.assertTrue(isinstance(gc.geoms[1], geometry.LineString))
+        self.assertEqual(len(list(gc.geoms)), 2)
+        self.assertTrue(isinstance(list(gc.geoms)[0], geometry.Point))
+        self.assertTrue(isinstance(list(gc.geoms)[1], geometry.LineString))
         self.assertEqual(gc.to_wkt(),
             'GEOMETRYCOLLECTION (POINT (4.0 6.0), LINESTRING (4.0 6.0, 7.0 10.0))')
 

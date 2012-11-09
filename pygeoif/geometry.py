@@ -806,10 +806,10 @@ class GeometryCollection(_Feature):
     @property
     def bounds(self):
         if self._geoms:
-            minx = self.geoms[0].bounds[0]
-            miny = self.geoms[0].bounds[1]
-            maxx = self.geoms[0].bounds[2]
-            maxy = self.geoms[0].bounds[3]
+            minx = self._geoms[0].bounds[0]
+            miny = self._geoms[0].bounds[1]
+            maxx = self._geoms[0].bounds[2]
+            maxy = self._geoms[0].bounds[3]
             for geom in self.geoms:
                 minx = min(geom.bounds[0], minx)
                 miny = min(geom.bounds[1], miny)
