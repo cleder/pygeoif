@@ -553,6 +553,13 @@ class MultiPoint(_Feature):
         wc = [ ' '.join([str(x) for x in c.coords[0]]) for c in self.geoms]
         return self._type.upper() + '(' + ', '.join(wc) + ')'
 
+    def __len__(self):
+        if self._geoms:
+            return len(self._geoms)
+        else:
+            return 0
+
+
 
 class MultiLineString(_Feature):
     """
@@ -638,6 +645,11 @@ class MultiLineString(_Feature):
                             ) + ')'
         return self._type.upper() + '(' + wc + ')'
 
+    def __len__(self):
+        if self._geoms:
+            return len(self._geoms)
+        else:
+            return 0
 
 class MultiPolygon(_Feature):
     """A collection of one or more polygons
@@ -756,7 +768,11 @@ class MultiPolygon(_Feature):
         for geom in self.geoms:
             geom._set_orientation(clockwise, exterior, interiors)
 
-
+    def __len__(self):
+        if self._geoms:
+            return len(self._geoms)
+        else:
+            return 0
 
 class GeometryCollection(_Feature):
     """A heterogenous collection of geometries
@@ -817,12 +833,17 @@ class GeometryCollection(_Feature):
                 maxy = max(geom.bounds[3], maxy)
             return (minx, miny, maxx, maxy)
 
-
     def to_wkt(self):
         wkts = []
         for geom in self.geoms:
             wkts.append(geom.to_wkt())
         return 'GEOMETRYCOLLECTION (%s)' % ', '.join(wkts)
+
+    def __len__(self):
+        if self._geoms:
+            return len(self._geoms)
+        else:
+            return 0
 
 
 def signed_area(coords):
