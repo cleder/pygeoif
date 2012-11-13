@@ -177,7 +177,7 @@ geoms : sequence
 
 GeometryCollection
 -------------------
-A heterogenous collection of geometries (Points, LineStrings, LinearRings,
+A heterogenous collection of geometries (Points, LineStrings, LinearRings
 and Polygons)
 
 Attributes

@@ -50,8 +50,6 @@ class _Feature(object):
         raise NotImplementedError
 
 
-
-
 class Point(_Feature):
     """
     A zero dimensional feature
