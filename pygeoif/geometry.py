@@ -804,7 +804,7 @@ class GeometryCollection(_Feature):
                 if isinstance(feature, (Point, LineString, LinearRing, Polygon)):
                     self._geoms.append(feature)
                 elif isinstance(as_shape(feature), (Point, LineString, LinearRing, Polygon)):
-                    self._geoms.append(feature)
+                    self._geoms.append(as_shape(feature))
                 else:
                     raise ValueError
         else:
