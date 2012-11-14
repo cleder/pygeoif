@@ -392,8 +392,8 @@ class Polygon(_Feature):
             if isinstance(shell[0][0], (list, tuple)):
                 # we passed shell and holes in the first parameter
                 self._exterior = LinearRing(shell[0])
-                if len(shell) == 2:
-                    for hole in shell[1]:
+                if len(shell) > 1:
+                    for hole in shell[1:]:
                         self._interiors.append(LinearRing(hole))
             else:
                 self._exterior = LinearRing(shell)

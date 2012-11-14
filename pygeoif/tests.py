@@ -54,8 +54,8 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p.__geo_interface__,p6.__geo_interface__)
         p6.coords = [0,1,2]
         self.assertEqual(p3.coords, p6.coords)
-        self.assertRaises(TypeError, p6.coords, 0)
-        self.assertRaises(TypeError, p6.coords, [0])
+        self.assertRaises(TypeError, setattr, p6, 'coords', 0)
+        self.assertRaises(TypeError, setattr, p6, 'coords', [0])
         f = geometry._Feature()
         self.assertRaises(TypeError, geometry.Point, f)
 
@@ -164,7 +164,7 @@ class BasicTestCase(unittest.TestCase):
         ph5 = geometry.Polygon(
                (
                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
-               [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+               ((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))
                ))
         r1 = geometry.LinearRing([(0, 0), (2, 2), (2, 0), (0, 0)])
         r2 = geometry.LinearRing([(0.5, 0.5), (1, 1), (1, 0), (0.5, 0.5)])
@@ -172,6 +172,7 @@ class BasicTestCase(unittest.TestCase):
         pt = geometry.Point(0, 1)
         self.assertRaises(TypeError, geometry.Polygon, pt)
         self.assertRaises(TypeError, geometry.Polygon, 0)
+        self.assertRaises(TypeError, geometry.Polygon, pt, [pt])
 
     def testMultiPoint(self):
         p0 = geometry.Point(0, 0)
@@ -183,6 +184,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(mp.geoms[0].x, 0)
         mp1 = geometry.MultiPoint([p0, p1, p2])
         self.assertEqual(len(mp1.geoms), 3)
+        self.assertEqual(len(mp1), 3)
         self.assertEqual(mp1.geoms[0].x, 0)
         self.assertEqual(mp1.geoms[1].x, 1)
         self.assertEqual(mp1.geoms[2].x, 2)
@@ -203,7 +205,7 @@ class BasicTestCase(unittest.TestCase):
         p = geometry.Polygon(
                (
                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
-               [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+               ((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))
                ))
         mp6 = geometry.MultiPoint(p)
         self.assertEqual(mp6.bounds, (0.0, 0.0, 1.0, 1.0))
@@ -220,6 +222,7 @@ class BasicTestCase(unittest.TestCase):
         ml2 = geometry.MultiLineString([l, l1])
         self.assertEqual(ml2.geoms[0].coords, ((0.0, 0.0), (1.0, 1.0)))
         self.assertEqual(ml2.geoms[1].coords, ((0.0, 0.0), (1.0, 1.0), (2.0, 2.0)))
+        self.assertEqual(len(ml2),2)
         ml3 = geometry.MultiLineString(l)
         self.assertEqual(ml3.geoms[0].coords, ((0.0, 0.0), (1.0, 1.0)))
         pt = geometry.Point(0, 1)
@@ -232,6 +235,7 @@ class BasicTestCase(unittest.TestCase):
         i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
         ph1 = geometry.Polygon(e, [i])
         mp = geometry.MultiPolygon([p,ph1])
+        self.assertEqual(len(mp), 2)
         self.assertTrue(isinstance(mp.geoms[0], geometry.Polygon))
         self.assertTrue(isinstance(mp.geoms[1], geometry.Polygon))
         self.assertEqual(mp.bounds, (0.0, 0.0, 2.0, 2.0))
@@ -264,11 +268,24 @@ class BasicTestCase(unittest.TestCase):
         l = geometry.LineString([(0, 0), (1, 1)])
         gc = geometry.GeometryCollection([p,ph,p0,p1,r,l])
         self.assertEqual(len(list(gc.geoms)),6)
+        self.assertEqual(len(gc), 6)
         self.assertEqual(gc.bounds, (-1.0, -1.0, 2.0, 2.0))
+        self.assertEqual(gc.__geo_interface__,
+                geometry.as_shape(gc).__geo_interface__)
+        self.assertEqual(gc.__geo_interface__,
+                geometry.as_shape(gc.__geo_interface__).__geo_interface__)
 
     def test_mapping(self):
         self.assertEqual(geometry.mapping(geometry.Point(1,1)),
             {'type': 'Point', 'coordinates': (1.0, 1.0)})
+
+    def test_signed_area(self):
+        a0 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+        a1 = [(0, 0, 1), (0, 2, 2), (2, 2, 3), (2, 0, 4), (0, 0, 1)]
+        self.assertEqual(geometry.signed_area(a0), geometry.signed_area(a1))
+        a2 = [(0, 0, 1, 3), (0, 2, 2)]
+        self.assertRaises(ValueError, geometry.signed_area, a2)
+
 
 class WKTTestCase(unittest.TestCase):
 
