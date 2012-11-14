@@ -128,10 +128,14 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p.bounds,(0.0, 0.0, 1.0, 1.0))
         r = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
         p1 = geometry.Polygon(r)
+        self.assertEqual(p1.__geo_interface__,
+            geometry.as_shape(p1).__geo_interface__)
         self.assertEqual(p1.exterior.coords, r.coords)
         e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
         i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
         ph1 = geometry.Polygon(e, [i])
+        self.assertEqual(ph1.__geo_interface__,
+            geometry.as_shape(ph1).__geo_interface__)
         self.assertEqual(ph1.exterior.coords, tuple(e))
         self.assertEqual(list(ph1.interiors)[0].coords, tuple(i))
         self.assertEqual(ph1.__geo_interface__, {'type': 'Polygon',
@@ -143,6 +147,8 @@ class BasicTestCase(unittest.TestCase):
         int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
         int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
         ph2 = geometry.Polygon(ext, [int_1, int_2])
+        self.assertEqual(ph2.__geo_interface__,
+            geometry.as_shape(ph2).__geo_interface__)
         self.assertEqual(ph2.exterior.coords, tuple(ext))
         self.assertEqual(list(ph2.interiors)[0].coords, tuple(int_1))
         self.assertEqual(list(ph2.interiors)[1].coords, tuple(int_2))
