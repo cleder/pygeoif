@@ -19,15 +19,17 @@ for this protocol you may use pygeoif as a starting point and build
 your functionality on top of it
 
 You may think of pygeoif as a 'shapely ultralight' which lets you
-construct geometries and perform _very_ basic operations like
+construct geometries and perform **very** basic operations like
 reading and writing geometries from/to WKT, constructing line strings
 out of points, polygons from linear rings, multi polygons from
 polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with shapely
 you feel right at home with pygeoif
 
-It was written to provide clean and python only geometries for fastkml
-http://pypi.python.org/pypi/fastkml/
+It was written to provide clean and python only geometries for
+fastkml_
+
+.. _fastkml: http://pypi.python.org/pypi/fastkml/
 
 Example
 ========
@@ -43,7 +45,6 @@ Example
     >>> l = geometry.LineString([p,p1])
     >>> l.bounds
     (0.0, 0.0, 1.0, 1.0)
-    >>> dir (geometry)
     >>> dir(l)
     ['__class__', '__delattr__', '__dict__', '__doc__', '__format__',
     '__geo_interface__', '__getattribute__', '__hash__', '__init__',
@@ -55,9 +56,9 @@ Example
     LINESTRING (1.0 1.0, 0.0 0.0)
 
 
-You find more examples in the tests.py file which cover every aspect of
-pygeoif.
-https://github.com/cleder/pygeoif/blob/master/pygeoif/tests.py
+You find more examples in the
+`tests.py <https://github.com/cleder/pygeoif/blob/master/pygeoif/tests.py>`_
+file which cover every aspect of pygeoif or in fastkml_.
 
 Classes
 ========
@@ -211,7 +212,7 @@ from_wkt
 Create a geometry from its WKT representation
 
 
-    >>> p = geometry.from_wkt('POINT (0.0 1.0)')
+    >>> p = geometry.from_wkt('POINT (0 1)')
     >>> print p
     POINT (0.0 1.0)
 
@@ -235,3 +236,4 @@ mapping
 -------
 
 Returns the __geo_interface__ dictionary
+
