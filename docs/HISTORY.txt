@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.3 (2012/11/14)
 -------------------
 
 - add GeometryCollection
