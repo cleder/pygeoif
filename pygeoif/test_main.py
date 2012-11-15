@@ -85,12 +85,9 @@ class BasicTestCase(unittest.TestCase):
         pt = geometry.Point(0, 1)
         self.assertRaises(TypeError, geometry.LineString, pt)
         self.assertRaises(TypeError, geometry.LineString, 0)
-        try:
-            with self.assertRaises(ValueError):
-                l2.coords = ((0,0),(1,1,1))
-                l2.coords = 0
-        except:
-            pass
+        self.assertRaises(ValueError, setattr, l2, 'coords', ((0,0),(1,1,1)))
+        self.assertRaises(ValueError, setattr, l2, 'coords', 0)
+
 
 
     def testLinearRing(self):
@@ -276,6 +273,14 @@ class BasicTestCase(unittest.TestCase):
                 geometry.as_shape(gc).__geo_interface__)
         self.assertEqual(gc.__geo_interface__,
                 geometry.as_shape(gc.__geo_interface__).__geo_interface__)
+        f = geometry._Feature()
+        gc1 = geometry.GeometryCollection([p.__geo_interface__,ph,p0,p1,r,l.__geo_interface__])
+        self.assertEqual(gc.__geo_interface__,gc1.__geo_interface__)
+        self.assertRaises(NotImplementedError, geometry.GeometryCollection, [p,f])
+        mp1 = geometry.MultiPoint([p0, p1])
+        self.assertRaises(ValueError, geometry.GeometryCollection, [p,mp1])
+
+
 
     def test_mapping(self):
         self.assertEqual(geometry.mapping(geometry.Point(1,1)),
