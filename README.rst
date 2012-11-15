@@ -31,6 +31,10 @@ fastkml_
 
 .. _fastkml: http://pypi.python.org/pypi/fastkml/
 
+PyGeoIf is well tested and continually tested with *Travis CI*
+.. image:: https://api.travis-ci.org/cleder/pygeoif.png
+
+
 Example
 ========
 
