@@ -34,7 +34,7 @@ fastkml_
 PyGeoIf is continually tested with *Travis CI*
 
 .. image:: https://api.travis-ci.org/cleder/pygeoif.png
-
+    :target: https://travis-ci.org/cleder/pygeoif
 
 Example
 ========
