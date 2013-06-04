@@ -36,7 +36,7 @@ PyGeoIf is continually tested with *Travis CI*
 .. image:: https://api.travis-ci.org/cleder/pygeoif.png
     :target: https://travis-ci.org/cleder/pygeoif
 
-..image:: https://coveralls.io/repos/cleder/pygeoif/badge.png?branch=master
+.. image:: https://coveralls.io/repos/cleder/pygeoif/badge.png?branch=master
     :target: https://coveralls.io/r/cleder/pygeoif?branch=master
 
 
