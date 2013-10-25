@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4 (2013/10/25)
+-----------------
+
+- after a year in production promote it to `Development Status :: 5 - Production/Stable`
+- MultiPolygons return tuples as the __geo_interface__
+
 0.3.1 (2012/11/15)
 ------------------
 

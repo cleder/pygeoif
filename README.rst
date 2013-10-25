@@ -13,6 +13,7 @@ implement this protocol:
 * geojson http://pypi.python.org/pypi/geojson/
 * PySAL http://pysal.geodacenter.org/
 * Shapely https://github.com/Toblerity/Shapely
+* pyshp https://pypi.python.org/pypi/pyshp
 
 So when you want to write your own geospatilal library with support
 for this protocol you may use pygeoif as a starting point and build

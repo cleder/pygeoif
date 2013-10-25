@@ -13,7 +13,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-version = '0.3.1'
+version = '0.4'
 
 setup(name='pygeoif',
       version=version,
@@ -32,7 +32,7 @@ setup(name='pygeoif',
         'Programming Language :: Python :: 3.3',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
       ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='GIS Spatial WKT',
