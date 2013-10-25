@@ -671,10 +671,10 @@ class MultiPolygon(_Feature):
             coords.append(tuple(geom.exterior.coords))
             for hole in geom.interiors:
                 coords.append(tuple(hole.coords))
-            allcoords.append(coords)
+            allcoords.append(tuple(coords))
         return {
             'type': self._type,
-            'coordinates': allcoords
+            'coordinates': tuple(allcoords)
             }
 
     def __init__(self, polygons):

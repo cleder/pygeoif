@@ -395,6 +395,11 @@ class WKTTestCase(unittest.TestCase):
             'MULTIPOLYGON(((0.0 0.0, 10.0 20.0, 30.0 40.0, 0.0 0.0),(1.0 1.0, 2.0 2.0, 3.0 3.0, 1.0 1.0))((100.0 100.0, 110.0 110.0, 120.0 120.0, 100.0 100.0)))')
         p = geometry.from_wkt('MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))')
         self.assertEqual(len(p.geoms), 2)
+        p = geometry.from_wkt("MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),((15 5, 40 10, 10 20, 5 10, 15 5)))")
+        self.assertEqual(p.__geo_interface__, {'type': 'MultiPolygon', 'coordinates':
+            ((((30.0, 20.0), (10.0, 40.0), (45.0, 40.0), (30.0, 20.0)),),
+            (((15.0, 5.0), (40.0, 10.0), (10.0, 20.0),
+            (5.0, 10.0), (15.0, 5.0)),))})
 
     def test_geometrycollection(self):
         gc = geometry.from_wkt('GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))')
