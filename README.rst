@@ -69,7 +69,7 @@ Example
 
 
 You find more examples in the
-`tests.py <https://github.com/cleder/pygeoif/blob/master/pygeoif/tests.py>`_
+`test_main.py <https://github.com/cleder/pygeoif/blob/master/pygeoif/test_main.py>`_
 file which cover every aspect of pygeoif or in fastkml_.
 
 Classes
