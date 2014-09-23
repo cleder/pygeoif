@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.5 (unreleased)
+-----------------
+
+- add pypy and pypy3 and python 3.4 to travis
+
+
 0.4 (2013/10/25)
 -----------------
 
