@@ -84,7 +84,7 @@ class Point(_Feature):
 
         1) 1 parameter: this must satisfy the __geo_interface__ protocol
             or be a tuple or list of x, y, [z]
-        2) 2 or more parameters: x, y, [z] : float
+        2) 2 or 3 parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
         self._coordinates = ()
@@ -338,7 +338,6 @@ class Polygon(_Feature):
             return {
                 'type': self._type,
                 'coordinates': (self._exterior.coords,)
-
                 }
 
     def __init__(self, shell, holes=None):
@@ -538,14 +537,8 @@ class MultiPoint(_Feature):
 
     def unique(self):
         """ Make Points unique, delete duplicates """
-        coords = []
-        for geom in self.geoms:
-            coords.append(geom.coords)
-        coords = list(set(coords))
-        self._geoms = []
-        for coord in coords:
-            p = Point(coord[0])
-            self._geoms.append(p)
+        coords = [geom.coords for geom in self.geoms]
+        self._geoms = [Point(coord[0]) for coord in set(coords)]
 
     def to_wkt(self):
         wc = [' '.join([str(x) for x in c.coords[0]]) for c in self.geoms]
@@ -1018,12 +1011,12 @@ def from_wkt(geo_str):
             polygons.append(Polygon([c.split() for c in coords[0]], exteriors))
         return MultiPolygon(polygons)
     elif ftype == 'GEOMETRYCOLLECTION':
-        gc_type = gcre.findall(coordinates)
+        gc_types = gcre.findall(coordinates)
         gc_coords = gcre.split(coordinates)[1:]
-        assert(len(gc_type) == len(gc_coords))
+        assert(len(gc_types) == len(gc_coords))
         features = []
-        for i in range(0, len(gc_type)):
-            gc_wkt = gc_type[i] + gc_coords[i][:gc_coords[i].rfind(')') + 1]
+        for (gc_type, gc_coord) in zip(gc_types, gc_coords):
+            gc_wkt = gc_type + gc_coord[:gc_coord.rfind(')') + 1]
             features.append(from_wkt(gc_wkt))
         return GeometryCollection(features)
     else:
