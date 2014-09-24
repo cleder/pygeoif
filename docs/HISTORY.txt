@@ -5,6 +5,7 @@ Changelog
 -----------------
 
 - add pypy and pypy3 and python 3.4 to travis
+- Add tox configuration for performing local testing [Ian Lee]
 
 
 0.4 (2013/10/25)

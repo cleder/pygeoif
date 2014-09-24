@@ -249,3 +249,37 @@ mapping
 
 Returns the __geo_interface__ dictionary
 
+
+Development
+===========
+
+Installation
+------------
+
+You can install PyGeoIf from pypi using pip::
+
+    pip install pygeoif
+
+Testing
+-------
+
+In order to provide a Travis-CI like testing of the PyGeoIf package during
+development, you can use tox (``pip install tox``) to evaluate the tests on
+all supported Python interpreters which you have installed on your system.
+
+You can run the tests with ``tox --skip-missin-interpreters`` and are looking
+for output similar to the following::
+
+    ______________________________________________________ summary ______________________________________________________
+    SKIPPED:  py26: InterpreterNotFound: python2.6
+      py27: commands succeeded
+    SKIPPED:  py32: InterpreterNotFound: python3.2
+    SKIPPED:  py33: InterpreterNotFound: python3.3
+      py34: commands succeeded
+    SKIPPED:  pypy: InterpreterNotFound: pypy
+    SKIPPED:  pypy3: InterpreterNotFound: pypy3
+      congratulations :)
+
+You are primarily looking for the ``congratulations :)`` line at the bottom,
+signifying that the code is working as expected on all configurations
+available.
