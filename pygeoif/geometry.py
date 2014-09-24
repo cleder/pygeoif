@@ -338,7 +338,6 @@ class Polygon(_Feature):
             return {
                 'type': self._type,
                 'coordinates': (self._exterior.coords,)
-
                 }
 
     def __init__(self, shell, holes=None):
@@ -1012,12 +1011,12 @@ def from_wkt(geo_str):
             polygons.append(Polygon([c.split() for c in coords[0]], exteriors))
         return MultiPolygon(polygons)
     elif ftype == 'GEOMETRYCOLLECTION':
-        gc_type = gcre.findall(coordinates)
+        gc_types = gcre.findall(coordinates)
         gc_coords = gcre.split(coordinates)[1:]
-        assert(len(gc_type) == len(gc_coords))
+        assert(len(gc_types) == len(gc_coords))
         features = []
-        for i in range(0, len(gc_type)):
-            gc_wkt = gc_type[i] + gc_coords[i][:gc_coords[i].rfind(')') + 1]
+        for (gc_type, gc_coord) in zip(gc_types, gc_coords):
+            gc_wkt = gc_type + gc_coord[:gc_coord.rfind(')') + 1]
             features.append(from_wkt(gc_wkt))
         return GeometryCollection(features)
     else:
