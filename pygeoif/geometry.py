@@ -538,14 +538,8 @@ class MultiPoint(_Feature):
 
     def unique(self):
         """ Make Points unique, delete duplicates """
-        coords = []
-        for geom in self.geoms:
-            coords.append(geom.coords)
-        coords = list(set(coords))
-        self._geoms = []
-        for coord in coords:
-            p = Point(coord[0])
-            self._geoms.append(p)
+        coords = [geom.coords for geom in self.geoms]
+        self._geoms = [Point(coord[0]) for coord in set(coords)]
 
     def to_wkt(self):
         wc = [' '.join([str(x) for x in c.coords[0]]) for c in self.geoms]
