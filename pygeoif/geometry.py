@@ -84,7 +84,7 @@ class Point(_Feature):
 
         1) 1 parameter: this must satisfy the __geo_interface__ protocol
             or be a tuple or list of x, y, [z]
-        2) 2 or more parameters: x, y, [z] : float
+        2) 2 or 3 parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
         self._coordinates = ()
