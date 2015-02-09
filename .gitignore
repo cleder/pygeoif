@@ -2,3 +2,9 @@
 .tox/
 *.egg/
 *.egg-info/
+.idea/
+
+*.pyc
+
+
+
