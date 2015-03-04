@@ -19,7 +19,7 @@
 import re
 
 
-class _Feature(object):
+class _Geometry(object):
     """ Base class """
     _type = None
     _coordinates = ()
@@ -90,7 +90,7 @@ class _Feature(object):
         raise NotImplementedError
 
 
-class Point(_Feature):
+class Point(_Geometry):
     """
     A zero dimensional feature
 
@@ -192,7 +192,7 @@ class Point(_Feature):
         return self._type.upper() + ' ' + coords
 
 
-class LineString(_Feature):
+class LineString(_Geometry):
     """
     A one-dimensional figure comprising one or more line segments
 
@@ -342,7 +342,7 @@ class LinearRing(LineString):
             self._geoms = self._geoms[::-1]
 
 
-class Polygon(_Feature):
+class Polygon(_Geometry):
     """
     A two-dimensional figure bounded by a linear ring
 
@@ -474,7 +474,7 @@ class Polygon(_Feature):
                 interior._set_orientation(clockwise)
 
 
-class MultiPoint(_Feature):
+class MultiPoint(_Geometry):
     """A collection of one or more points
 
     Attributes
@@ -583,7 +583,7 @@ class MultiPoint(_Feature):
             return 0
 
 
-class MultiLineString(_Feature):
+class MultiLineString(_Geometry):
     """
     A collection of one or more line strings
 
@@ -675,7 +675,7 @@ class MultiLineString(_Feature):
             return 0
 
 
-class MultiPolygon(_Feature):
+class MultiPolygon(_Geometry):
     """A collection of one or more polygons
 
     If component polygons overlap the collection is `invalid` and some
@@ -798,7 +798,7 @@ class MultiPolygon(_Feature):
             return 0
 
 
-class GeometryCollection(_Feature):
+class GeometryCollection(_Geometry):
     """A heterogenous collection of geometries
 
     Attributes

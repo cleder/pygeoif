@@ -8,8 +8,8 @@ except ImportError:
 
 class BasicTestCase(unittest.TestCase):
 
-    def test_feature(self):
-        f = geometry._Feature()
+    def test_Feature(self):
+        f = geometry._Geometry()
         self.assertRaises(NotImplementedError, lambda: f.bounds)
         self.assertRaises(NotImplementedError, f.to_wkt)
 
@@ -55,7 +55,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p3.coords, p6.coords)
         self.assertRaises(TypeError, setattr, p6, 'coords', 0)
         self.assertRaises(TypeError, setattr, p6, 'coords', [0])
-        f = geometry._Feature()
+        f = geometry._Geometry()
         self.assertRaises(TypeError, geometry.Point, f)
 
     def test_linestring(self):
@@ -293,10 +293,10 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(gc.__geo_interface__,
                          geometry.as_shape
                          (gc.__geo_interface__).__geo_interface__)
-        f = geometry._Feature()
+        f = geometry._Geometry()
         gc1 = geometry.GeometryCollection([p.__geo_interface__, ph, p0, p1, r,
                                            l.__geo_interface__])
-        self.assertEqual(gc.__geo_interface__, gc1.__geo_interface__)
+        self.assertEqual(gc.__geo_interface__,gc1.__geo_interface__)
         self.assertRaises(NotImplementedError, geometry.GeometryCollection,
                           [p, f])
         mp1 = geometry.MultiPoint([p0, p1])
@@ -335,6 +335,8 @@ class WKTTestCase(unittest.TestCase):
 
     # these are valid WKTs but not supported
     wkt_fail = ['POINT ZM (1 1 5 60)', 'POINT EMPTY', 'MULTIPOLYGON EMPTY']
+
+
 
     def test_point(self):
         p = geometry.from_wkt('POINT (0.0 1.0)')
@@ -386,6 +388,7 @@ class WKTTestCase(unittest.TestCase):
             (20 30, 35 35, 30 20, 20 30))''')
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
 
+
     def test_multipoint(self):
         p = geometry.from_wkt('MULTIPOINT(3.5 5.6,4.8 10.5)')
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
@@ -401,6 +404,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
         self.assertEqual(p.geoms[0].x, 10.0)
         self.assertEqual(p.geoms[3].y, 10.0)
+
 
     def test_multilinestring(self):
         p = geometry.from_wkt('MULTILINESTRING((3 4,10 50,20 25),'
@@ -461,6 +465,7 @@ class WKTTestCase(unittest.TestCase):
             self.assertRaises(Exception, geometry.from_wkt, wkt)
 
 
+
 class AsShapeTestCase(unittest.TestCase):
 
     def test_point(self):
@@ -472,6 +477,7 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry.LineString([(0, 0), (1, 1)])
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
 
     def test_linearring(self):
         f = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
@@ -494,6 +500,8 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry.Polygon(ext, [int_1, int_2])
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+
 
     def test_multipoint(self):
         f = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
@@ -529,7 +537,7 @@ class AsShapeTestCase(unittest.TestCase):
         self.assertRaises(TypeError, geometry.as_shape, 'a')
 
     def test_notimplemented(self):
-        f = geometry._Feature()
+        f = geometry._Geometry()
         self.assertRaises(NotImplementedError, geometry.as_shape, f)
 
     def test_dict_asshape(self):
@@ -629,7 +637,7 @@ class OrientationTestCase(unittest.TestCase):
 class ReprMethodTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.feature = geometry._Feature()
+        self.feature = geometry._Geometry()
         self.point = geometry.Point(0, 1)
         self.linestring = geometry.LineString([[0, 0], [1, 0], [1, 1]])
         self.linearring = geometry.LinearRing([[0, 0], [1, 0], [1, 1],
@@ -663,8 +671,8 @@ class ReprMethodTestCase(unittest.TestCase):
         self.assertEquals(self.multiline.__repr__(), ml_stringchk)
         self.assertEquals(self.multipoly.__repr__(), m_polychk)
         self.assertEquals(self.geo_collect.__repr__(), gc_chk)
-        self.assertEquals(self.feature.__repr__()[0:33],
-                          '<pygeoif.geometry._Feature object')
+        self.assertEquals(self.feature.__repr__()[0:34], 
+                          '<pygeoif.geometry._Geometry object')
 
 
 def test_suite():
