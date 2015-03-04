@@ -89,6 +89,31 @@ class _Geometry(object):
     def bounds(self):
         raise NotImplementedError
 
+class Feature(object):
+
+    _type = 'Feature'
+    _properties = {}
+
+    def __init__(self, geometry, properties=None, *kwargs):
+        self.geometry = geometry
+        if not properties:
+            self.properties = self._properties
+
+
+    def __geo_interface__(self):
+        return {
+            'type': self._type,
+            'geometry': self.geometry.__geointerface__,
+            'properties': self.properties
+            }
+
+# class FeatureCollection(object):
+#
+#     _type = 'FeatureCollection'
+#
+#     def __init__(self, features=[], *kwargs):
+#         self.features = features
+#         self.bounds = self.features[0].
 
 class Point(_Geometry):
     """

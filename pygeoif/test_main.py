@@ -675,6 +675,53 @@ class ReprMethodTestCase(unittest.TestCase):
                           '<pygeoif.geometry._Geometry object')
 
 
+class FeatureTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.a = geometry.Polygon(((0., 0.), (0., 1.),
+                                   (1., 1.), (1., 0.), (0., 0.)))
+        self.b = geometry.Polygon(((0., 0.), (0., 2.),
+                                   (2., 1.), (2., 0.), (0., 0.)))
+        self.f1 = geometry.Feature(self.a)
+        self.f2 = geometry.Feature(self.b)
+        self.fc = geometry.FeatureCollection([self.f1, self.f2])
+
+    def test_feature(self):
+        self.assertRaises(TypeError, geometry.Feature)
+        self.assertEqual(self.f1.__geo_interface__,
+                         geometry.as_shape(self.f1).__geo_interface__)
+        self.assertEqual(self.f1.__geo_interface__,
+                         {'type': 'Feature',
+                          'geometry': {'type': 'Polygon',
+                                       'coordinates': (((0.0, 0.0), (0.0, 1.0),
+                                                        (1.0, 1.0), (1.0, 0.0),
+                                                        (0.0, 0.0)),),
+                                       },
+                          'properties': {}
+                          })
+        self.f1.properties['coords'] = {}
+        self.f1.properties['coords']['cube'] = (0, 0, 0)
+        self.assertEqual(self.f1.__geo_interface__,
+                         {'type': 'Feature',
+                          'geometry': {'type': 'Polygon',
+                                       'coordinates': (((0.0, 0.0), (0.0, 1.0),
+                                                        (1.0, 1.0), (1.0, 0.0),
+                                                        (0.0, 0.0)),),
+                                       },
+                          'properties': {'coords': {'cube': (0, 0, 0)}}
+                          })
+        self.assertEqual(self.f1.geometry.bounds, (0.0, 0.0, 1.0, 1.0))
+
+    def test_featurecollection(self):
+        self.assertRaises(TypeError, geometry.FeatureCollection)
+        self.assertRaises(TypeError, geometry.FeatureCollection, None)
+        self.assertEqual(len(list(self.fc.features)), 2)
+        self.assertEqual(len(self.fc), 2)
+        self.assertEqual(self.fc.bounds, (-1.0, -1.0, 2.0, 2.0))
+        self.assertEqual(self.fc.__geo_interface__,
+                         geometry.as_shape(self.fc).__geo_interface__)
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BasicTestCase))
@@ -682,6 +729,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(AsShapeTestCase))
     suite.addTest(unittest.makeSuite(OrientationTestCase))
     suite.addTest(unittest.makeSuite(ReprMethodTestCase))
+    suite.addTest(unittest.makeSuite(FeatureTestCase))
     return suite
 
 if __name__ == '__main__':
