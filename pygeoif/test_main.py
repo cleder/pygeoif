@@ -8,7 +8,7 @@ except ImportError:
 
 class BasicTestCase(unittest.TestCase):
 
-    def test_Feature(self):
+    def test_Geometry(self):
         f = geometry._Geometry()
         self.assertRaises(NotImplementedError, lambda: f.bounds)
         self.assertRaises(NotImplementedError, f.to_wkt)
@@ -616,10 +616,10 @@ class OrientationTestCase(unittest.TestCase):
         self.assertEqual(mp.geoms[0].exterior.coords, e0)
         self.assertEqual(mp.geoms[1].exterior.coords, e1)
 
+
     def test_orient(self):
         ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25),
-                 (0.5, 0.25)]
+        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
         int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
         p = geometry.Polygon(ext, [int_1, int_2])
         p1 = geometry.orient(p, 1)
@@ -637,7 +637,7 @@ class OrientationTestCase(unittest.TestCase):
 class ReprMethodTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.feature = geometry._Geometry()
+        self.geometry = geometry._Geometry()
         self.point = geometry.Point(0, 1)
         self.linestring = geometry.LineString([[0, 0], [1, 0], [1, 1]])
         self.linearring = geometry.LinearRing([[0, 0], [1, 0], [1, 1],
@@ -653,6 +653,7 @@ class ReprMethodTestCase(unittest.TestCase):
         self.geo_collect = geometry.GeometryCollection([self.point,
                                                         self.linestring,
                                                         self.linearring])
+        self.feature = geometry.Feature(self.point, {'a': 1, 'b': 2})
 
     def test_repr(self):
         pointchk = "Point(0.0, 1.0)"
@@ -671,8 +672,9 @@ class ReprMethodTestCase(unittest.TestCase):
         self.assertEquals(self.multiline.__repr__(), ml_stringchk)
         self.assertEquals(self.multipoly.__repr__(), m_polychk)
         self.assertEquals(self.geo_collect.__repr__(), gc_chk)
-        self.assertEquals(self.feature.__repr__()[0:34], 
+        self.assertEquals(self.geometry.__repr__()[0:34], 
                           '<pygeoif.geometry._Geometry object')
+        self.assertEquals(self.feature.__repr__(), '<Feature Instance Point geometry 2 properties>')
 
 
 class FeatureTestCase(unittest.TestCase):

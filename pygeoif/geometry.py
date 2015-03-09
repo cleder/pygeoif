@@ -18,18 +18,8 @@
 
 import re
 
-
-class _Geometry(object):
-    """ Base class """
-    _type = None
-    _coordinates = ()
-
-    @property
-    def __geo_interface__(self):
-        return {
-            'type': self._type,
-            'coordinates': tuple(self._coordinates)
-        }
+class _GeoObject(object):
+    """Base Class"""
 
     def __repr__(self):
         if self._type == 'Point':
@@ -68,8 +58,26 @@ class _Geometry(object):
             bounds = self.bounds
             return "<{0} {1} Geometries {2} bbox>".format(
                 instance, qty, bounds)
+        elif self._type == 'Feature':
+            instance = "Feature Instance"
+            geometry = self._geometry._type
+            properties = len(self._properties)
+            return "<{} {} geometry {} properties>".format(instance, geometry, properties)
         else:
             return object.__repr__(self)
+
+
+class _Geometry(_GeoObject):
+    """Base Class for a variety of geometry types """
+    _type = None
+    _coordinates = ()
+
+    @property
+    def __geo_interface__(self):
+        return {
+            'type': self._type,
+            'coordinates': tuple(self._coordinates)
+            }
 
     def __str__(self):
         return self.to_wkt()
@@ -89,22 +97,43 @@ class _Geometry(object):
     def bounds(self):
         raise NotImplementedError
 
-class Feature(object):
+class Feature(_GeoObject):
+    """
+    Aggregates a geometry instance with associated user-defined properties.
+
+    Attributes
+    ~~~~~~~~~~~
+    geometry : object
+        A geometry instance
+    properties : dict
+        A dictionary linking field keys with values
+        associated with geometry instance
+
+    Example
+    ~~~~~~~~
+
+     >>> p = Point(1.0, -1.0)
+     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
+     >>> a = Feature(p, props)
+     >>> a.properties
+     {'Name': 'Sample Point', 'Other': 'Other Data'}
+      >>> a.properties['Name']
+     'Sample Point'
+      """
 
     _type = 'Feature'
-    _properties = {}
+    _properties = None
+    _geometry = None
 
-    def __init__(self, geometry, properties=None, *kwargs):
-        self.geometry = geometry
-        if not properties:
-            self.properties = self._properties
-
+    def __init__(self, geometry, properties={}, *kwargs):
+        self._geometry = geometry
+        self._properties = properties
 
     def __geo_interface__(self):
         return {
             'type': self._type,
-            'geometry': self.geometry.__geointerface__,
-            'properties': self.properties
+            'geometry': self._geometry.__geointerface__,
+            'properties': self._properties
             }
 
 # class FeatureCollection(object):
@@ -117,7 +146,7 @@ class Feature(object):
 
 class Point(_Geometry):
     """
-    A zero dimensional feature
+    A zero dimensional geometry
 
     A point has zero length and zero area.
 
@@ -327,7 +356,7 @@ class LineString(_Geometry):
 
 class LinearRing(LineString):
     """
-    A closed one-dimensional feature comprising one or more line segments
+    A closed one-dimensional geometry comprising one or more line segments
 
     A LinearRing that crosses itself or touches itself at a single point is
     invalid and operations on it may fail.
@@ -373,7 +402,7 @@ class Polygon(_Geometry):
 
     A polygon has a non-zero area. It may have one or more negative-space
     "holes" which are also bounded by linear rings. If any rings cross each
-    other, the feature is invalid and operations on it may fail.
+    other, the geometry is invalid and operations on it may fail.
 
     Attributes
     ----------
@@ -839,7 +868,7 @@ class GeometryCollection(_Geometry):
     _type = 'GeometryCollection'
     _geoms = None
 
-    _allowed_features = (Point, LineString, LinearRing, Polygon)
+    _allowed_geomtries = (Point, LineString, LinearRing, Polygon)
 
     @property
     def __geo_interface__(self):
@@ -848,14 +877,14 @@ class GeometryCollection(_Geometry):
             gifs.append(geom.__geo_interface__)
         return {'type': self._type, 'geometries': gifs}
 
-    def __init__(self, features):
+    def __init__(self, geometries):
         self._geoms = []
-        if isinstance(features, (list, tuple)):
-            for feature in features:
-                if isinstance(feature, self._allowed_features):
-                    self._geoms.append(feature)
-                elif isinstance(as_shape(feature), self._allowed_features):
-                    self._geoms.append(as_shape(feature))
+        if isinstance(geometries, (list, tuple)):
+            for geometry in geometries:
+                if isinstance(geometry, self._allowed_geomtries):
+                    self._geoms.append(geometry)
+                elif isinstance(as_shape(geometry), self._allowed_geomtries):
+                    self._geoms.append(as_shape(geometry))
                 else:
                     raise ValueError
         else:
@@ -864,7 +893,7 @@ class GeometryCollection(_Geometry):
     @property
     def geoms(self):
         for geom in self._geoms:
-            if isinstance(geom, self._allowed_features):
+            if isinstance(geom, self._allowed_geomtries):
                 yield geom
             else:
                 raise ValueError("Illegal geometry type.")
@@ -928,23 +957,23 @@ def orient(polygon, sign=1.0):
     return Polygon(rings[0], rings[1:])
 
 
-def as_shape(feature):
-    """ creates a pygeoif feature from an object that
+def as_shape(geometry):
+    """ creates a pygeoif geometry from an object that
     provides the __geo_interface__ or a dictionary that
     is __geo_interface__ compatible"""
     gi = None
-    if isinstance(feature, dict):
-        is_geometryCollection = feature['type'] == 'GeometryCollection'
-        if ('coordinates' in feature) and ('type' in feature):
-            gi = feature
-        elif is_geometryCollection and 'geometries' in feature:
-            gi = feature
-    elif hasattr(feature, '__geo_interface__'):
-        gi = feature.__geo_interface__
+    if isinstance(geometry, dict):
+        is_geometryCollection = geometry['type'] == 'GeometryCollection'
+        if ('coordinates' in geometry) and ('type' in geometry):
+            gi = geometry
+        elif is_geometryCollection and 'geometries' in geometry:
+            gi = geometry
+    elif hasattr(geometry, '__geo_interface__'):
+        gi = geometry.__geo_interface__
     else:
         try:
             # maybe we can convert it into a valid __geo_interface__ dict
-            cdict = dict(feature)
+            cdict = dict(geometry)
             is_geometryCollection = cdict['type'] == 'GeometryCollection'
             if ('coordinates' in cdict) and ('type' in cdict):
                 gi = cdict
@@ -955,10 +984,10 @@ def as_shape(feature):
     if gi:
         ft = gi['type']
         if ft == 'GeometryCollection':
-            features = []
+            geometries = []
             for fi in gi['geometries']:
-                features.append(as_shape(fi))
-            return GeometryCollection(features)
+                geometries.append(as_shape(fi))
+            return GeometryCollection(geometries)
         coords = gi['coordinates']
         if ft == 'Point':
             return Point(coords)
@@ -1067,11 +1096,11 @@ def from_wkt(geo_str):
         gc_types = gcre.findall(coordinates)
         gc_coords = gcre.split(coordinates)[1:]
         assert(len(gc_types) == len(gc_coords))
-        features = []
+        geometries = []
         for (gc_type, gc_coord) in zip(gc_types, gc_coords):
             gc_wkt = gc_type + gc_coord[:gc_coord.rfind(')') + 1]
-            features.append(from_wkt(gc_wkt))
-        return GeometryCollection(features)
+            geometries.append(from_wkt(gc_wkt))
+        return GeometryCollection(geometries)
     else:
         raise NotImplementedError
 
