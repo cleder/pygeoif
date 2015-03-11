@@ -29,7 +29,32 @@ class _Feature(object):
         return {
             'type': self._type,
             'coordinates': tuple(self._coordinates)
-            }
+        }
+
+    def __repr__(self):
+        if self._type == 'Point':
+            return("Point({0}, {1})".format(self.x, self.y))
+        elif self._type == 'LineString':
+            return "<LineString Instance Coordinates " \
+                   "{}>".format(len(self.coords))
+        elif self._type == 'LinearRing':
+            return "<LinearRing Instance Coordinate Sets " \
+                   "{}>".format(len(self.coords))
+        elif self._type == 'Polygon':
+            return "<Polygon Instance {} Interiors {} Exterior" \
+                   "  >".format(len(self._interiors.coords),
+                                len(self._exterior.coords))
+        elif self._type == 'MultiPoint':
+            return "<MultiPoint Instance {} Points".format(len(self.geoms))
+        elif self._type == 'MultiLineString':
+            return "<MultiLineString Instance, {} Lines, " \
+                   "bbox {} ".format(len(self._geoms), self.bounds)
+        elif self._type == 'MultiPolygon':
+            return "<MultiPolygon Instance, {} Polygons, " \
+                   "bbox {} ".format(len(self._geoms), self.bounds)
+        elif self._type == 'GeometryCollection':
+            return "<GeometryCollection Instance,{} geometries, " \
+                   "bbox {} ".format(len(self._geoms), self.bounds)
 
     def __str__(self):
         return self.to_wkt()
@@ -93,7 +118,7 @@ class Point(_Feature):
                 if args[0].__geo_interface__['type'] == 'Point':
                     self._coordinates = list(
                         args[0].__geo_interface__['coordinates']
-                        )
+                    )
                 else:
                     raise TypeError
             else:
@@ -148,11 +173,8 @@ class Point(_Feature):
         return tuple(self._coordinates + self._coordinates)
 
     def to_wkt(self):
-        return (
-            self._type.upper()
-            + ' '
-            + str(tuple(self._coordinates)).replace(',', '')
-            )
+        coords = str(tuple(self._coordinates)).replace(',', '')
+        return self._type.upper() + ' ' + coords
 
 
 class LineString(_Feature):
@@ -176,7 +198,7 @@ class LineString(_Feature):
             return {
                 'type': self._type,
                 'coordinates': tuple(self.coords)
-                }
+            }
 
     def __init__(self, coordinates):
         """
@@ -333,12 +355,12 @@ class Polygon(_Feature):
             return {
                 'type': self._type,
                 'coordinates': tuple(coords)
-                }
+            }
         elif self._exterior:
             return {
                 'type': self._type,
                 'coordinates': (self._exterior.coords,)
-                }
+            }
 
     def __init__(self, shell, holes=None):
         """
@@ -418,18 +440,13 @@ class Polygon(_Feature):
             return self.exterior.bounds
 
     def to_wkt(self):
-        ec = (
-            '('
-            + ', '.join(
-                [' '.join([str(x) for x in c]) for c in self.exterior.coords]
-                )
-            + ')'
-            )
+        ext = [' '.join([str(x) for x in c]) for c in self.exterior.coords]
+        ec = ('(' + ', '.join(ext) + ')')
         ic = ''
         for interior in self.interiors:
             ic += ',(' + ', '.join(
                 [' '.join([str(x) for x in c]) for c in interior.coords]
-                ) + ')'
+            ) + ')'
         return self._type.upper() + '(' + ec + ic + ')'
 
     def _set_orientation(self, clockwise=False, exterior=True, interiors=True):
@@ -459,7 +476,7 @@ class MultiPoint(_Feature):
         return {
             'type': self._type,
             'coordinates': tuple([g.coords[0] for g in self._geoms])
-            }
+        }
 
     def __init__(self, points):
         """
@@ -571,8 +588,8 @@ class MultiLineString(_Feature):
             'type': self._type,
             'coordinates': tuple(
                 tuple(c for c in g.coords) for g in self.geoms
-                )
-            }
+            )
+        }
 
     def __init__(self, lines):
         """
@@ -669,7 +686,7 @@ class MultiPolygon(_Feature):
         return {
             'type': self._type,
             'coordinates': tuple(allcoords)
-            }
+        }
 
     def __init__(self, polygons):
         """
@@ -684,12 +701,12 @@ class MultiPolygon(_Feature):
         -------
         Construct a collection from a sequence of coordinate tuples
 
-          >>> ob = MultiPolygon( [
+          >>> ob = MultiPolygon([
           ...     (
           ...     ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
-          ...     [((0.1,0.1), (0.1,0.2), (0.2,0.2), (0.2,0.1))]
-          ...     )
-          ... ] )
+          ...     [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+          ...)
+          ...])
           >>> len(ob.geoms)
           1
           >>> type(ob.geoms[0]) == Polygon
@@ -877,12 +894,10 @@ def as_shape(feature):
     is __geo_interface__ compatible"""
     gi = None
     if isinstance(feature, dict):
+        is_geometryCollection = feature['type'] == 'GeometryCollection'
         if ('coordinates' in feature) and ('type' in feature):
             gi = feature
-        elif (
-            (feature['type'] == 'GeometryCollection')
-            and ('geometries' in feature)
-        ):
+        elif is_geometryCollection and 'geometries' in feature:
             gi = feature
     elif hasattr(feature, '__geo_interface__'):
         gi = feature.__geo_interface__
@@ -890,12 +905,10 @@ def as_shape(feature):
         try:
             # maybe we can convert it into a valid __geo_interface__ dict
             cdict = dict(feature)
+            is_geometryCollection = cdict['type'] == 'GeometryCollection'
             if ('coordinates' in cdict) and ('type' in cdict):
                 gi = cdict
-            elif (
-                (cdict['type'] == 'GeometryCollection')
-                and ('geometries' in cdict)
-            ):
+            elif is_geometryCollection and 'geometries' in cdict:
                 gi = cdict
         except:
             pass
@@ -930,14 +943,14 @@ def as_shape(feature):
         raise TypeError('Object does not implement __geo_interface__')
 
 
-wkt_regex = re.compile(
-    r'^(SRID=(?P<srid>\d+);)?'
-    r'(?P<wkt>'
-    r'(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|'
-    r'MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|GEOMETRYCOLLECTION)'
-    r'[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$',
-    re.I
-    )
+wkt_regex = re.compile(r'^(SRID=(?P<srid>\d+);)?'
+                       r'(?P<wkt>'
+                       r'(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|'
+                       r'MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|'
+                       r'GEOMETRYCOLLECTION)'
+                       r'[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$',
+                       re.I
+                       )
 
 gcre = re.compile(r'POINT|LINESTRING|LINEARRING|POLYGON')
 
