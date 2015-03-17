@@ -33,40 +33,41 @@ class _Feature(object):
 
     def __repr__(self):
         if self._type == 'Point':
-            return("Point({}, {})".format(self.x, self.y))
+            return("Point({0}, {1})".format(self.x, self.y))
         elif self._type == 'LineString':
             instance = "LineString Instance"
             qty = len(self.coords)
-            return "<{} {} Coords>".format(instance, qty)
+            return "<{0} {1} Coords>".format(instance, qty)
         elif self._type == 'LinearRing':
             instance = "LinearRing Instance"
             qty = len(self.coords)
-            return "<{} {} Coords>".format(instance, qty)
+            return "<{0} {1} Coords>".format(instance, qty)
         elif self._type == 'Polygon':
             instance = "Polygon Instance"
             inter_qty = len(self._interiors)
             exter_qty = len(self._exterior.coords)
-            return "<{} {} Interior {} Exterior>".format(instance, inter_qty,
-                                                         exter_qty)
+            return "<{0} {1} Interior {2} Exterior>".format(
+                instance, inter_qty, exter_qty)
         elif self._type == 'MultiPoint':
             instance = "MultiPoint Instance"
             qty = len(self.geoms)
-            return "<{} {} Points>".format(instance, qty)
+            return "<{0} {1} Points>".format(instance, qty)
         elif self._type == 'MultiLineString':
             instance = "MultiLineString Instance"
             qty = len(self._geoms)
             bounds = self.bounds
-            return "<{} {} Lines {} bbox>".format(instance, qty, bounds)
+            return "<{0} {1} Lines {2} bbox>".format(instance, qty, bounds)
         elif self._type == 'MultiPolygon':
             instance = "MultiPolygon Instance"
             qty = len(self._geoms)
             bounds = self.bounds
-            return "<{} {} Polygons {} bbox>".format(instance, qty, bounds)
+            return "<{0} {1} Polygons {2} bbox>".format(instance, qty, bounds)
         elif self._type == 'GeometryCollection':
             instance = "GeometryCollection Instance"
             qty = len(self._geoms)
             bounds = self.bounds
-            return "<{} {} Geometries {} bbox>".format(instance, qty, bounds)
+            return "<{0} {1} Geometries {2} bbox>".format(
+                instance, qty, bounds)
         else:
             return object.__repr__(self)
 

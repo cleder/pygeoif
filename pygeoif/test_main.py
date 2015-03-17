@@ -652,9 +652,9 @@ class ReprMethodTestCase(unittest.TestCase):
         l_ringchk = "<LinearRing Instance 4 Coords>"
         polychk = "<Polygon Instance 0 Interior 5 Exterior>"
         m_pointchk = "<MultiPoint Instance 2 Points>"
-        ml_stringchk = "<MultiLineString Instance 1 Lines {} bbox>".format(self.multiline.bounds)
-        m_polychk = "<MultiPolygon Instance 1 Polygons {} bbox>".format(self.multipoly.bounds)
-        gc_chk = "<GeometryCollection Instance 3 Geometries {} bbox>".format(self.geo_collect.bounds)
+        ml_stringchk = "<MultiLineString Instance 1 Lines {0} bbox>".format(self.multiline.bounds)
+        m_polychk = "<MultiPolygon Instance 1 Polygons {0} bbox>".format(self.multipoly.bounds)
+        gc_chk = "<GeometryCollection Instance 3 Geometries {0} bbox>".format(self.geo_collect.bounds)
         self.assertEquals(self.point.__repr__(), pointchk)
         self.assertEquals(self.linestring.__repr__(), l_stringchk)
         self.assertEquals(self.linearring.__repr__(), l_ringchk)
