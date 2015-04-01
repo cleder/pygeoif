@@ -504,6 +504,7 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+        self.assertEqual((0, 0, 1, 2), f.bounds)
 
     def test_multipolygon(self):
         f = geometry.MultiPolygon([(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0),
@@ -625,12 +626,54 @@ class OrientationTestCase(unittest.TestCase):
         self.assertEqual(list(interiors[1].coords), int_2)
 
 
+class ReprMethodTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.feature = geometry._Feature()
+        self.point = geometry.Point(0, 1)
+        self.linestring = geometry.LineString([[0, 0], [1, 0], [1, 1]])
+        self.linearring = geometry.LinearRing([[0, 0], [1, 0], [1, 1],
+                                               [0, 0]])
+        self.coords_1 = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
+        self.polygon = geometry.Polygon(self.coords_1)
+        self.multipoint = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
+        self.multiline = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
+        self.multipoly = geometry.MultiPolygon([(((0.0, 0.0), (0.0, 1.0),
+                                                 (1.0, 1.0), (1.0, 0.0)),
+                                               [((0.1, 0.1), (0.1, 0.2),
+                                                 (0.2, 0.2), (0.2, 0.1))])])
+        self.geo_collect = geometry.GeometryCollection([self.point,
+                                                        self.linestring,
+                                                        self.linearring])
+
+    def test_repr(self):
+        pointchk = "Point(0.0, 1.0)"
+        l_stringchk = "<LineString Instance 3 Coords>"
+        l_ringchk = "<LinearRing Instance 4 Coords>"
+        polychk = "<Polygon Instance 0 Interior 5 Exterior>"
+        m_pointchk = "<MultiPoint Instance 2 Points>"
+        ml_stringchk = "<MultiLineString Instance 1 Lines {0} bbox>".format(self.multiline.bounds)
+        m_polychk = "<MultiPolygon Instance 1 Polygons {0} bbox>".format(self.multipoly.bounds)
+        gc_chk = "<GeometryCollection Instance 3 Geometries {0} bbox>".format(self.geo_collect.bounds)
+        self.assertEquals(self.point.__repr__(), pointchk)
+        self.assertEquals(self.linestring.__repr__(), l_stringchk)
+        self.assertEquals(self.linearring.__repr__(), l_ringchk)
+        self.assertEquals(self.polygon.__repr__(), polychk)
+        self.assertEquals(self.multipoint.__repr__(), m_pointchk)
+        self.assertEquals(self.multiline.__repr__(), ml_stringchk)
+        self.assertEquals(self.multipoly.__repr__(), m_polychk)
+        self.assertEquals(self.geo_collect.__repr__(), gc_chk)
+        self.assertEquals(self.feature.__repr__()[0:33],
+                          '<pygeoif.geometry._Feature object')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(BasicTestCase))
     suite.addTest(unittest.makeSuite(WKTTestCase))
     suite.addTest(unittest.makeSuite(AsShapeTestCase))
     suite.addTest(unittest.makeSuite(OrientationTestCase))
+    suite.addTest(unittest.makeSuite(ReprMethodTestCase))
     return suite
 
 if __name__ == '__main__':
