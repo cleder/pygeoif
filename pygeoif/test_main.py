@@ -654,6 +654,8 @@ class ReprMethodTestCase(unittest.TestCase):
                                                         self.linestring,
                                                         self.linearring])
         self.feature = geometry.Feature(self.point, {'a': 1, 'b': 2})
+        self.feature_list = [self.feature, self.feature]
+        self.fc = geometry.FeatureCollection(self.feature_list)
 
     def test_repr(self):
         pointchk = "Point(0.0, 1.0)"
@@ -664,6 +666,7 @@ class ReprMethodTestCase(unittest.TestCase):
         ml_stringchk = "<MultiLineString Instance 1 Lines {0} bbox>".format(self.multiline.bounds)
         m_polychk = "<MultiPolygon Instance 1 Polygons {0} bbox>".format(self.multipoly.bounds)
         gc_chk = "<GeometryCollection Instance 3 Geometries {0} bbox>".format(self.geo_collect.bounds)
+        fc_chk = "<FeatureCollection Instance 2 Features {0} bbox>".format(self.fc.bounds)
         self.assertEquals(self.point.__repr__(), pointchk)
         self.assertEquals(self.linestring.__repr__(), l_stringchk)
         self.assertEquals(self.linearring.__repr__(), l_ringchk)
@@ -674,7 +677,9 @@ class ReprMethodTestCase(unittest.TestCase):
         self.assertEquals(self.geo_collect.__repr__(), gc_chk)
         self.assertEquals(self.geometry.__repr__()[0:34], 
                           '<pygeoif.geometry._Geometry object')
-        self.assertEquals(self.feature.__repr__(), '<Feature Instance Point geometry 2 properties>')
+        self.assertEquals(self.feature.__repr__(),\
+                          '<Feature Instance Point geometry 2 properties>')
+        self.assertEquals(self.fc.__repr__(), fc_chk)
 
 
 class FeatureTestCase(unittest.TestCase):
@@ -719,7 +724,7 @@ class FeatureTestCase(unittest.TestCase):
         self.assertRaises(TypeError, geometry.FeatureCollection, None)
         self.assertEqual(len(list(self.fc.features)), 2)
         self.assertEqual(len(self.fc), 2)
-        self.assertEqual(self.fc.bounds, (-1.0, -1.0, 2.0, 2.0))
+        self.assertEqual(self.fc.bounds, (0.0, 0.0, 2.0, 2.0))
         self.assertEqual(self.fc.__geo_interface__,
                          geometry.as_shape(self.fc).__geo_interface__)
 

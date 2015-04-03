@@ -18,6 +18,7 @@
 
 import re
 
+
 class _GeoObject(object):
     """Base Class"""
 
@@ -40,21 +41,21 @@ class _GeoObject(object):
                 instance, inter_qty, exter_qty)
         elif self._type == 'MultiPoint':
             instance = "MultiPoint Instance"
-            qty = len(self.geoms)
+            qty = len(self)
             return "<{0} {1} Points>".format(instance, qty)
         elif self._type == 'MultiLineString':
             instance = "MultiLineString Instance"
-            qty = len(self._geoms)
+            qty = len(self)
             bounds = self.bounds
             return "<{0} {1} Lines {2} bbox>".format(instance, qty, bounds)
         elif self._type == 'MultiPolygon':
             instance = "MultiPolygon Instance"
-            qty = len(self._geoms)
+            qty = len(self)
             bounds = self.bounds
             return "<{0} {1} Polygons {2} bbox>".format(instance, qty, bounds)
         elif self._type == 'GeometryCollection':
             instance = "GeometryCollection Instance"
-            qty = len(self._geoms)
+            qty = len(self)
             bounds = self.bounds
             return "<{0} {1} Geometries {2} bbox>".format(
                 instance, qty, bounds)
@@ -62,7 +63,15 @@ class _GeoObject(object):
             instance = "Feature Instance"
             geometry = self._geometry._type
             properties = len(self._properties)
-            return "<{} {} geometry {} properties>".format(instance, geometry, properties)
+            return "<{0} {1} geometry {2} properties>".format(instance,
+                                                              geometry,
+                                                              properties)
+        elif self._type == 'FeatureCollection':
+            instance = 'FeatureCollection Instance'
+            qty = len(self)
+            bounds = self.bounds
+            return '<{0} {1} Features {2} bbox>'.format(instance, qty, bounds)
+
         else:
             return object.__repr__(self)
 
@@ -97,6 +106,7 @@ class _Geometry(_GeoObject):
     def bounds(self):
         raise NotImplementedError
 
+
 class Feature(_GeoObject):
     """
     Aggregates a geometry instance with associated user-defined properties.
@@ -129,20 +139,22 @@ class Feature(_GeoObject):
         self._geometry = geometry
         self._properties = properties
 
+    @property
+    def geometry(self):
+        return self._geometry
+
+    @property
+    def properties(self):
+        return self._properties
+
+    @property
     def __geo_interface__(self):
         return {
             'type': self._type,
-            'geometry': self._geometry.__geointerface__,
+            'geometry': self._geometry.__geo_interface__,
             'properties': self._properties
             }
 
-# class FeatureCollection(object):
-#
-#     _type = 'FeatureCollection'
-#
-#     def __init__(self, features=[], *kwargs):
-#         self.features = features
-#         self.bounds = self.features[0].
 
 class Point(_Geometry):
     """
@@ -925,6 +937,63 @@ class GeometryCollection(_Geometry):
             return 0
 
 
+class FeatureCollection(_GeoObject):
+    """A heterogenous collection of geometries
+    Attributes
+    ----------
+    features : sequence
+        A sequence of feature instances
+    """
+    _type = 'FeatureCollection'
+    _features = None
+
+    @property
+    def __geo_interface__(self):
+        gifs = []
+        for feature in self._features:
+            gifs.append(feature.__geo_interface__)
+        return {'type': self._type, 'features': gifs}
+
+    def __init__(self, features):
+        self._features = []
+        if isinstance(features, (list, tuple)):
+            for feature in features:
+                if isinstance(feature, Feature):
+                    self._features.append(feature)
+                else:
+                    raise ValueError
+        else:
+            raise TypeError
+
+    @property
+    def features(self):
+        for feature in self._features:
+            if isinstance(feature, Feature):
+                yield feature
+            else:
+                raise ValueError("Illegal type.")
+
+    @property
+    def bounds(self):
+        if self._features:
+            minx = self._features[0].geometry.bounds[0]
+            miny = self._features[0].geometry.bounds[1]
+            maxx = self._features[0].geometry.bounds[2]
+            maxy = self._features[0].geometry.bounds[3]
+            for feature in self.features:
+                minx = min(feature.geometry.bounds[0], minx)
+                miny = min(feature.geometry.bounds[1], miny)
+                maxx = max(feature.geometry.bounds[2], maxx)
+                maxy = max(feature.geometry.bounds[3], maxy)
+            return (minx, miny, maxx, maxy)
+
+    def __len__(self):
+        if self._features:
+            return len(self._features)
+        else:
+            return 0
+
+
 def signed_area(coords):
     """Return the signed area enclosed by a ring using the linear time
     algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
@@ -964,9 +1033,12 @@ def as_shape(geometry):
     gi = None
     if isinstance(geometry, dict):
         is_geometryCollection = geometry['type'] == 'GeometryCollection'
+        is_feature = geometry['type'] == 'Feature'
         if ('coordinates' in geometry) and ('type' in geometry):
             gi = geometry
         elif is_geometryCollection and 'geometries' in geometry:
+            gi = geometry
+        elif is_feature:
             gi = geometry
     elif hasattr(geometry, '__geo_interface__'):
         gi = geometry.__geo_interface__
@@ -988,6 +1060,13 @@ def as_shape(geometry):
             for fi in gi['geometries']:
                 geometries.append(as_shape(fi))
             return GeometryCollection(geometries)
+        if ft == 'Feature':
+            return Feature(as_shape(gi['geometry']), gi['properties'])
+        if ft == 'FeatureCollection':
+            features = []
+            for fi in gi['features']:
+                features.append(as_shape(fi))
+            return FeatureCollection(features)
         coords = gi['coordinates']
         if ft == 'Point':
             return Point(coords)
