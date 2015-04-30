@@ -8,8 +8,8 @@ except ImportError:
 
 class BasicTestCase(unittest.TestCase):
 
-    def test_feature(self):
-        f = geometry._Feature()
+    def test_Geometry(self):
+        f = geometry._Geometry()
         self.assertRaises(NotImplementedError, lambda: f.bounds)
         self.assertRaises(NotImplementedError, f.to_wkt)
 
@@ -55,7 +55,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(p3.coords, p6.coords)
         self.assertRaises(TypeError, setattr, p6, 'coords', 0)
         self.assertRaises(TypeError, setattr, p6, 'coords', [0])
-        f = geometry._Feature()
+        f = geometry._Geometry()
         self.assertRaises(TypeError, geometry.Point, f)
 
     def test_linestring(self):
@@ -293,10 +293,10 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(gc.__geo_interface__,
                          geometry.as_shape
                          (gc.__geo_interface__).__geo_interface__)
-        f = geometry._Feature()
+        f = geometry._Geometry()
         gc1 = geometry.GeometryCollection([p.__geo_interface__, ph, p0, p1, r,
                                            l.__geo_interface__])
-        self.assertEqual(gc.__geo_interface__, gc1.__geo_interface__)
+        self.assertEqual(gc.__geo_interface__,gc1.__geo_interface__)
         self.assertRaises(NotImplementedError, geometry.GeometryCollection,
                           [p, f])
         mp1 = geometry.MultiPoint([p0, p1])
@@ -335,6 +335,8 @@ class WKTTestCase(unittest.TestCase):
 
     # these are valid WKTs but not supported
     wkt_fail = ['POINT ZM (1 1 5 60)', 'POINT EMPTY', 'MULTIPOLYGON EMPTY']
+
+
 
     def test_point(self):
         p = geometry.from_wkt('POINT (0.0 1.0)')
@@ -386,6 +388,7 @@ class WKTTestCase(unittest.TestCase):
             (20 30, 35 35, 30 20, 20 30))''')
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
 
+
     def test_multipoint(self):
         p = geometry.from_wkt('MULTIPOINT(3.5 5.6,4.8 10.5)')
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
@@ -401,6 +404,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(isinstance(p, geometry.MultiPoint), True)
         self.assertEqual(p.geoms[0].x, 10.0)
         self.assertEqual(p.geoms[3].y, 10.0)
+
 
     def test_multilinestring(self):
         p = geometry.from_wkt('MULTILINESTRING((3 4,10 50,20 25),'
@@ -461,6 +465,7 @@ class WKTTestCase(unittest.TestCase):
             self.assertRaises(Exception, geometry.from_wkt, wkt)
 
 
+
 class AsShapeTestCase(unittest.TestCase):
 
     def test_point(self):
@@ -472,6 +477,7 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry.LineString([(0, 0), (1, 1)])
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
 
     def test_linearring(self):
         f = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
@@ -494,6 +500,8 @@ class AsShapeTestCase(unittest.TestCase):
         f = geometry.Polygon(ext, [int_1, int_2])
         s = geometry.as_shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
+
+
 
     def test_multipoint(self):
         f = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
@@ -529,7 +537,7 @@ class AsShapeTestCase(unittest.TestCase):
         self.assertRaises(TypeError, geometry.as_shape, 'a')
 
     def test_notimplemented(self):
-        f = geometry._Feature()
+        f = geometry._Geometry()
         self.assertRaises(NotImplementedError, geometry.as_shape, f)
 
     def test_dict_asshape(self):
@@ -608,10 +616,10 @@ class OrientationTestCase(unittest.TestCase):
         self.assertEqual(mp.geoms[0].exterior.coords, e0)
         self.assertEqual(mp.geoms[1].exterior.coords, e1)
 
+
     def test_orient(self):
         ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25),
-                 (0.5, 0.25)]
+        int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
         int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
         p = geometry.Polygon(ext, [int_1, int_2])
         p1 = geometry.orient(p, 1)
@@ -629,7 +637,7 @@ class OrientationTestCase(unittest.TestCase):
 class ReprMethodTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.feature = geometry._Feature()
+        self.geometry = geometry._Geometry()
         self.point = geometry.Point(0, 1)
         self.linestring = geometry.LineString([[0, 0], [1, 0], [1, 1]])
         self.linearring = geometry.LinearRing([[0, 0], [1, 0], [1, 1],
@@ -645,6 +653,9 @@ class ReprMethodTestCase(unittest.TestCase):
         self.geo_collect = geometry.GeometryCollection([self.point,
                                                         self.linestring,
                                                         self.linearring])
+        self.feature = geometry.Feature(self.point, {'a': 1, 'b': 2})
+        self.feature_list = [self.feature, self.feature]
+        self.fc = geometry.FeatureCollection(self.feature_list)
 
     def test_repr(self):
         pointchk = "Point(0.0, 1.0)"
@@ -655,6 +666,7 @@ class ReprMethodTestCase(unittest.TestCase):
         ml_stringchk = "<MultiLineString Instance 1 Lines {0} bbox>".format(self.multiline.bounds)
         m_polychk = "<MultiPolygon Instance 1 Polygons {0} bbox>".format(self.multipoly.bounds)
         gc_chk = "<GeometryCollection Instance 3 Geometries {0} bbox>".format(self.geo_collect.bounds)
+        fc_chk = "<FeatureCollection Instance 2 Features {0} bbox>".format(self.fc.bounds)
         self.assertEquals(self.point.__repr__(), pointchk)
         self.assertEquals(self.linestring.__repr__(), l_stringchk)
         self.assertEquals(self.linearring.__repr__(), l_ringchk)
@@ -663,8 +675,58 @@ class ReprMethodTestCase(unittest.TestCase):
         self.assertEquals(self.multiline.__repr__(), ml_stringchk)
         self.assertEquals(self.multipoly.__repr__(), m_polychk)
         self.assertEquals(self.geo_collect.__repr__(), gc_chk)
-        self.assertEquals(self.feature.__repr__()[0:33],
-                          '<pygeoif.geometry._Feature object')
+        self.assertEquals(self.geometry.__repr__()[0:34], 
+                          '<pygeoif.geometry._Geometry object')
+        self.assertEquals(self.feature.__repr__(),\
+                          '<Feature Instance Point geometry 2 properties>')
+        self.assertEquals(self.fc.__repr__(), fc_chk)
+
+
+class FeatureTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.a = geometry.Polygon(((0., 0.), (0., 1.),
+                                   (1., 1.), (1., 0.), (0., 0.)))
+        self.b = geometry.Polygon(((0., 0.), (0., 2.),
+                                   (2., 1.), (2., 0.), (0., 0.)))
+        self.f1 = geometry.Feature(self.a)
+        self.f2 = geometry.Feature(self.b)
+        self.fc = geometry.FeatureCollection([self.f1, self.f2])
+
+    def test_feature(self):
+        self.assertRaises(TypeError, geometry.Feature)
+        self.assertEqual(self.f1.__geo_interface__,
+                         geometry.as_shape(self.f1).__geo_interface__)
+        self.assertEqual(self.f1.__geo_interface__,
+                         {'type': 'Feature',
+                          'geometry': {'type': 'Polygon',
+                                       'coordinates': (((0.0, 0.0), (0.0, 1.0),
+                                                        (1.0, 1.0), (1.0, 0.0),
+                                                        (0.0, 0.0)),),
+                                       },
+                          'properties': {}
+                          })
+        self.f1.properties['coords'] = {}
+        self.f1.properties['coords']['cube'] = (0, 0, 0)
+        self.assertEqual(self.f1.__geo_interface__,
+                         {'type': 'Feature',
+                          'geometry': {'type': 'Polygon',
+                                       'coordinates': (((0.0, 0.0), (0.0, 1.0),
+                                                        (1.0, 1.0), (1.0, 0.0),
+                                                        (0.0, 0.0)),),
+                                       },
+                          'properties': {'coords': {'cube': (0, 0, 0)}}
+                          })
+        self.assertEqual(self.f1.geometry.bounds, (0.0, 0.0, 1.0, 1.0))
+
+    def test_featurecollection(self):
+        self.assertRaises(TypeError, geometry.FeatureCollection)
+        self.assertRaises(TypeError, geometry.FeatureCollection, None)
+        self.assertEqual(len(list(self.fc.features)), 2)
+        self.assertEqual(len(self.fc), 2)
+        self.assertEqual(self.fc.bounds, (0.0, 0.0, 2.0, 2.0))
+        self.assertEqual(self.fc.__geo_interface__,
+                         geometry.as_shape(self.fc).__geo_interface__)
 
 
 def test_suite():
@@ -674,6 +736,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(AsShapeTestCase))
     suite.addTest(unittest.makeSuite(OrientationTestCase))
     suite.addTest(unittest.makeSuite(ReprMethodTestCase))
+    suite.addTest(unittest.makeSuite(FeatureTestCase))
     return suite
 
 if __name__ == '__main__':

@@ -203,6 +203,28 @@ GEOMETRYCOLLECTION isn't supported by the Shapefile format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
+Feature
+-------
+Aggregates a geometry instance with associated user-defined properties.
+
+Attributes
+~~~~~~~~~~~
+geometry : object
+    A geometry instance
+properties : dict
+    A dictionary linking field keys with values associated with with geometry instance
+
+Example
+~~~~~~~~
+
+      >>> p = Point(1.0, -1.0)
+      >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
+      >>> a = Feature(p, props)
+      >>> a.properties
+      {'Name': 'Sample Point', 'Other': 'Other Data'}
+      >>> a.properties['Name']
+      'Sample Point'
+
 Functions
 =========
 
