@@ -20,7 +20,7 @@ import re
 
 
 class _GeoObject(object):
-    """Base Class"""
+    """Base Class for Geometry, Feature, and FeatureCollection"""
 
     def __repr__(self):
         if self._type == 'Point':
@@ -77,7 +77,8 @@ class _GeoObject(object):
 
 
 class _Geometry(_GeoObject):
-    """Base Class for a variety of geometry types """
+    """Base Class for geometry objects.
+       Inherits from GeoObject"""
     _type = None
     _coordinates = ()
 
@@ -865,7 +866,8 @@ class MultiPolygon(_Geometry):
 
 
 class GeometryCollection(_Geometry):
-    """A heterogenous collection of geometries
+    """A heterogenous collection of geometries (Points, LineStrings,
+       LinearRings, and Polygons)
 
     Attributes
     ----------
@@ -876,6 +878,21 @@ class GeometryCollection(_Geometry):
     GEOMETRYCOLLECTION isn't supported by the Shapefile format. And this sub-
     class isn't generally supported by ordinary GIS sw (viewers and so on). So
     it's very rarely used in the real GIS professional world.
+
+    Example
+    -------
+
+    Initialize Geometries and construct a GeometryCollection
+
+    >>> from pygeoif import geometry
+    >>> p = geometry.Point(1.0, -1.0)
+    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> geoms = [p, p2]
+    >>> c = geometry.GeometryCollection(geoms)
+    >>> c.__geo_interface__
+    {'type': 'GeometryCollection',
+    'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},
+    {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     """
     _type = 'GeometryCollection'
     _geoms = None
@@ -938,11 +955,34 @@ class GeometryCollection(_Geometry):
 
 
 class FeatureCollection(_GeoObject):
-    """A heterogenous collection of geometries
+    """A heterogenous collection of Features
+
     Attributes
     ----------
     features : sequence
         A sequence of feature instances
+
+
+    Example
+    -------
+
+    >>> from pygeoif import geometry
+    >>> p = geometry.Point(1.0, -1.0)
+    >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
+    >>> a = geometry.Feature(p, props)
+    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
+    >>> b = geometry.Feature(p2, props2)
+    >>> features = [a, b]
+    >>> c = geometry.FeatureCollection(features)
+    >>> c.__geo_interface__
+    {'type': 'FeatureCollection',
+     'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},
+     'type': 'Feature',
+     'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},
+    {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},
+     'type': 'Feature',
+     'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
     """
     _type = 'FeatureCollection'
     _features = None

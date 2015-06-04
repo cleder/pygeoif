@@ -15,7 +15,7 @@ implement this protocol:
 * Shapely https://github.com/Toblerity/Shapely
 * pyshp https://pypi.python.org/pypi/pyshp
 
-So when you want to write your own geospatilal library with support
+So when you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
 your functionality on top of it
 
@@ -75,9 +75,12 @@ file which cover every aspect of pygeoif or in fastkml_.
 Classes
 ========
 
-All classes implement the attributes:
+All classes implement the attribute:
 
 * __geo_interface__: as dicussed above
+
+All geometry classes implement the attributes:
+
 * geom_type: Returns a string specifying the Geometry Type of the object
 * bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
 * wkt: Returns the 'Well Known Text' representation of the object
@@ -87,10 +90,21 @@ and the method:
 
 * to_wkt which also prints the object
 
+GeoObject
+----------
+Base class for Geometry, Feature, and FeatureCollection
+
+Geometry
+--------
+Base class for geometry objects. 
+Inherits from Geoobject.
+
 
 Point
 -----
-A zero dimensional feature
+A zero dimensional geometry
+
+A point has zero length and zero area.
 
 Attributes
 ~~~~~~~~~~~
@@ -128,7 +142,7 @@ geoms : sequence
 LinearRing
 -----------
 
-A closed one-dimensional feature comprising one or more line segments
+A closed one-dimensional geometry comprising one or more line segments
 
 A LinearRing that crosses itself or touches itself at a single point is
 invalid and operations on it may fail.
@@ -144,7 +158,7 @@ A two-dimensional figure bounded by a linear ring
 
 A polygon has a non-zero area. It may have one or more negative-space
 "holes" which are also bounded by linear rings. If any rings cross each
-other, the feature is invalid and operations on it may fail.
+other, the geometry is invalid and operations on it may fail.
 
 Attributes
 ~~~~~~~~~~~
@@ -203,6 +217,18 @@ GEOMETRYCOLLECTION isn't supported by the Shapefile format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
+Example
+~~~~~~~~
+
+    >>> from pygeoif import geometry
+    >>> p = geometry.Point(1.0, -1.0)
+    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> geoms = [p, p2]
+    >>> c = geometry.GeometryCollection(geoms)
+    >>> c.__geo_interface__
+    {'type': 'GeometryCollection', 'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},/
+    {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
+
 Feature
 -------
 Aggregates a geometry instance with associated user-defined properties.
@@ -224,6 +250,33 @@ Example
       {'Name': 'Sample Point', 'Other': 'Other Data'}
       >>> a.properties['Name']
       'Sample Point'
+
+FeatureCollection
+-----------------
+A heterogenous collection of Features
+
+Attributes
+~~~~~~~~~~~
+features: sequence
+    A sequence of feature instances
+
+Example
+~~~~~~~~
+
+>>> from pygeoif import geometry
+>>> p = geometry.Point(1.0, -1.0)
+>>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
+>>> a = geometry.Feature(p, props)
+>>> p2 = geometry.Point(1.0, -1.0)
+>>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
+>>> b = geometry.Feature(p2, props2)
+>>> features = [a, b]
+>>> c = geometry.FeatureCollection(features)
+>>> c.__geo_interface__
+{'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},/
+ 'type': 'Feature', 'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},/
+ {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)}, 'type': 'Feature',/
+ 'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
 
 Functions
 =========
