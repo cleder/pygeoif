@@ -77,8 +77,11 @@ class _GeoObject(object):
 
 
 class _Geometry(_GeoObject):
-    """Base Class for geometry objects.
-       Inherits from GeoObject"""
+    """
+    Base Class for geometry objects.
+
+    Inherits from GeoObject
+    """
     _type = None
     _coordinates = ()
 
