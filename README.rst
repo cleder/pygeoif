@@ -228,6 +228,8 @@ Example
     >>> c.__geo_interface__
     {'type': 'GeometryCollection', 'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},/
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
+    >>> [geom for geom in geoms]
+    [Point(1.0, -1.0), Point(1.0, -1.0)]
 
 Feature
 -------
@@ -263,20 +265,22 @@ features: sequence
 Example
 ~~~~~~~~
 
->>> from pygeoif import geometry
->>> p = geometry.Point(1.0, -1.0)
->>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
->>> a = geometry.Feature(p, props)
->>> p2 = geometry.Point(1.0, -1.0)
->>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
->>> b = geometry.Feature(p2, props2)
->>> features = [a, b]
->>> c = geometry.FeatureCollection(features)
->>> c.__geo_interface__
-{'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},/
- 'type': 'Feature', 'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},/
- {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)}, 'type': 'Feature',/
- 'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+    >>> from pygeoif import geometry
+    >>> p = geometry.Point(1.0, -1.0)
+    >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
+    >>> a = geometry.Feature(p, props)
+    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
+    >>> b = geometry.Feature(p2, props2)
+    >>> features = [a, b]
+    >>> c = geometry.FeatureCollection(features)
+    >>> c.__geo_interface__
+    {'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},/
+     'type': 'Feature', 'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},/
+     {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)}, 'type': 'Feature',/
+     'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+    >>> [feature for feature in c]
+    [<Feature Instance Point geometry 2 properties>, <Feature Instance Point geometry 2 properties>]
 
 Functions
 =========
