@@ -1,9 +1,10 @@
 Changelog
 =========
 
-0.5 (unreleased)
+0.5 (2015/07/13)
 -----------------
 
+- Add __iter__ method to FeatureCollection and GeometryCollection [jzmiller1]
 - add pypy and pypy3 and python 3.4 to travis
 - Add tox configuration for performing local testing [Ian Lee]
 
