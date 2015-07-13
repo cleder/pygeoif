@@ -956,6 +956,9 @@ class GeometryCollection(_Geometry):
         else:
             return 0
 
+    def __iter__(self):
+        return iter(self._geoms)
+
 
 class FeatureCollection(_GeoObject):
     """A heterogenous collection of Features
@@ -1035,6 +1038,9 @@ class FeatureCollection(_GeoObject):
             return len(self._features)
         else:
             return 0
+
+    def __iter__(self):
+        return iter(self._features)
 
 
 def signed_area(coords):

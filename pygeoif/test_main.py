@@ -301,6 +301,7 @@ class BasicTestCase(unittest.TestCase):
                           [p, f])
         mp1 = geometry.MultiPoint([p0, p1])
         self.assertRaises(ValueError, geometry.GeometryCollection, [p, mp1])
+        self.assertEqual([p, ph, p0, p1, r, l], [geom for geom in gc])
 
     def test_mapping(self):
         self.assertEqual(geometry.mapping(geometry.Point(1, 1)),
@@ -727,6 +728,7 @@ class FeatureTestCase(unittest.TestCase):
         self.assertEqual(self.fc.bounds, (0.0, 0.0, 2.0, 2.0))
         self.assertEqual(self.fc.__geo_interface__,
                          geometry.as_shape(self.fc).__geo_interface__)
+        self.assertEqual([self.f1, self.f2], [feature for feature in self.fc])
 
 
 def test_suite():
