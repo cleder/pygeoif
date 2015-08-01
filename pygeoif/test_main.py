@@ -678,7 +678,7 @@ class ReprMethodTestCase(unittest.TestCase):
         self.assertEquals(self.geo_collect.__repr__(), gc_chk)
         self.assertEquals(self.geometry.__repr__()[0:34], 
                           '<pygeoif.geometry._Geometry object')
-        self.assertEquals(self.feature.__repr__(),\
+        self.assertEquals(self.feature.__repr__(),
                           '<Feature Instance Point geometry 2 properties>')
         self.assertEquals(self.fc.__repr__(), fc_chk)
 
@@ -692,6 +692,7 @@ class FeatureTestCase(unittest.TestCase):
                                    (2., 1.), (2., 0.), (0., 0.)))
         self.f1 = geometry.Feature(self.a)
         self.f2 = geometry.Feature(self.b)
+        self.f3 = geometry.Feature(self.a, feature_id='1')
         self.fc = geometry.FeatureCollection([self.f1, self.f2])
 
     def test_feature(self):
@@ -719,6 +720,22 @@ class FeatureTestCase(unittest.TestCase):
                           'properties': {'coords': {'cube': (0, 0, 0)}}
                           })
         self.assertEqual(self.f1.geometry.bounds, (0.0, 0.0, 1.0, 1.0))
+        del self.f1.properties['coords']
+
+    def test_feature_with_id(self):
+        self.assertEqual(self.f3.id, '1')
+        self.assertEqual(self.f3.__geo_interface__,
+                         {'type': 'Feature',
+                          'geometry': {'type': 'Polygon',
+                                       'coordinates': (((0.0, 0.0), (0.0, 1.0),
+                                                        (1.0, 1.0), (1.0, 0.0),
+                                                        (0.0, 0.0)),),
+                                       },
+                          'id': '1',
+                          'properties': {}
+                          })
+        self.assertEqual(self.f3.__geo_interface__,
+                         geometry.as_shape(self.f3).__geo_interface__)
 
     def test_featurecollection(self):
         self.assertRaises(TypeError, geometry.FeatureCollection)

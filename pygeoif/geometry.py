@@ -138,10 +138,16 @@ class Feature(_GeoObject):
     _type = 'Feature'
     _properties = None
     _geometry = None
+    _feature_id = None
 
-    def __init__(self, geometry, properties={}, *kwargs):
+    def __init__(self, geometry, properties={}, feature_id=None, *kwargs):
         self._geometry = geometry
         self._properties = properties
+        self._feature_id = feature_id
+
+    @property
+    def id(self):
+        return self._feature_id
 
     @property
     def geometry(self):
@@ -153,11 +159,15 @@ class Feature(_GeoObject):
 
     @property
     def __geo_interface__(self):
-        return {
-            'type': self._type,
-            'geometry': self._geometry.__geo_interface__,
-            'properties': self._properties
-            }
+        geo_interface = {'type': self._type,
+                         'geometry': self._geometry.__geo_interface__,
+                         'properties': self._properties
+                         }
+        if self._feature_id is None:
+            return geo_interface
+        else:
+            geo_interface['id'] = self._feature_id
+            return geo_interface
 
 
 class Point(_Geometry):
@@ -1110,7 +1120,9 @@ def as_shape(geometry):
                 geometries.append(as_shape(fi))
             return GeometryCollection(geometries)
         if ft == 'Feature':
-            return Feature(as_shape(gi['geometry']), gi['properties'])
+            return Feature(as_shape(gi['geometry']),
+                           properties=gi.get('properties', {}),
+                           feature_id=gi.get('id', None))
         if ft == 'FeatureCollection':
             features = []
             for fi in gi['features']:
