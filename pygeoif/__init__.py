@@ -19,4 +19,5 @@
 from .geometry import Point, LineString, LinearRing, Polygon
 from .geometry import MultiPoint, MultiLineString, MultiPolygon
 from .geometry import GeometryCollection
+from .geometry import Feature, FeatureCollection
 from .geometry import as_shape, from_wkt, mapping, orient, signed_area
