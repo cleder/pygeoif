@@ -160,6 +160,7 @@ class Feature(_GeoObject):
     @property
     def __geo_interface__(self):
         geo_interface = {'type': self._type,
+                         'bbox': self._geometry.bounds,
                          'geometry': self._geometry.__geo_interface__,
                          'properties': self._properties
                          }
@@ -292,6 +293,7 @@ class LineString(_Geometry):
         if self._type and self._geoms:
             return {
                 'type': self._type,
+                'bbox': self.bounds,
                 'coordinates': tuple(self.coords)
             }
 
@@ -449,11 +451,13 @@ class Polygon(_Geometry):
                 coords.append(hole.coords)
             return {
                 'type': self._type,
+                'bbox': self.bounds,
                 'coordinates': tuple(coords)
             }
         elif self._exterior:
             return {
                 'type': self._type,
+                'bbox': self.bounds,
                 'coordinates': (self._exterior.coords,)
             }
 
@@ -570,6 +574,7 @@ class MultiPoint(_Geometry):
     def __geo_interface__(self):
         return {
             'type': self._type,
+            'bbox': self.bounds,
             'coordinates': tuple([g.coords[0] for g in self._geoms])
         }
 
@@ -681,6 +686,7 @@ class MultiLineString(_Geometry):
     def __geo_interface__(self):
         return {
             'type': self._type,
+            'bbox': self.bounds,
             'coordinates': tuple(
                 tuple(c for c in g.coords) for g in self.geoms
             )
@@ -780,6 +786,7 @@ class MultiPolygon(_Geometry):
             allcoords.append(tuple(coords))
         return {
             'type': self._type,
+            'bbox': self.bounds,
             'coordinates': tuple(allcoords)
         }
 
@@ -1008,7 +1015,9 @@ class FeatureCollection(_GeoObject):
         gifs = []
         for feature in self._features:
             gifs.append(feature.__geo_interface__)
-        return {'type': self._type, 'features': gifs}
+        return {'type': self._type,
+                'bbox': self.bounds,
+                'features': gifs}
 
     def __init__(self, features):
         self._features = []
