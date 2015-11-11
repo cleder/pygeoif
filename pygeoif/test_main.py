@@ -65,6 +65,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(l.bounds, (0.0, 0.0, 1.0, 1.0))
         self.assertEqual(l.__geo_interface__,
                          {'type': 'LineString',
+                          'bbox': (0.0, 0.0, 1.0, 1.0),
                           'coordinates': ((0.0, 0.0), (1.0, 1.0))})
         self.assertEqual(l.to_wkt(), 'LINESTRING (0.0 0.0, 1.0 1.0)')
         p = geometry.Point(0, 0)
@@ -97,6 +98,7 @@ class BasicTestCase(unittest.TestCase):
         l = geometry.LineString(r)
         self.assertEqual(l.coords, ((0, 0), (1, 1), (1, 0), (0, 0)))
         self.assertEqual(r.__geo_interface__, {'type': 'LinearRing',
+                                               'bbox': (0.0, 0.0, 1.0, 1.0),
                                                'coordinates': ((0.0, 0.0),
                                                                (1.0, 1.0),
                                                                (1.0, 0.0),
@@ -117,9 +119,10 @@ class BasicTestCase(unittest.TestCase):
     def test_polygon(self):
         p = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
         self.assertEqual(p.exterior.coords, ((0.0, 0.0), (1.0, 1.0),
-                                            (1.0, 0.0), (0.0, 0.0)))
+                                             (1.0, 0.0), (0.0, 0.0)))
         self.assertEqual(list(p.interiors), [])
         self.assertEqual(p.__geo_interface__, {'type': 'Polygon',
+                                               'bbox': (0.0, 0.0, 1.0, 1.0),
                                                'coordinates': (((0.0, 0.0),
                                                                 (1.0, 1.0),
                                                                 (1.0, 0.0),
@@ -136,6 +139,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(ph1.exterior.coords, tuple(e))
         self.assertEqual(list(ph1.interiors)[0].coords, tuple(i))
         self.assertEqual(ph1.__geo_interface__, {'type': 'Polygon',
+                                                 'bbox': (0.0, 0.0, 2.0, 2.0),
                                                  'coordinates': (((0.0, 0.0),
                                                                   (0.0, 2.0),
                                                                   (2.0, 2.0),
@@ -157,6 +161,7 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(list(ph2.interiors)[0].coords, tuple(int_1))
         self.assertEqual(list(ph2.interiors)[1].coords, tuple(int_2))
         self.assertEqual(ph2.__geo_interface__, {'type': 'Polygon',
+                                                 'bbox': (0.0, 0.0, 2.0, 2.0),
                                                  'coordinates': (((0.0, 0.0),
                                                                   (0.0, 2.0),
                                                                   (2.0, 2.0),
@@ -229,6 +234,10 @@ class BasicTestCase(unittest.TestCase):
         self.assertEqual(mp6.bounds, (0.0, 0.0, 1.0, 1.0))
         self.assertRaises(TypeError, geometry.MultiPoint, [0, 0])
         self.assertRaises(TypeError, geometry.MultiPoint, 0,)
+        self.assertEqual(mp1.__geo_interface__,
+                         {'type': 'MultiPoint',
+                          'bbox': (0.0, 0.0, 2.0, 2.0),
+                          'coordinates': ((0.0, 0.0), (1.0, 1.0), (2.0, 2.0))})
 
     def test_multilinestring(self):
         ml = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
@@ -263,6 +272,17 @@ class BasicTestCase(unittest.TestCase):
                                                      (0.2, 0.2), (0.2, 0.1))]
                                      )
                                     ])
+        self.assertEqual(mp.__geo_interface__,
+                         {'type': 'MultiPolygon',
+                          'bbox': (0.0, 0.0, 1.0, 1.0),
+                          'coordinates': ((((0.0, 0.0), (0.0, 1.0),
+                                            (1.0, 1.0), (1.0, 0.0),
+                                            (0.0, 0.0)
+                                            ),
+                                           ((0.1, 0.1), (0.1, 0.2),
+                                            (0.2, 0.2), (0.2, 0.1),
+                                            (0.1, 0.1))),)
+                          })
         self.assertEqual(len(mp.geoms), 1)
         self.assertTrue(isinstance(mp.geoms[0], geometry.Polygon))
         mp1 = geometry.MultiPolygon(mp)
@@ -442,6 +462,7 @@ class WKTTestCase(unittest.TestCase):
         p = geometry.from_wkt("MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),"
                               "((15 5, 40 10, 10 20, 5 10, 15 5)))")
         self.assertEqual(p.__geo_interface__, {'type': 'MultiPolygon',
+                                               'bbox': (5.0, 5.0, 45.0, 40.0),
                                                'coordinates':
                         ((((30.0, 20.0), (10.0, 40.0), (45.0, 40.0),
                            (30.0, 20.0)),), (((15.0, 5.0), (40.0, 10.0),
@@ -701,7 +722,9 @@ class FeatureTestCase(unittest.TestCase):
                          geometry.as_shape(self.f1).__geo_interface__)
         self.assertEqual(self.f1.__geo_interface__,
                          {'type': 'Feature',
+                          'bbox': (0.0, 0.0, 1.0, 1.0),
                           'geometry': {'type': 'Polygon',
+                                       'bbox': (0.0, 0.0, 1.0, 1.0),
                                        'coordinates': (((0.0, 0.0), (0.0, 1.0),
                                                         (1.0, 1.0), (1.0, 0.0),
                                                         (0.0, 0.0)),),
@@ -712,7 +735,9 @@ class FeatureTestCase(unittest.TestCase):
         self.f1.properties['coords']['cube'] = (0, 0, 0)
         self.assertEqual(self.f1.__geo_interface__,
                          {'type': 'Feature',
+                          'bbox': (0.0, 0.0, 1.0, 1.0),
                           'geometry': {'type': 'Polygon',
+                                       'bbox': (0.0, 0.0, 1.0, 1.0),
                                        'coordinates': (((0.0, 0.0), (0.0, 1.0),
                                                         (1.0, 1.0), (1.0, 0.0),
                                                         (0.0, 0.0)),),
@@ -726,7 +751,9 @@ class FeatureTestCase(unittest.TestCase):
         self.assertEqual(self.f3.id, '1')
         self.assertEqual(self.f3.__geo_interface__,
                          {'type': 'Feature',
+                          'bbox': (0.0, 0.0, 1.0, 1.0),
                           'geometry': {'type': 'Polygon',
+                                       'bbox': (0.0, 0.0, 1.0, 1.0),
                                        'coordinates': (((0.0, 0.0), (0.0, 1.0),
                                                         (1.0, 1.0), (1.0, 0.0),
                                                         (0.0, 0.0)),),
