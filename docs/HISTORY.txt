@@ -4,6 +4,7 @@ Changelog
 0.7 (unreleased)
 -----------------
 
+- add "bbox" to `__geo_interface__` output [jzmiller1]
 
 0.6 (2015/08/04)
 -----------------
