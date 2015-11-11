@@ -140,8 +140,10 @@ class Feature(_GeoObject):
     _geometry = None
     _feature_id = None
 
-    def __init__(self, geometry, properties={}, feature_id=None, *kwargs):
+    def __init__(self, geometry, properties=None, feature_id=None, *kwargs):
         self._geometry = geometry
+        if properties is None:
+            properties = {}
         self._properties = properties
         self._feature_id = feature_id
 
