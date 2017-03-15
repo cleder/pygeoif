@@ -860,7 +860,7 @@ class MultiPolygon(_Geometry):
             return (minx, miny, maxx, maxy)
 
     def to_wkt(self):
-        pc = ''
+        pc = []
         for geom in self.geoms:
             ec = '(' + ', '.join(
                 [' '.join([str(x) for x in c]) for c in geom.exterior.coords]
@@ -870,8 +870,8 @@ class MultiPolygon(_Geometry):
                 ic += ',(' + ', '.join(
                     [' '.join([str(x) for x in c]) for c in interior.coords]
                 ) + ')'
-            pc += '(' + ec + ic + ')'
-        return self._type.upper() + '(' + pc + ')'
+            pc.append('(' + ec + ic + ')')
+        return self._type.upper() + '(' + ','.join(pc) + ')'
 
     def _set_orientation(self, clockwise=False, exterior=True, interiors=True):
         """ sets the orientation of the coordinates in
