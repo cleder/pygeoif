@@ -17,7 +17,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.test_args)
         sys.exit(errno)
 
-version = '0.7'
+version = '0.8'
 
 README = open("README.rst").read()
 HISTORY = open(os.path.join("docs", "HISTORY.txt")).read()
