@@ -5,3 +5,4 @@ Contributors
 - Zac Miller (jzmiller1)
 - John Dees (johnpdees)
 - NormWorthington
+- Giorgio Salluzzo (mindflayer)

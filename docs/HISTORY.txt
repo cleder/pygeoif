@@ -1,9 +1,10 @@
 Changelog
 =========
 
-0.7 (unreleased)
+0.7 (2017/05/04)
 -----------------
 
+- fix broken multipolygon [mindflayer]
 - add "bbox" to `__geo_interface__` output [jzmiller1]
 
 0.6 (2015/08/04)
