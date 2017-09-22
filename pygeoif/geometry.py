@@ -1184,7 +1184,7 @@ def from_wkt(geo_str):
     Create a geometry from its WKT representation
     """
 
-    wkt = geo_str.strip()
+    wkt = geo_str.upper().strip()
     wkt = ' '.join([l.strip() for l in wkt.splitlines()])
     wkt = wkt_regex.match(wkt).group('wkt')
     ftype = wkt_regex.match(wkt).group('type')

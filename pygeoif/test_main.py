@@ -360,14 +360,15 @@ class WKTTestCase(unittest.TestCase):
 
 
     def test_point(self):
-        p = geometry.from_wkt('POINT (0.0 1.0)')
-        self.assertEqual(isinstance(p, geometry.Point), True)
-        self.assertEqual(p.x, 0.0)
-        self.assertEqual(p.y, 1.0)
-        self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
-        self.assertEqual(p.to_wkt(), p.wkt)
-        self.assertEqual(str(p), 'POINT (0.0 1.0)')
-        self.assertEqual(p.geom_type, 'Point')
+        for wkt in ['POINT (0.0 1.0)', 'POINT(0.0 1.0)', 'Point(0.0 1.0)', 'Point (0.0 1.0)']:
+            p = geometry.from_wkt(wkt)
+            self.assertEqual(isinstance(p, geometry.Point), True)
+            self.assertEqual(p.x, 0.0)
+            self.assertEqual(p.y, 1.0)
+            self.assertEqual(p.to_wkt(), 'POINT (0.0 1.0)')
+            self.assertEqual(p.to_wkt(), p.wkt)
+            self.assertEqual(str(p), 'POINT (0.0 1.0)')
+            self.assertEqual(p.geom_type, 'Point')
 
     def test_linestring(self):
         l = geometry.from_wkt('LINESTRING(-72.991 46.177,-73.079 46.16,'

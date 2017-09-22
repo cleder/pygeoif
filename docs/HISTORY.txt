@@ -4,6 +4,7 @@ Changelog
 0.8 (unreleased)
 -----------------
 
+- Parses WKT that is not in upper case.
 
 
 0.7 (2017/05/04)
