@@ -9,7 +9,7 @@ Other Python programs and packages that you may have heard of already
 implement this protocol:
 
 * ArcPy http://help.arcgis.com/en/arcgisdesktop/
-* descartes https://bitbucket.org/sgillies/descartes/
+* descartes https://docs.descarteslabs.com/
 * geojson http://pypi.python.org/pypi/geojson/
 * PySAL http://pysal.geodacenter.org/
 * Shapely https://github.com/Toblerity/Shapely
