@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012  Christian Ledermann
+#   Copyright (C) 2012 -2021  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -16,37 +16,51 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, cast
+from typing_extensions import Protocol, TypedDict
 
-Point2D = Tuple[float, float]
-Point3D = Tuple[float, float, float]
-TPoint = Union[Point2D, Point3D]
+Point2D = Tuple[float, float]  # pragma: no mutate
+Point3D = Tuple[float, float, float]  # pragma: no mutate
+TPoint = Union[Point2D, Point3D]  # pragma: no mutate
 
-Bounds = Tuple[float, float, float, float]
+Bounds = Tuple[float, float, float, float]  # pragma: no mutate
+
+GeoInterface = TypedDict("GeoInterface", {"type": str, "coordinates": TPoint})
+
+
+class GeoType(Protocol):
+    """Any compatible type that implements the __geo_interface."""
+
+    __geo_interface__: GeoInterface
+
+
+class DimensionError(IndexError):
+    """Geometries must have 2 or 3 dimensions."""
 
 
 class _Geometry:
     """Base Class for geometry objects."""
 
-    _coordinates = ()
-
     @property
     def __geo_interface__(self):
-        return {"type": self.geom_type, "coordinates": tuple(self._coordinates)}
+        return {"type": self.geom_type, "coordinates": ()}
 
     def __str__(self) -> str:
         return self.wkt
 
     @property
     def geom_type(self) -> str:
+        """Return a string specifying the Geometry Type of the object."""
         return self.__class__.__name__
 
     @property
     def wkt(self) -> str:
+        """Return the Well Known Text Representation of the object."""
         raise NotImplementedError
 
     @property
     def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
         raise NotImplementedError
 
 
@@ -73,6 +87,15 @@ class Point(_Geometry):
       1.0
     """
 
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "Point":
+        assert geo_interface["type"] == cls.__name__
+        return cls(*geo_interface["coordinates"])
+
+    @classmethod
+    def _from_interface(cls, object: GeoType) -> "Point":
+        return cls._from_dict(object.__geo_interface__)
+
     def __init__(self, x: float, y: float, z: Optional[float] = None) -> None:
         """
         Parameters
@@ -80,9 +103,20 @@ class Point(_Geometry):
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
-        self._coordinates = tuple(
-            coordinate for coordinate in [x, y, z] if coordinate is not None
+        self._coordinates = cast(
+            TPoint,
+            tuple(coordinate for coordinate in [x, y, z] if coordinate is not None),
         )
+
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        return {
+            "type": self.geom_type,
+            "coordinates": cast(TPoint, tuple(self._coordinates)),
+        }
+
+    def __repr__(self) -> str:
+        return f"{self.geom_type}{self._coordinates}"
 
     @property
     def x(self) -> float:
@@ -97,24 +131,26 @@ class Point(_Geometry):
     @property
     def z(self) -> float:
         """Return z coordinate."""
-        return self._coordinates[2]
+        if len(self._coordinates) == 3:
+            return self._coordinates[2]  # type: ignore
+        raise DimensionError("This point has no z coordinate.")
 
     @property
     def coords(self) -> Tuple[TPoint]:
-        return (tuple(self._coordinates),)
+        return (cast(TPoint, (self._coordinates)),)
 
     @coords.setter
     def coords(self, coordinates: Tuple[TPoint]) -> None:
-        self._coordinates = tuple(coordinates)
+        self._coordinates = coordinates[0]
 
     @property
     def bounds(self) -> Bounds:
-        return self._coordinates + self._coordinates
+        return self.x, self.y, self.x, self.y
 
     @property
     def wkt(self) -> str:
         coords = " ".join(str(coordinate) for coordinate in self._coordinates)
-        return f"{self.geom_type.upper()} ({coords})"
-
-    def __repr__(self) -> str:
-        return f"{self.geom_type}{self._coordinates}"
+        inset = " "
+        if len(self._coordinates) == 3:
+            inset = " Z "
+        return f"{self.geom_type.upper()}{inset}({coords})"
