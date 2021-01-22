@@ -16,8 +16,8 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
-from .geometry import Point, LineString, LinearRing, Polygon
-from .geometry import MultiPoint, MultiLineString, MultiPolygon
-from .geometry import GeometryCollection
-from .geometry import Feature, FeatureCollection
-from .geometry import as_shape, from_wkt, mapping, orient, signed_area
+#from .geometry import Point, LineString, LinearRing, Polygon
+#from .geometry import MultiPoint, MultiLineString, MultiPolygon
+#from .geometry import GeometryCollection
+#from .geometry import Feature, FeatureCollection
+#from .geometry import as_shape, from_wkt, mapping, orient, signed_area

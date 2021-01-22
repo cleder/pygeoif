@@ -5,18 +5,14 @@ arch:
 - ppc64le
 sudo: false
 python:
-- '3.5'
-- '3.4'
+- '3.6'
+- '3.7'
+- '3.8'
+- '3.9'
 jobs:
   include:
    - arch : amd64
-     python : '2.7'
-     dist: bionic
-   - arch : amd64
      python : pypy3
-   - arch : ppc64le
-     dist: bionic
-     python : '2.7'
 install:
 - pip install coveralls
 - pip install pep8
