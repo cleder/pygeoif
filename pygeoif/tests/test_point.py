@@ -1,6 +1,8 @@
 """Test Point."""
 from unittest import mock
+
 import pytest
+
 from pygeoif import geometry
 
 
@@ -66,7 +68,7 @@ def test_coords_get():
 
 
 def test_coords_set():
-    point = geometry.Point(1.0, 0.0, 3.0)
+    point = geometry.Point(1.0, 0.0, 3.0)  # pragma: no mutate
     point.coords = ((4, 5),)
 
     assert point.coords == ((4, 5),)
@@ -86,7 +88,9 @@ def test_from_dict():
 
 def test_from_dict_wrong_type():
     with pytest.raises(AssertionError):
-        geometry.Point._from_dict({"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)})
+        geometry.Point._from_dict(
+            {"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)},  # pragma: no mutate
+        )
 
 
 def test_from_compatible():

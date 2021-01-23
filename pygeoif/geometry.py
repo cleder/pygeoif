@@ -16,22 +16,14 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-from typing import Tuple, Optional, Union, cast
-from typing_extensions import Protocol, TypedDict
+from typing import Optional
+from typing import Tuple
+from typing import cast
 
-Point2D = Tuple[float, float]  # pragma: no mutate
-Point3D = Tuple[float, float, float]  # pragma: no mutate
-TPoint = Union[Point2D, Point3D]  # pragma: no mutate
-
-Bounds = Tuple[float, float, float, float]  # pragma: no mutate
-
-GeoInterface = TypedDict("GeoInterface", {"type": str, "coordinates": TPoint})
-
-
-class GeoType(Protocol):
-    """Any compatible type that implements the __geo_interface."""
-
-    __geo_interface__: GeoInterface
+from .types import Bounds
+from .types import GeoInterface
+from .types import GeoType
+from .types import TPoint
 
 
 class DimensionError(IndexError):
@@ -93,8 +85,8 @@ class Point(_Geometry):
         return cls(*geo_interface["coordinates"])
 
     @classmethod
-    def _from_interface(cls, object: GeoType) -> "Point":
-        return cls._from_dict(object.__geo_interface__)
+    def _from_interface(cls, obj: GeoType) -> "Point":
+        return cls._from_dict(obj.__geo_interface__)
 
     def __init__(self, x: float, y: float, z: Optional[float] = None) -> None:
         """
@@ -133,7 +125,7 @@ class Point(_Geometry):
         """Return z coordinate."""
         if len(self._coordinates) == 3:
             return self._coordinates[2]  # type: ignore
-        raise DimensionError("This point has no z coordinate.")
+        raise DimensionError("This point has no z coordinate.")  # pragma: no mutate
 
     @property
     def coords(self) -> Tuple[TPoint]:
