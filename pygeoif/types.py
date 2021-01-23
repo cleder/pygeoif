@@ -15,7 +15,8 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-
+"""Types for geometries."""
+from typing import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -24,13 +25,16 @@ from typing_extensions import TypedDict
 
 Point2D = Tuple[float, float]  # pragma: no mutate
 Point3D = Tuple[float, float, float]  # pragma: no mutate
-TPoint = Union[Point2D, Point3D]  # pragma: no mutate
+PointType = Union[Point2D, Point3D]  # pragma: no mutate
+LineType = Sequence[PointType]  # pragma: no mutate
 
 Bounds = Tuple[float, float, float, float]  # pragma: no mutate
 
+CoordinatesType = Union[PointType, LineType]  # pragma: no mutate
+
 GeoInterface = TypedDict(
     "GeoInterface",  # pragma: no mutate
-    {"type": str, "coordinates": TPoint},  # pragma: no mutate
+    {"type": str, "coordinates": CoordinatesType, "bbox": Bounds},  # pragma: no mutate
 )  # pragma: no mutate
 
 

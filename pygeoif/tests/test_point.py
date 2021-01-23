@@ -21,12 +21,12 @@ def test_bounds3d():
 def test_xy():
     point = geometry.Point(1.0, 0.0)
 
-    assert point.x == 1
-    assert point.y == 0
-
     with pytest.raises(IndexError) as exc:
         point.z
+
     exc.match(r"This point has no z coordinate.")
+    assert point.x == 1
+    assert point.y == 0
 
 
 def test_xyz():
@@ -77,7 +77,11 @@ def test_coords_set():
 def test_geo_interface():
     point = geometry.Point(0, 1, 2)
 
-    assert point.__geo_interface__ == {"type": "Point", "coordinates": (0.0, 1.0, 2.0)}
+    assert point.__geo_interface__ == {
+        "type": "Point",
+        "bbox": (0, 1, 0, 1),  # pragma: no mutate
+        "coordinates": (0.0, 1.0, 2.0),
+    }
 
 
 def test_from_dict():
@@ -87,7 +91,7 @@ def test_from_dict():
 
 
 def test_from_dict_wrong_type():
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         geometry.Point._from_dict(
             {"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)},  # pragma: no mutate
         )
@@ -95,7 +99,11 @@ def test_from_dict_wrong_type():
 
 def test_from_compatible():
     not_a_geometry = mock.Mock()
-    not_a_geometry.__geo_interface__ = {"type": "Point", "coordinates": (0.0, 1.0, 2.0)}
+    not_a_geometry.__geo_interface__ = {
+        "type": "Point",
+        "bbox": (0, 1, 0, 1),  # pragma: no mutate
+        "coordinates": (0.0, 1.0, 2.0),
+    }
 
     point = geometry.Point._from_interface(not_a_geometry)
 
