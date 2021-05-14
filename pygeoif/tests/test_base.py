@@ -7,10 +7,8 @@ def test_geometry_interface():
     """The geo interface must be implemented in subclasses."""
     base_geo = geometry._Geometry()
 
-    assert base_geo.__geo_interface__ == {
-        "type": "_Geometry",
-        "coordinates": (),
-    }
+    with pytest.raises(NotImplementedError):
+        assert base_geo.__geo_interface__
 
 
 def test_bounds():

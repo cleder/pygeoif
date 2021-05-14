@@ -25,11 +25,36 @@ from .types import Bounds
 from .types import GeoInterface
 from .types import GeoType
 from .types import LineType
+from .types import Point2D
+from .types import Point3D
 from .types import PointType
 
 
 class DimensionError(IndexError):
     """Geometries must have 2 or 3 dimensions."""
+
+
+def signed_area(coords: LineType) -> float:
+    """Return the signed area enclosed by a ring.
+
+    Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
+    A value >= 0 indicates a counter-clockwise oriented ring.
+    """
+    if len(coords[0]) == 2:
+        xs, ys = map(list, zip(*coords))
+    elif len(coords[0]) == 3:
+        xs, ys, _s = map(list, zip(*coords))
+    else:
+        raise ValueError
+    xs.append(xs[1])
+    ys.append(ys[1])
+    return (
+        sum(
+            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore
+            for i in range(1, len(coords))
+        )
+        / 2.0
+    )
 
 
 class _Geometry:
@@ -54,8 +79,8 @@ class _Geometry:
         raise NotImplementedError
 
     @property
-    def __geo_interface__(self):
-        return {"type": self.geom_type, "coordinates": ()}
+    def __geo_interface__(self) -> GeoInterface:
+        raise NotImplementedError
 
     @classmethod
     def _check_dict(cls, geo_interface: GeoInterface) -> None:
@@ -97,36 +122,33 @@ class Point(_Geometry):
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
-        self._coordinates = cast(
-            PointType,
-            tuple(coordinate for coordinate in [x, y, z] if coordinate is not None),
-        )
+        self._coordinates = self._set_geoms(x, y, z)
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}{self._coordinates}"
+        return f"{self.geom_type}{tuple(self._coordinates)}"
 
     @property
     def x(self) -> float:
         """Return x coordinate."""
-        return self._coordinates[0]
+        return self._coordinates.x
 
     @property
     def y(self) -> float:
         """Return y coordinate."""
-        return self._coordinates[1]
+        return self._coordinates.y
 
     @property
     def z(self) -> float:
         """Return z coordinate."""
         if len(self._coordinates) == 3:
-            return self._coordinates[2]  # type: ignore
+            return self._coordinates.z  # type: ignore
         raise DimensionError("This point has no z coordinate.")  # pragma: no mutate
 
     @property
     def coords(self) -> Tuple[PointType]:
         """Return the geometry coordinates."""
-        return (cast(PointType, (self._coordinates)),)
+        return (self._coordinates,)
 
     @coords.setter
     def coords(self, coordinates: Tuple[PointType]) -> None:
@@ -165,6 +187,14 @@ class Point(_Geometry):
     def _from_interface(cls, obj: GeoType) -> "Point":
         return cls._from_dict(obj.__geo_interface__)
 
+    @staticmethod
+    def _set_geoms(x: float, y: float, z: Optional[float] = None) -> PointType:
+        """Set coordinates."""
+        args = [coordinate for coordinate in [x, y, z] if coordinate is not None]
+        if len(args) == 3:
+            return Point3D(*args)
+        return Point2D(*args)
+
 
 class LineString(_Geometry):
     """
@@ -195,6 +225,11 @@ class LineString(_Geometry):
           >>> a = LineString([(0, 0), (1, 0), (1, 1)])
         """
         self._geoms = self._set_geoms(coordinates)
+
+    def __repr__(self) -> str:
+        """Return the representation."""
+        coords = tuple(tuple(coord) for coord in self.coords)
+        return f"{self.geom_type}({coords})"
 
     @property
     def geoms(self) -> Tuple[Point, ...]:
@@ -237,7 +272,7 @@ class LineString(_Geometry):
         return {
             "type": self.geom_type,
             "bbox": self.bounds,
-            "coordinates": cast(LineType, self.coords),
+            "coordinates": self.coords,
         }
 
     @classmethod
@@ -261,3 +296,44 @@ class LineString(_Geometry):
             point = Point(*coord)
             geoms.append(point)
         return geoms
+
+
+class LinearRing(LineString):
+    """
+    A closed one-dimensional geometry comprising one or more line segments.
+
+    A LinearRing that crosses itself or touches itself at a single point is
+    invalid and operations on it may fail.
+
+    A Linear Ring is self closing
+    """
+
+    def __init__(self, coordinates: LineType) -> None:
+        """
+        Initialize a LinearRing.
+
+        Args:
+            coordinates (Sequence):
+                A sequence of (x, y [,z]) numeric coordinate pairs or triples
+        """
+        super().__init__(coordinates)
+        if self._geoms[0].coords != self._geoms[-1].coords:
+            self._geoms.append(self._geoms[0])
+
+    @property
+    def coords(self) -> LineType:
+        """Return the geometry coordinates."""
+        return super().coords
+
+    @coords.setter
+    def coords(self, coordinates: LineType) -> None:
+        """Set the geometry coordinates."""
+        self._geoms = self._set_geoms(coordinates)
+        if self._geoms[0].coords != self._geoms[-1].coords:
+            self._geoms.append(self._geoms[0])
+
+    def _set_orientation(self, clockwise: bool = False) -> None:
+        """Set the orientation of the coordinates."""
+        area = signed_area(self.coords)
+        if area >= 0 and clockwise or area < 0 and not clockwise:
+            self._geoms = self._geoms[::-1]

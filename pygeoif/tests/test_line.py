@@ -94,3 +94,24 @@ def test_from_compatible():
     )
     line = geometry.LineString._from_interface(not_a_geometry)
     assert line.coords == ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0))
+
+
+def test_repr2d():
+    line = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+
+    assert repr(line) == "LineString(((0, 0), (1, 1), (2, 2)))"
+
+
+def test_repr3d():
+    line = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+
+    assert repr(line) == "LineString(((0, 0, 0), (1, 1, 3), (2, 2, 6)))"
+
+
+def test_repr_eval():
+    line = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+
+    assert (
+        eval(repr(line), {}, {"LineString": geometry.LineString}).__geo_interface__
+        == line.__geo_interface__
+    )
