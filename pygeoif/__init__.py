@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012  Christian Ledermann
+#   Copyright (C) 2012 - 2021 Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
+"""PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data."""
 # from .geometry import Point, LineString, LinearRing, Polygon
 # from .geometry import MultiPoint, MultiLineString, MultiPolygon
 # from .geometry import GeometryCollection

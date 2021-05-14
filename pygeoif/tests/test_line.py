@@ -35,7 +35,9 @@ def test_coords_set_3d():
 def test_set_geoms_raises():
     line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="All coordinates must have the same dimension"
+    ):
         line._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 
 

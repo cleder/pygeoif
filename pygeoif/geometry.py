@@ -40,14 +40,14 @@ def signed_area(coords: LineType) -> float:
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.
     """
-    if len(coords[0]) == 2:
+    if len(coords[0]) == 2:  # pragma: no mutate
         xs, ys = map(list, zip(*coords))
-    elif len(coords[0]) == 3:
+    elif len(coords[0]) == 3:  # pragma: no mutate
         xs, ys, _s = map(list, zip(*coords))
     else:
-        raise ValueError
-    xs.append(xs[1])
-    ys.append(ys[1])
+        raise ValueError  # pragma: no mutate
+    xs.append(xs[1])  # pragma: no mutate
+    ys.append(ys[1])  # pragma: no mutate
     return (
         sum(
             xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore
@@ -329,11 +329,11 @@ class LinearRing(LineString):
     def coords(self, coordinates: LineType) -> None:
         """Set the geometry coordinates."""
         self._geoms = self._set_geoms(coordinates)
-        if self._geoms[0].coords != self._geoms[-1].coords:
+        if self._geoms[0].coords != self._geoms[-1].coords:  # pragma: no mutate
             self._geoms.append(self._geoms[0])
 
     def _set_orientation(self, clockwise: bool = False) -> None:
         """Set the orientation of the coordinates."""
         area = signed_area(self.coords)
-        if area >= 0 and clockwise or area < 0 and not clockwise:
+        if area >= 0 and clockwise or area < 0 and not clockwise:  # pragma: no mutate
             self._geoms = self._geoms[::-1]

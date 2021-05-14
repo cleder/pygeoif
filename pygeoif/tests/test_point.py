@@ -100,7 +100,7 @@ def test_from_dict():
 
 
 def test_from_dict_wrong_type():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You cannot assign Xoint to Point"):
         geometry.Point._from_dict(
             {"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)},  # pragma: no mutate
         )

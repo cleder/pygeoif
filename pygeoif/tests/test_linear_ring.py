@@ -35,7 +35,9 @@ def test_coords_set_3d():
 def test_set_geoms_raises():
     ring = geometry.LinearRing([(0, 0), (1, 0)])  # pragma: no mutate
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="All coordinates must have the same dimension"
+    ):
         ring._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 
 
@@ -115,3 +117,35 @@ def test_repr_eval():
         eval(repr(ring), {}, {"LinearRing": geometry.LinearRing}).__geo_interface__
         == ring.__geo_interface__
     )
+
+
+def test_set_orientation():
+    ring = geometry.LinearRing(((0, 0), (1, 1), (1, 0), (0, 0)))
+
+    ring._set_orientation()
+
+    assert ring.coords == ((0, 0), (1, 0), (1, 1), (0, 0))
+
+
+def test_set_orientation_clockwise():
+    ring = geometry.LinearRing(((0, 0), (1, 0), (1, 1), (0, 0)))
+
+    ring._set_orientation(True)
+
+    assert ring.coords == ((0, 0), (1, 1), (1, 0), (0, 0))
+
+
+def test_set_orientation_3d():
+    ring = geometry.LinearRing(((0, 0, 3), (1, 1, 2), (1, 0, 3), (0, 0, 3)))
+
+    ring._set_orientation(False)
+
+    assert ring.coords == ((0, 0, 3), (1, 0, 3), (1, 1, 2), (0, 0, 3))
+
+
+def test_set_orientation_3d_clockwise():
+    ring = geometry.LinearRing(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5)))
+
+    ring._set_orientation(True)
+
+    assert ring.coords == ((0, 0, 5), (1, 1, 7), (1, 0, 6), (0, 0, 5))
