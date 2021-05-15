@@ -383,6 +383,14 @@ class Polygon(_Geometry):
             self._interiors = [LinearRing(hole) for hole in holes]
         self._exterior = LinearRing(shell)
 
+    def __repr__(self) -> str:
+        """Return the representation."""
+        exterior = tuple(tuple(coord) for coord in self.exterior.coords)
+        interiors = tuple(
+            tuple(tuple(coord) for coord in hole.coords) for hole in self.interiors
+        )
+        return f"{self.geom_type}({exterior}, {interiors or ''})"
+
     @property
     def exterior(self) -> LinearRing:
         """Return the exterior Linear Ring of the polygon."""
@@ -403,7 +411,7 @@ class Polygon(_Geometry):
     def wkt(self) -> str:
         """Return the well known text representation of the Polygon."""
         ec = f'({", ".join(" ".join(str(x) for x in c) for c in self.exterior.coords)})'
-        ic = "".join(
+        ic = "".join(  # noqa: ECE001
             f',({", ".join(" ".join(str(x) for x in c) for c in interior.coords)})'
             for interior in self.interiors
         )
