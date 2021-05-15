@@ -591,6 +591,10 @@ class MultiLineString(_MultiGeometry):
         """Return the number of lines in the collection."""
         return len(self._geoms)
 
+    def __repr__(self) -> str:
+        """Return the representation."""
+        return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
+
     @property
     def geoms(self) -> Generator[LineString, None, None]:
         """Return the LineStrings in the collection."""
