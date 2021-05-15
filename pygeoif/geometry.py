@@ -168,11 +168,15 @@ class Point(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the Well Known Text Representation of the object."""
-        coords = " ".join(str(coordinate) for coordinate in self._coordinates)
+        coords = self._wkt_coords
         inset = " "
         if len(self._coordinates) == 3:
             inset = " Z "
         return f"{self._wkt_type}{inset}({coords})"
+
+    @property
+    def _wkt_coords(self) -> str:
+        return " ".join(str(coordinate) for coordinate in self._coordinates)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -230,7 +234,7 @@ class LineString(_Geometry):
     @property
     def geoms(self) -> Tuple[Point, ...]:
         """Return the underlying geometries."""
-        return tuple(self._geoms)
+        return self._geoms
 
     @property
     def coords(self) -> LineType:
@@ -264,7 +268,7 @@ class LineString(_Geometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return f'({", ".join(" ".join(str(x) for x in c) for c in self.coords)})'
+        return f'({", ".join(point._wkt_coords for point in self.geoms)})'
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -478,6 +482,16 @@ class _MultiGeometry(_Geometry):
             "Multi-part geometries do not provide a coordinate sequence",
         )
 
+    @property
+    def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
+        return (
+            min(geom.bounds[0] for geom in self.geoms),
+            min(geom.bounds[1] for geom in self.geoms),
+            max(geom.bounds[2] for geom in self.geoms),
+            max(geom.bounds[3] for geom in self.geoms),
+        )
+
 
 class MultiPoint(_MultiGeometry):
     """
@@ -524,23 +538,13 @@ class MultiPoint(_MultiGeometry):
         yield from self._geoms
 
     @property
-    def bounds(self) -> Bounds:
-        """Return the X-Y bounding box."""
-        return (
-            min(p.x for p in self._geoms),
-            min(p.y for p in self._geoms),
-            max(p.x for p in self._geoms),
-            max(p.y for p in self._geoms),
-        )
-
-    @property
     def wkt(self) -> str:
         """Return the well known text representation of the MultiPoint."""
         return f"{self._wkt_type}{self._wkt_coords}"
 
     @property
-    def _wkt_coords(self):
-        wc = ", ".join(" ".join(str(x) for x in c.coords[0]) for c in self.geoms)
+    def _wkt_coords(self) -> str:
+        wc = ", ".join(point._wkt_coords for point in self.geoms)
         return f"({wc})"
 
     @property
@@ -570,7 +574,7 @@ class MultiLineString(_MultiGeometry):
         A sequence of LineStrings
     """
 
-    def __init__(self, lines) -> None:
+    def __init__(self, lines: Sequence[LineType]) -> None:
         """
         Ititialize the MultiLineString.
 
@@ -598,17 +602,7 @@ class MultiLineString(_MultiGeometry):
     @property
     def geoms(self) -> Generator[LineString, None, None]:
         """Return the LineStrings in the collection."""
-        return tuple(self._geoms)
-
-    @property
-    def bounds(self) -> Bounds:
-        """Return the X-Y bounding box."""
-        return (
-            min(geom.bounds[0] for geom in self.geoms),
-            min(geom.bounds[1] for geom in self.geoms),
-            max(geom.bounds[2] for geom in self.geoms),
-            max(geom.bounds[3] for geom in self.geoms),
-        )
+        yield from self._geoms
 
     @property
     def wkt(self) -> str:
@@ -624,3 +618,97 @@ class MultiLineString(_MultiGeometry):
             "bbox": self.bounds,
             "coordinates": tuple(tuple(g.coords) for g in self.geoms),
         }
+
+
+class MultiPolygon(_MultiGeometry):
+    """A collection of one or more polygons
+
+    If component polygons overlap the collection is `invalid` and some
+    operations on it may fail.
+
+    Attributes
+    ----------
+    geoms : sequence
+        A sequence of `Polygon` instances
+    """
+
+    _geoms = None
+    _type = "MultiPolygon"
+
+    @property
+    def __geo_interface__(self):
+        allcoords = []
+        for geom in self.geoms:
+            coords = [tuple(geom.exterior.coords)]
+            for hole in geom.interiors:
+                coords.append(tuple(hole.coords))
+            allcoords.append(tuple(coords))
+        return {
+            "type": self._type,
+            "bbox": self.bounds,
+            "coordinates": tuple(allcoords),
+        }
+
+    def __init__(self, polygons: Sequence[Sequence[LineType]]) -> None:
+        """
+        Initialize a Multipolygon.
+
+        Parameters
+        ----------
+        polygons : sequence
+            A sequence of (shell, holes) tuples where shell is the sequence
+            representation of a linear ring (see linearring.py) and holes is
+            a sequence of such linear rings
+
+        Example
+        -------
+        Construct a collection from a sequence of coordinate tuples
+
+          >>> ob = MultiPolygon([
+          ...     (
+          ...     ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+          ...     [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))]
+          ...)
+          ...])
+          >>> len(ob.geoms)
+          1
+          >>> type(ob.geoms[0]) == Polygon
+          True
+        """
+        self._geoms = tuple(
+            Polygon(polygon[0], polygon[1] if len(polygon) == 2 else None)
+            for polygon in polygons
+        )
+
+    @property
+    def geoms(self) -> Generator[LineString, None, None]:
+        """Return the Polygons in the collection."""
+        yield from self._geoms
+
+    def to_wkt(self) -> str:
+        pc = []
+        for geom in self.geoms:
+            ec = (
+                "("
+                + ", ".join(" ".join(str(x) for x in c) for c in geom.exterior.coords)
+            ) + ")"
+
+            ic = "".join(
+                (
+                    (
+                        ",("
+                        + ", ".join(
+                            " ".join(str(x) for x in c) for c in interior.coords
+                        )
+                    )
+                    + ")"
+                )
+                for interior in geom.interiors
+            )
+
+            pc.append("(" + ec + ic + ")")
+        return self._type.upper() + "(" + ",".join(pc) + ")"
+
+    def __len__(self) -> int:
+        """Return the number of polygons in the collection."""
+        return len(self._geoms)

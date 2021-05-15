@@ -68,7 +68,9 @@ def test_repr_eval():
 
     assert (
         eval(
-            repr(lines), {}, {"MultiLineString": geometry.MultiLineString},
+            repr(lines),
+            {},
+            {"MultiLineString": geometry.MultiLineString},
         ).__geo_interface__
         == lines.__geo_interface__
     )
@@ -79,7 +81,9 @@ def test_repr_eval_single_line():
 
     assert (
         eval(
-            repr(lines), {}, {"MultiLineString": geometry.MultiLineString},
+            repr(lines),
+            {},
+            {"MultiLineString": geometry.MultiLineString},
         ).__geo_interface__
         == lines.__geo_interface__
     )

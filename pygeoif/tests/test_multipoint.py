@@ -68,7 +68,9 @@ def test_repr_eval():
 
     assert (
         eval(
-            repr(multipoint), {}, {"MultiPoint": geometry.MultiPoint},
+            repr(multipoint),
+            {},
+            {"MultiPoint": geometry.MultiPoint},
         ).__geo_interface__
         == multipoint.__geo_interface__
     )
