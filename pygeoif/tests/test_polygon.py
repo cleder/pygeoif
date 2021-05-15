@@ -47,7 +47,7 @@ def test_from_dict_shell_only():
             "type": "Polygon",
             "bbox": (0.0, 0.0, 1.0, 1.0),
             "coordinates": (((0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),
-        }
+        },
     )
 
     assert polygon.__geo_interface__, {
@@ -66,7 +66,7 @@ def test_from_dict_with_holes():
                 ((0.0, 0.0), (0.0, 2.0), (2.0, 2.0), (2.0, 0.0), (0.0, 0.0)),
                 ((1.0, 0.0), (0.5, 0.5), (1.0, 1.0), (1.5, 0.5), (1.0, 0.0)),
             ),
-        }
+        },
     )
 
     assert polygon.__geo_interface__ == {

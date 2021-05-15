@@ -44,8 +44,6 @@ def signed_area(coords: LineType) -> float:
         xs, ys = map(list, zip(*coords))
     elif len(coords[0]) == 3:  # pragma: no mutate
         xs, ys, _s = map(list, zip(*coords))
-    else:
-        raise ValueError  # pragma: no mutate
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
     return (
@@ -350,7 +348,7 @@ class Polygon(_Geometry):
     """
 
     def __init__(
-        self, shell: LineType, holes: Optional[Sequence[LineType]] = None
+        self, shell: LineType, holes: Optional[Sequence[LineType]] = None,
     ) -> None:
         """
         Initialize the polygon.
@@ -404,7 +402,7 @@ class Polygon(_Geometry):
         A polygon does not have  coordinate sequences.
         """
         raise NotImplementedError(
-            "Component rings have coordinate sequences, but the polygon does not"
+            "Component rings have coordinate sequences, but the polygon does not",
         )
 
     @property
@@ -448,3 +446,93 @@ class Polygon(_Geometry):
     @classmethod
     def _from_interface(cls, obj: GeoType) -> "Polygon":
         return cls._from_dict(obj.__geo_interface__)
+
+
+class _MultiGeometry(_Geometry):
+    """
+    Heterogeneous collections of geometric objects.
+
+    The collection may be homogeneous (MultiPoint etc.) or heterogeneous.
+    """
+
+    @property
+    def coords(self) -> NoReturn:
+        """
+        Raise a NotImplementedError.
+
+        Multi-part geometries do not provide a coordinate sequence.
+        """
+        raise NotImplementedError(
+            "Multi-part geometries do not provide a coordinate sequence",
+        )
+
+
+class MultiPoint(_MultiGeometry):
+    """
+    A collection of one or more points.
+
+    Attributes
+    ----------
+    geoms : sequence
+        A sequence of Points
+    """
+
+    def __init__(self, points: Sequence[PointType]) -> None:
+        """
+        Create a collection of one or more points.
+
+        Parameters
+        ----------
+        points : sequence
+            A sequence of (x, y [,z]) numeric coordinate pairs or triples.
+
+        Example
+        -------
+        Construct a 2 point collection
+
+          >>> ob = MultiPoint([[0.0, 0.0], [1.0, 2.0]])
+          >>> len(ob.geoms)
+          2
+          >>> type(ob.geoms[0]) == Point
+          True
+        """
+        self._geoms = tuple(Point(*point) for point in points)
+
+    def __len__(self) -> int:
+        """Return the number of points in this MultiPoint."""
+        return len(self._geoms)
+
+    @property
+    def geoms(self) -> Generator[Point, None, None]:
+        """Return a sequece of Points."""
+        yield from self._geoms
+
+    @property
+    def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
+        return (
+            min(p.x for p in self._geoms),
+            min(p.y for p in self._geoms),
+            max(p.x for p in self._geoms),
+            max(p.y for p in self._geoms),
+        )
+
+    @property
+    def wkt(self) -> str:
+        """Return the well known text representation of the MultiPoint."""
+        wc = (" ".join(str(x) for x in c.coords[0]) for c in self.geoms)
+        return f"{self.geom_type.upper()}({', '.join(wc)})"
+
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        """Return the geo interface."""
+        return {
+            "type": self.geom_type,
+            "bbox": self.bounds,
+            "coordinates": tuple(g.coords[0] for g in self._geoms),
+        }
+
+    def unique(self) -> None:
+        """Make Points unique, delete duplicates."""
+        coords = [geom.coords for geom in self.geoms]
+        self._geoms = tuple(Point(*coord[0]) for coord in set(coords))
