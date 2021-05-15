@@ -16,8 +16,10 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Geometries in pure Python."""
+from typing import Generator
 from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
 from typing import cast
 
@@ -337,3 +339,92 @@ class LinearRing(LineString):
         area = signed_area(self.coords)
         if area >= 0 and clockwise or area < 0 and not clockwise:  # pragma: no mutate
             self._geoms = self._geoms[::-1]
+
+
+class Polygon(_Geometry):
+    """
+    A two-dimensional figure bounded by a linear ring.
+
+    A polygon has a non-zero area. It may have one or more negative-space
+    "holes" which are also bounded by linear rings. If any rings cross each
+    other, the geometry is invalid and operations on it may fail.
+
+    Attributes
+    ----------
+    exterior : LinearRing
+        The ring which bounds the positive space of the polygon.
+    interiors : sequence
+        A sequence of rings which bound all existing holes.
+    """
+
+    def __init__(
+        self, shell: LineType, holes: Optional[Sequence[LineType]] = None
+    ) -> None:
+        """
+        Initialize the polygon.
+
+        Parameters
+        ----------
+        shell : sequence
+            A sequence of (x, y [,z]) numeric coordinate pairs or triples
+        holes : sequence
+            A sequence of objects which satisfy the same requirements as the
+            shell parameters above
+
+        Example
+        -------
+        Create a square polygon with no holes
+
+          >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
+          >>> polygon = Polygon(coords)
+        """
+        self._interiors = []
+        if holes:
+            self._interiors = [LinearRing(hole) for hole in holes]
+        self._exterior = LinearRing(shell)
+
+    @property
+    def exterior(self) -> LinearRing:
+        """Return the exterior Linear Ring of the polygon."""
+        return self._exterior
+
+    @property
+    def interiors(self) -> Generator[LinearRing, None, None]:
+        """Interiors (Holes) of the polygon."""
+        if self._interiors:
+            yield from self._interiors
+
+    @property
+    def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
+        return self.exterior.bounds
+
+    @property
+    def wkt(self) -> str:
+        """Return the well known text representation of the Polygon."""
+        ec = f'({", ".join(" ".join(str(x) for x in c) for c in self.exterior.coords)})'
+        ic = "".join(
+            f',({", ".join(" ".join(str(x) for x in c) for c in interior.coords)})'
+            for interior in self.interiors
+        )
+        inset = " "
+        if len(self._exterior.coords[0]) == 3:
+            inset = " Z "
+        return f"{self.geom_type.upper()}{inset}({ec}{ic})"
+
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        """Return the geo interface."""
+        if self._interiors:
+            coords = [self.exterior.coords]
+            coords.extend(hole.coords for hole in self.interiors)
+            return {
+                "type": self.geom_type,
+                "bbox": self.bounds,
+                "coordinates": tuple(coords),
+            }
+        return {
+            "type": self.geom_type,
+            "bbox": self.bounds,
+            "coordinates": (self._exterior.coords,),
+        }

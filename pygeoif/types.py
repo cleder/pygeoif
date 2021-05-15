@@ -42,10 +42,10 @@ class Point3D(NamedTuple):
 
 PointType = Union[Point2D, Point3D]  # pragma: no mutate
 LineType = Sequence[PointType]  # pragma: no mutate
-
+PolygonType = Sequence[LineType]  # pragma: no mutate
 Bounds = Tuple[float, float, float, float]  # pragma: no mutate
 
-CoordinatesType = Union[PointType, LineType]  # pragma: no mutate
+CoordinatesType = Union[PointType, LineType, PolygonType]  # pragma: no mutate
 
 GeoInterface = TypedDict(
     "GeoInterface",  # pragma: no mutate
