@@ -94,7 +94,9 @@ def test_from_compatible():
             "coordinates": ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0), (0, 4, 3)),
         },
     )
+
     ring = geometry.LinearRing._from_interface(not_a_geometry)
+
     assert ring.coords == ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0), (0, 4, 3), (0, 0, 1))
 
 

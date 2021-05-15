@@ -17,7 +17,7 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Geometries in pure Python."""
 from typing import Generator
-from typing import List
+from typing import NoReturn
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -27,8 +27,6 @@ from .types import Bounds
 from .types import GeoInterface
 from .types import GeoType
 from .types import LineType
-from .types import Point2D
-from .types import Point3D
 from .types import PointType
 
 
@@ -124,7 +122,10 @@ class Point(_Geometry):
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
-        self._coordinates = self._set_geoms(x, y, z)
+        self._coordinates = cast(
+            PointType,
+            tuple(coordinate for coordinate in [x, y, z] if coordinate is not None),
+        )
 
     def __repr__(self) -> str:
         """Return the representation."""
@@ -133,18 +134,18 @@ class Point(_Geometry):
     @property
     def x(self) -> float:
         """Return x coordinate."""
-        return self._coordinates.x
+        return self._coordinates[0]
 
     @property
     def y(self) -> float:
         """Return y coordinate."""
-        return self._coordinates.y
+        return self._coordinates[1]
 
     @property
     def z(self) -> float:
         """Return z coordinate."""
         if len(self._coordinates) == 3:
-            return self._coordinates.z  # type: ignore
+            return self._coordinates[2]  # type: ignore
         raise DimensionError("This point has no z coordinate.")  # pragma: no mutate
 
     @property
@@ -189,14 +190,6 @@ class Point(_Geometry):
     def _from_interface(cls, obj: GeoType) -> "Point":
         return cls._from_dict(obj.__geo_interface__)
 
-    @staticmethod
-    def _set_geoms(x: float, y: float, z: Optional[float] = None) -> PointType:
-        """Set coordinates."""
-        args = [coordinate for coordinate in [x, y, z] if coordinate is not None]
-        if len(args) == 3:
-            return Point3D(*args)
-        return Point2D(*args)
-
 
 class LineString(_Geometry):
     """
@@ -230,8 +223,7 @@ class LineString(_Geometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        coords = tuple(tuple(coord) for coord in self.coords)
-        return f"{self.geom_type}({coords})"
+        return f"{self.geom_type}({self.coords})"
 
     @property
     def geoms(self) -> Tuple[Point, ...]:
@@ -287,7 +279,7 @@ class LineString(_Geometry):
         return cls._from_dict(obj.__geo_interface__)
 
     @staticmethod
-    def _set_geoms(coordinates: LineType) -> List[Point]:
+    def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
         geoms = []
         l0 = len(coordinates[0])  # pragma: no mutate
         for coord in coordinates:
@@ -297,7 +289,7 @@ class LineString(_Geometry):
                 )
             point = Point(*coord)
             geoms.append(point)
-        return geoms
+        return tuple(geoms)
 
 
 class LinearRing(LineString):
@@ -320,7 +312,7 @@ class LinearRing(LineString):
         """
         super().__init__(coordinates)
         if self._geoms[0].coords != self._geoms[-1].coords:
-            self._geoms.append(self._geoms[0])
+            self._geoms = self._geoms + (self._geoms[0],)
 
     @property
     def coords(self) -> LineType:
@@ -332,7 +324,7 @@ class LinearRing(LineString):
         """Set the geometry coordinates."""
         self._geoms = self._set_geoms(coordinates)
         if self._geoms[0].coords != self._geoms[-1].coords:  # pragma: no mutate
-            self._geoms.append(self._geoms[0])
+            self._geoms = self._geoms + (self._geoms[0],)
 
     def _set_orientation(self, clockwise: bool = False) -> None:
         """Set the orientation of the coordinates."""
@@ -378,18 +370,15 @@ class Polygon(_Geometry):
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
         """
-        self._interiors = []
+        self._interiors: Tuple[LinearRing, ...] = ()
         if holes:
-            self._interiors = [LinearRing(hole) for hole in holes]
+            self._interiors = tuple(LinearRing(hole) for hole in holes)
         self._exterior = LinearRing(shell)
 
     def __repr__(self) -> str:
         """Return the representation."""
-        exterior = tuple(tuple(coord) for coord in self.exterior.coords)
-        interiors = tuple(
-            tuple(tuple(coord) for coord in hole.coords) for hole in self.interiors
-        )
-        return f"{self.geom_type}({exterior}, {interiors or ''})"
+        interiors = tuple(hole.coords for hole in self.interiors)
+        return f"{self.geom_type}({self.exterior.coords}, {interiors or ''})"
 
     @property
     def exterior(self) -> LinearRing:
@@ -406,6 +395,17 @@ class Polygon(_Geometry):
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         return self.exterior.bounds
+
+    @property
+    def coords(self) -> NoReturn:
+        """
+        Raise a NotImplementedError.
+
+        A polygon does not have  coordinate sequences.
+        """
+        raise NotImplementedError(
+            "Component rings have coordinate sequences, but the polygon does not"
+        )
 
     @property
     def wkt(self) -> str:
@@ -436,3 +436,15 @@ class Polygon(_Geometry):
             "bbox": self.bounds,
             "coordinates": (self._exterior.coords,),
         }
+
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":
+        cls._check_dict(geo_interface)
+        return cls(
+            cast(LineType, geo_interface["coordinates"][0]),
+            cast(Tuple[LineType], geo_interface["coordinates"][1:]),
+        )
+
+    @classmethod
+    def _from_interface(cls, obj: GeoType) -> "Polygon":
+        return cls._from_dict(obj.__geo_interface__)

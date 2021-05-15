@@ -16,7 +16,6 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Types for geometries."""
-from typing import NamedTuple
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -24,22 +23,8 @@ from typing import Union
 from typing_extensions import Protocol
 from typing_extensions import TypedDict
 
-
-class Point2D(NamedTuple):
-    """A two dimensinal point."""
-
-    x: float
-    y: float
-
-
-class Point3D(NamedTuple):
-    """A threedimensional point."""
-
-    x: float
-    y: float
-    z: float
-
-
+Point2D = Tuple[float, float]  # pragma: no mutate
+Point3D = Tuple[float, float, float]  # pragma: no mutate
 PointType = Union[Point2D, Point3D]  # pragma: no mutate
 LineType = Sequence[PointType]  # pragma: no mutate
 PolygonType = Sequence[LineType]  # pragma: no mutate
