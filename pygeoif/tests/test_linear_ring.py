@@ -36,7 +36,8 @@ def test_set_geoms_raises():
     ring = geometry.LinearRing([(0, 0), (1, 0)])  # pragma: no mutate
 
     with pytest.raises(
-        ValueError, match="All coordinates must have the same dimension",
+        ValueError,
+        match="All coordinates must have the same dimension",
     ):
         ring._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 

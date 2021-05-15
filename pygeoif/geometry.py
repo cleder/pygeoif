@@ -80,6 +80,10 @@ class _Geometry:
     def __geo_interface__(self) -> GeoInterface:
         raise NotImplementedError
 
+    @property
+    def _wkt_type(self) -> str:
+        return self.__class__.__name__.upper()
+
     @classmethod
     def _check_dict(cls, geo_interface: GeoInterface) -> None:
         if geo_interface["type"] != cls.__name__:
@@ -168,7 +172,7 @@ class Point(_Geometry):
         inset = " "
         if len(self._coordinates) == 3:
             inset = " Z "
-        return f"{self.geom_type.upper()}{inset}({coords})"
+        return f"{self._wkt_type}{inset}({coords})"
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -245,8 +249,8 @@ class LineString(_Geometry):
         inset = " "
         if len(self.coords[0]) == 3:  # pragma: no mutate
             inset = " Z "
-        coords = ", ".join(" ".join(str(x) for x in c) for c in self.coords)
-        return f"{self.geom_type.upper()}{inset}({coords})"
+        coords = self._wkt_coords
+        return f"{self._wkt_type}{inset}{coords}"
 
     @property
     def bounds(self) -> Bounds:
@@ -257,6 +261,10 @@ class LineString(_Geometry):
             max(p.x for p in self._geoms),
             max(p.y for p in self._geoms),
         )
+
+    @property
+    def _wkt_coords(self) -> str:
+        return f'({", ".join(" ".join(str(x) for x in c) for c in self.coords)})'
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -348,7 +356,9 @@ class Polygon(_Geometry):
     """
 
     def __init__(
-        self, shell: LineType, holes: Optional[Sequence[LineType]] = None,
+        self,
+        shell: LineType,
+        holes: Optional[Sequence[LineType]] = None,
     ) -> None:
         """
         Initialize the polygon.
@@ -408,15 +418,17 @@ class Polygon(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the Polygon."""
-        ec = f'({", ".join(" ".join(str(x) for x in c) for c in self.exterior.coords)})'
-        ic = "".join(  # noqa: ECE001
-            f',({", ".join(" ".join(str(x) for x in c) for c in interior.coords)})'
-            for interior in self.interiors
-        )
         inset = " "
         if len(self._exterior.coords[0]) == 3:
             inset = " Z "
-        return f"{self.geom_type.upper()}{inset}({ec}{ic})"
+        coords = self._wkt_coords
+        return f"{self._wkt_type}{inset}{coords}"
+
+    @property
+    def _wkt_coords(self) -> str:
+        ec = self.exterior._wkt_coords
+        ic = "".join(f",{interior._wkt_coords}" for interior in self.interiors)
+        return f"({ec}{ic})"
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -502,6 +514,10 @@ class MultiPoint(_MultiGeometry):
         """Return the number of points in this MultiPoint."""
         return len(self._geoms)
 
+    def __repr__(self) -> str:
+        """Return the representation."""
+        return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
+
     @property
     def geoms(self) -> Generator[Point, None, None]:
         """Return a sequece of Points."""
@@ -520,8 +536,12 @@ class MultiPoint(_MultiGeometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the MultiPoint."""
-        wc = (" ".join(str(x) for x in c.coords[0]) for c in self.geoms)
-        return f"{self.geom_type.upper()}({', '.join(wc)})"
+        return f"{self._wkt_type}{self._wkt_coords}"
+
+    @property
+    def _wkt_coords(self):
+        wc = ", ".join(" ".join(str(x) for x in c.coords[0]) for c in self.geoms)
+        return f"({wc})"
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -536,3 +556,67 @@ class MultiPoint(_MultiGeometry):
         """Make Points unique, delete duplicates."""
         coords = [geom.coords for geom in self.geoms]
         self._geoms = tuple(Point(*coord[0]) for coord in set(coords))
+
+
+class MultiLineString(_MultiGeometry):
+    """
+    A collection of one or more line strings.
+
+    A MultiLineString has non-zero length and zero area.
+
+    Attributes
+    ----------
+    geoms : sequence
+        A sequence of LineStrings
+    """
+
+    def __init__(self, lines) -> None:
+        """
+        Ititialize the MultiLineString.
+
+        Parameters
+        ----------
+        lines : sequence
+            A sequence of line-like coordinate sequences.
+
+        Example
+        -------
+        Construct a collection containing one line string.
+
+          >>> lines = MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
+        """
+        self._geoms = tuple(LineString(line) for line in lines)
+
+    def __len__(self) -> int:
+        """Return the number of lines in the collection."""
+        return len(self._geoms)
+
+    @property
+    def geoms(self) -> Generator[LineString, None, None]:
+        """Return the LineStrings in the collection."""
+        return tuple(self._geoms)
+
+    @property
+    def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
+        return (
+            min(geom.bounds[0] for geom in self.geoms),
+            min(geom.bounds[1] for geom in self.geoms),
+            max(geom.bounds[2] for geom in self.geoms),
+            max(geom.bounds[3] for geom in self.geoms),
+        )
+
+    @property
+    def wkt(self) -> str:
+        """Return the well known text representation of the MultiLineString."""
+        wc = ",".join(linestring._wkt_coords for linestring in self.geoms)
+        return f"{self._wkt_type}({wc})"
+
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        """Return the geo interface."""
+        return {
+            "type": self.geom_type,
+            "bbox": self.bounds,
+            "coordinates": tuple(tuple(g.coords) for g in self.geoms),
+        }
