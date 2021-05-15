@@ -58,7 +58,7 @@ def test_bounds():
 
 
 def test_wkt_shell_only():
-    polygon = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    polygon = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)], [])
 
     assert polygon.wkt == "POLYGON ((0 0, 1 1, 1 0, 0 0))"
 
@@ -86,8 +86,8 @@ def test_repr():
     polygon = geometry.Polygon(e, [i])
 
     assert repr(polygon) == (
-        "Polygon(((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)),"
-        " (((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),))"
+        "Polygon(((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)), "
+        "(((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),))"
     )
 
 
