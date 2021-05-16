@@ -22,3 +22,5 @@
 # from .geometry import GeometryCollection
 # from .geometry import Feature, FeatureCollection
 # from .geometry import as_shape, from_wkt, mapping, orient, signed_area
+
+# flake8: noqa

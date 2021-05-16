@@ -14,7 +14,7 @@ flake8-commas
 flake8-complex-f-strings
 flake8-debugger
 flake8-docstrings
-flake8-dunder-all
+# flake8-dunder-all
 flake8-encodings
 flake8-expression-complexity
 flake8-function-order
@@ -25,7 +25,7 @@ flake8-simplify
 flake8-string-format
 flake8-slots
 flake8-super
-flake8-type-checking
+# flake8-type-checking
 flake8-typing-imports
 flake8-use-fstring
 lizard

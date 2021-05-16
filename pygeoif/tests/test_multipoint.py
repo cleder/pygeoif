@@ -1,6 +1,4 @@
 """Test MultiPoint."""
-from unittest import mock
-
 import pytest
 
 from pygeoif import geometry
