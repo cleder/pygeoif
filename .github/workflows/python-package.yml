@@ -26,7 +26,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
         pip install -r test-requirements.txt
     - name: Test with pytest
       run: |
@@ -36,7 +35,5 @@ jobs:
         mypy pygeoif
     - name: Lint with flake8
       run: |
-        # check the tests
-        flake8 pygeoif/tests --max-line-length=88 --ignore=D,S
-        # Use Blacks 88 chars line length
-        flake8 pygeoif --exclude pygeoif/tests --max-line-length=88
+        flake8 pygeoif
+        black --check pygeoif
