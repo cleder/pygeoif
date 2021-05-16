@@ -40,3 +40,10 @@ def test_wkt_cordinates():
     with pytest.raises(NotImplementedError, match="Must be implemented by subclass"):
 
         assert base_geo._wkt_coords
+
+
+def test_from_dict():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError, match="Must be implemented by subclass"):
+
+        assert base_geo._from_dict({"type": "_Geometry"})

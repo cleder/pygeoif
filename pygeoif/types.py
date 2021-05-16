@@ -50,6 +50,11 @@ GeoInterface = TypedDict(
     },
 )
 
+GeoCollectionInterface = TypedDict(
+    "GeoCollectionInterface",
+    {"type": str, "geometries": Sequence[GeoInterface]},
+)
+
 
 class GeoType(Protocol):
     """Any compatible type that implements the __geo_interface__."""

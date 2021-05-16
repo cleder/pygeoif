@@ -17,13 +17,16 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Geometries in pure Python."""
 from typing import Generator
+from typing import Iterable
 from typing import NoReturn
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
+from typing import Union
 from typing import cast
 
 from .types import Bounds
+from .types import GeoCollectionInterface
 from .types import GeoInterface
 from .types import GeoType
 from .types import LineType
@@ -694,3 +697,87 @@ class MultiPolygon(_MultiGeometry):
             (poly[0], poly[1:]) for poly in geo_interface["coordinates"]  # type: ignore
         )
         return cls(cast(Sequence[PolygonType], coords))
+
+
+Geometry = Union[
+    Point,
+    LineString,
+    LinearRing,
+    Polygon,
+    MultiPoint,
+    MultiLineString,
+    MultiPolygon,
+]
+
+
+class GeometryCollection(_MultiGeometry):
+    """
+    A heterogenous collection of geometries.
+
+    Attributes
+    ----------
+    geoms : sequence
+        A sequence of geometry instances
+
+    Please note:
+    GEOMETRYCOLLECTION isn't supported by the Shapefile format. And this sub-
+    class isn't generally supported by ordinary GIS sw (viewers and so on). So
+    it's very rarely used in the real GIS professional world.
+
+    Example
+    -------
+
+    Initialize Geometries and construct a GeometryCollection
+
+    >>> from pygeoif import geometry
+    >>> p = geometry.Point(1.0, -1.0)
+    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> geoms = [p, p2]
+    >>> c = geometry.GeometryCollection(geoms)
+    >>> c.__geo_interface__
+    {'type': 'GeometryCollection',
+    'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},
+    {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
+    """
+
+    def __init__(self, geometries: Iterable[Geometry]):
+        """
+        Initialize the MultiGeometry with Geometries.
+
+        Args:
+            geometries (Iterable[Geometry]
+        """
+        self._geoms = tuple(geometries)
+
+    def __len__(self) -> int:
+        """
+        Length of the collection.
+
+        Returns:
+            int: Number of geometries in the collection.
+        """
+        return len(self._geoms)
+
+    def __iter__(self) -> Iterable[Geometry]:
+        """
+        Iterate over the geometries of the collection.
+
+        Returns:
+            Iterable[Geometry]
+        """
+        return iter(self._geoms)
+
+    @property
+    def geoms(self) -> Generator[Geometry, None, None]:
+        """Iterate over the geometries."""
+        yield from self._geoms
+
+    @property
+    def _wkt_coords(self) -> str:
+        return ", ".join(geom.wkt for geom in self.geoms)
+
+    @property
+    def __geo_interface__(self) -> GeoCollectionInterface:  # type: ignore
+        """Return the geo interface of the collection."""
+        gifs = tuple(geom.__geo_interface__ for geom in self._geoms)
+        return {"type": self.geom_type, "geometries": gifs}
