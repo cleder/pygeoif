@@ -27,3 +27,10 @@ def test_wkt():
     with pytest.raises(NotImplementedError):
 
         assert base_geo.wkt
+
+
+def test_wkt_inset():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError):
+
+        assert base_geo.wkt

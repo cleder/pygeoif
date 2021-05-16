@@ -260,7 +260,7 @@ class LineString(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the LineSring."""
-        return f"{self._wkt_type}{self._wkt_inset}{self._wkt_coords}"
+        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
 
     @property
     def bounds(self) -> Bounds:
@@ -278,7 +278,7 @@ class LineString(_Geometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return f'({", ".join(point._wkt_coords for point in self.geoms)})'
+        return ", ".join(point._wkt_coords for point in self.geoms)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -432,13 +432,13 @@ class Polygon(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the Polygon."""
-        return f"{self._wkt_type}{self._wkt_inset}{self._wkt_coords}"
+        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
 
     @property
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords
-        ic = "".join(f",{interior._wkt_coords}" for interior in self.interiors)
-        return f"({ec}{ic})"
+        ic = "".join(f",({interior._wkt_coords})" for interior in self.interiors)
+        return f"({ec}){ic}"
 
     @property
     def _wkt_inset(self) -> str:
@@ -543,12 +543,11 @@ class MultiPoint(_MultiGeometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the MultiPoint."""
-        return f"{self._wkt_type}{self._wkt_coords}"
+        return f"{self._wkt_type}({self._wkt_coords})"
 
     @property
     def _wkt_coords(self) -> str:
-        wc = ", ".join(point._wkt_coords for point in self.geoms)
-        return f"({wc})"
+        return ", ".join(point._wkt_coords for point in self.geoms)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -610,8 +609,11 @@ class MultiLineString(_MultiGeometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the MultiLineString."""
-        wc = ",".join(linestring._wkt_coords for linestring in self.geoms)
-        return f"{self._wkt_type}({wc})"
+        return f"{self._wkt_type}({self._wkt_coords})"
+
+    @property
+    def _wkt_coords(self) -> str:
+        return ",".join(f'({linestring._wkt_coords})' for linestring in self.geoms)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -665,7 +667,7 @@ class MultiPolygon(_MultiGeometry):
         self._geoms = tuple(
             Polygon(
                 polygon[0],
-                polygon[1] if len(polygon) == 2 else None,  # type: ignore noqa: IF100
+                polygon[1] if len(polygon) == 2 else None,  # type: ignore # noqa: IF100
             )
             for polygon in polygons
         )
@@ -673,6 +675,10 @@ class MultiPolygon(_MultiGeometry):
     def __len__(self) -> int:
         """Return the number of polygons in the collection."""
         return len(self._geoms)
+
+    def __repr__(self) -> str:
+        """Return the representation."""
+        return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
 
     @property
     def geoms(self) -> Generator[Polygon, None, None]:
@@ -687,7 +693,7 @@ class MultiPolygon(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ",".join(poly._wkt_coords for poly in self.geoms)
+        return ",".join(f"({poly._wkt_coords})" for poly in self.geoms)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
