@@ -21,10 +21,9 @@ def test_bounds3d():
 def test_xy():
     point = geometry.Point(1.0, 0.0)
 
-    with pytest.raises(IndexError) as exc:
+    with pytest.raises(IndexError, match="^This point has no z coordinate$"):
         point.z
 
-    exc.match(r"This point has no z coordinate.")
     assert point.x == 1
     assert point.y == 0
 
@@ -100,7 +99,7 @@ def test_from_dict():
 
 
 def test_from_dict_wrong_type():
-    with pytest.raises(ValueError, match="You cannot assign Xoint to Point"):
+    with pytest.raises(ValueError, match="^You cannot assign Xoint to Point"):
         geometry.Point._from_dict(
             {"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)},  # pragma: no mutate
         )

@@ -171,7 +171,7 @@ class Point(_Geometry):
         """Return z coordinate."""
         if len(self._coordinates) == 3:
             return self._coordinates[2]  # type: ignore
-        raise DimensionError("This point has no z coordinate.")  # pragma: no mutate
+        raise DimensionError("This point has no z coordinate")  # pragma: no mutate
 
     @property
     def coords(self) -> Tuple[PointType]:
