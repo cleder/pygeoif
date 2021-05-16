@@ -69,22 +69,26 @@ class _Geometry:
 
     @property
     def wkt(self) -> str:
-        """Return the Well Known Text Representation of the object."""
-        raise NotImplementedError
+        """Return the Well Known Text representation of the object."""
+        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
 
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
-        raise NotImplementedError
+        raise NotImplementedError("Must be implemented by subclass")
 
     @property
     def __geo_interface__(self) -> GeoInterface:
-        raise NotImplementedError
+        raise NotImplementedError("Must be implemented by subclass")
+
+    @property
+    def _wkt_coords(self) -> str:
+        raise NotImplementedError("Must be implemented by subclass")
 
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensinal geometry or an empty string for 2 dimensions."""
-        raise NotImplementedError
+        return ""
 
     @property
     def _wkt_type(self) -> str:
@@ -97,6 +101,15 @@ class _Geometry:
             raise ValueError(
                 f"You cannot assign {geo_interface['type']} to {cls.__name__}",
             )
+
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "_Geometry":
+        cls._check_dict(geo_interface)
+        raise NotImplementedError("Must be implemented by subclass")
+
+    @classmethod
+    def _from_interface(cls, obj: GeoType) -> "_Geometry":
+        return cls._from_dict(obj.__geo_interface__)
 
 
 class Point(_Geometry):
@@ -138,7 +151,7 @@ class Point(_Geometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}{tuple(self._coordinates)}"
+        return f"{self.geom_type}{self._coordinates}"
 
     @property
     def x(self) -> float:
@@ -173,11 +186,6 @@ class Point(_Geometry):
         return self.x, self.y, self.x, self.y
 
     @property
-    def wkt(self) -> str:
-        """Return the Well Known Text Representation of the object."""
-        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
-
-    @property
     def _wkt_coords(self) -> str:
         return " ".join(str(coordinate) for coordinate in self._coordinates)
 
@@ -201,10 +209,6 @@ class Point(_Geometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "Point":
         cls._check_dict(geo_interface)
         return cls(*geo_interface["coordinates"])
-
-    @classmethod
-    def _from_interface(cls, obj: GeoType) -> "Point":
-        return cls._from_dict(obj.__geo_interface__)
 
 
 class LineString(_Geometry):
@@ -258,11 +262,6 @@ class LineString(_Geometry):
         self._geoms = self._set_geoms(coordinates)
 
     @property
-    def wkt(self) -> str:
-        """Return the well known text representation of the LineSring."""
-        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
-
-    @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         return (
@@ -293,10 +292,6 @@ class LineString(_Geometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
         cls._check_dict(geo_interface)
         return cls(cast(LineType, geo_interface["coordinates"]))
-
-    @classmethod
-    def _from_interface(cls, obj: GeoType) -> "LineString":
-        return cls._from_dict(obj.__geo_interface__)
 
     @staticmethod
     def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
@@ -399,8 +394,7 @@ class Polygon(_Geometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        interiors = tuple(hole.coords for hole in self.interiors)
-        return f"{self.geom_type}({self.exterior.coords}, {interiors or ''})"
+        return f"{self.geom_type}{self.coords}"
 
     @property
     def exterior(self) -> LinearRing:
@@ -430,11 +424,6 @@ class Polygon(_Geometry):
         return (self.exterior.coords,)
 
     @property
-    def wkt(self) -> str:
-        """Return the well known text representation of the Polygon."""
-        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
-
-    @property
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords
         ic = "".join(f",({interior._wkt_coords})" for interior in self.interiors)
@@ -461,10 +450,6 @@ class Polygon(_Geometry):
             cast(LineType, geo_interface["coordinates"][0]),
             cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
-
-    @classmethod
-    def _from_interface(cls, obj: GeoType) -> "Polygon":
-        return cls._from_dict(obj.__geo_interface__)
 
 
 class _MultiGeometry(_Geometry):
@@ -541,11 +526,6 @@ class MultiPoint(_MultiGeometry):
         yield from self._geoms
 
     @property
-    def wkt(self) -> str:
-        """Return the well known text representation of the MultiPoint."""
-        return f"{self._wkt_type}({self._wkt_coords})"
-
-    @property
     def _wkt_coords(self) -> str:
         return ", ".join(point._wkt_coords for point in self.geoms)
 
@@ -557,6 +537,11 @@ class MultiPoint(_MultiGeometry):
             "bbox": self.bounds,
             "coordinates": tuple(g.coords[0] for g in self._geoms),
         }
+
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPoint":
+        cls._check_dict(geo_interface)
+        return cls(cast(Sequence[PointType], geo_interface["coordinates"]))
 
     def unique(self) -> None:
         """Make Points unique, delete duplicates."""
@@ -607,13 +592,8 @@ class MultiLineString(_MultiGeometry):
         yield from self._geoms
 
     @property
-    def wkt(self) -> str:
-        """Return the well known text representation of the MultiLineString."""
-        return f"{self._wkt_type}({self._wkt_coords})"
-
-    @property
     def _wkt_coords(self) -> str:
-        return ",".join(f'({linestring._wkt_coords})' for linestring in self.geoms)
+        return ",".join(f"({linestring._wkt_coords})" for linestring in self.geoms)
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -623,6 +603,11 @@ class MultiLineString(_MultiGeometry):
             "bbox": self.bounds,
             "coordinates": tuple(tuple(g.coords) for g in self.geoms),
         }
+
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "MultiLineString":
+        cls._check_dict(geo_interface)
+        return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
 
 
 class MultiPolygon(_MultiGeometry):
@@ -686,12 +671,6 @@ class MultiPolygon(_MultiGeometry):
         yield from self._geoms
 
     @property
-    def wkt(self) -> str:
-        """Return the well known text representation of the MultiLineString."""
-        inset = ""
-        return f"{self._wkt_type}{inset}({self._wkt_coords})"
-
-    @property
     def _wkt_coords(self) -> str:
         return ",".join(f"({poly._wkt_coords})" for poly in self.geoms)
 
@@ -707,3 +686,11 @@ class MultiPolygon(_MultiGeometry):
             "bbox": self.bounds,
             "coordinates": coords,
         }
+
+    @classmethod
+    def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPolygon":
+        cls._check_dict(geo_interface)
+        coords = tuple(
+            (poly[0], poly[1:]) for poly in geo_interface["coordinates"]  # type: ignore
+        )
+        return cls(cast(Sequence[PolygonType], coords))

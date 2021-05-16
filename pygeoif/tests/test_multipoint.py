@@ -31,6 +31,22 @@ def test_geo_interface():
     }
 
 
+def test_from_dict():
+    multipoint = geometry.MultiPoint._from_dict(
+        {
+            "type": "MultiPoint",
+            "bbox": (0.0, 0.0, 1.0, 1.0),  # pragma: no mutate
+            "coordinates": ((0.0, 0.0), (1.0, 1.0)),
+        },
+    )
+
+    assert multipoint.__geo_interface__ == {
+        "type": "MultiPoint",
+        "bbox": (0.0, 0.0, 1.0, 1.0),  # pragma: no mutate
+        "coordinates": ((0.0, 0.0), (1.0, 1.0)),
+    }
+
+
 def test_coords():
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
 

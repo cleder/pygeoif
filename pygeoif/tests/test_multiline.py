@@ -35,6 +35,22 @@ def test_geo_interface():
     }
 
 
+def test_from_dict():
+    lines = geometry.MultiLineString._from_dict(
+        {
+            "type": "MultiLineString",
+            "bbox": (0, 0, 2, 2),
+            "coordinates": (((0, 0), (1, 1), (1, 2), (2, 2)), ((0.0, 0.0), (1.0, 2.0))),
+        },
+    )
+
+    assert lines.__geo_interface__ == {
+        "type": "MultiLineString",
+        "bbox": (0, 0, 2, 2),
+        "coordinates": (((0, 0), (1, 1), (1, 2), (2, 2)), ((0.0, 0.0), (1.0, 2.0))),
+    }
+
+
 def test_wkt():
     lines = geometry.MultiLineString(
         ([(0, 0), (1, 1), (1, 2), (2, 2)], [[0.0, 0.0], [1.0, 2.0]]),

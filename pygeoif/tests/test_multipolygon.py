@@ -55,6 +55,32 @@ def test_geo_interface():
     }
 
 
+def test_from_dict():
+    polys = geometry.MultiPolygon._from_dict(
+        {
+            "type": "MultiPolygon",
+            "bbox": (0.0, 0.0, 1.0, 1.0),
+            "coordinates": (
+                (
+                    ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),
+                    ((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1), (0.1, 0.1)),
+                ),
+            ),
+        },
+    )
+
+    assert polys.__geo_interface__ == {
+        "type": "MultiPolygon",
+        "bbox": (0.0, 0.0, 1.0, 1.0),
+        "coordinates": (
+            (
+                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),
+                ((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1), (0.1, 0.1)),
+            ),
+        ),
+    }
+
+
 def test_wkt():
     polys = geometry.MultiPolygon(
         [
