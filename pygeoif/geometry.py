@@ -767,6 +767,10 @@ class GeometryCollection(_MultiGeometry):
         """
         return iter(self._geoms)
 
+    def __repr__(self) -> str:
+        """Return the representation."""
+        return f"{self.geom_type}({tuple(geom for geom in self._geoms)})"
+
     @property
     def geoms(self) -> Generator[Geometry, None, None]:
         """Iterate over the geometries."""

@@ -1,7 +1,4 @@
 """Test Baseclass."""
-
-import pytest
-
 from pygeoif import geometry
 
 
@@ -12,8 +9,20 @@ def test_geo_interface():
     poly2 = geometry.Polygon(e, [i])
     p0 = geometry.Point(0, 0)
     p1 = geometry.Point(-1, -1)
-    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
-    line = geometry.LineString([(0, 0), (1, 1)])
+    ring = geometry.LinearRing(
+        [
+            (0, 0),
+            (1, 1),
+            (1, 0),
+            (0, 0),
+        ],
+    )
+    line = geometry.LineString(
+        [
+            (0, 0),
+            (1, 1),
+        ],
+    )
     gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
 
     assert gc.__geo_interface__ == {
@@ -68,6 +77,7 @@ def test_geo_wkt():
         "LINESTRING (0 0, 1 1))"
     )
 
+
 def test_len():
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
@@ -80,6 +90,7 @@ def test_len():
     gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
 
     assert len(gc) == 6
+
 
 def test_iter():
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
@@ -95,6 +106,7 @@ def test_iter():
     for k, v in zip(gc, [poly1, poly2, p0, p1, ring, line]):
         assert k == v
 
+
 def test_geoms():
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
@@ -108,3 +120,53 @@ def test_geoms():
 
     for k, v in zip(gc.geoms, [poly1, poly2, p0, p1, ring, line]):
         assert k == v
+
+
+def test_repr():
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+
+    assert repr(gc) == (
+        "GeometryCollection("
+        "(Polygon(((0, 0), (1, 1), (1, 0), (0, 0)),), "
+        "Polygon(((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)), "
+        "(((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),)), "
+        "Point(0, 0), Point(-1, -1), "
+        "LinearRing(((0, 0), (1, 1), (1, 0), (0, 0))), "
+        "LineString(((0, 0), (1, 1))))"
+        ")"
+    )
+
+
+def test_repr_eval():
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+
+    assert (
+        eval(
+            repr(gc),
+            {},
+            {
+                "LinearRing": geometry.LinearRing,
+                "Polygon": geometry.Polygon,
+                "Point": geometry.Point,
+                "LineString": geometry.LineString,
+                "GeometryCollection": geometry.GeometryCollection,
+            },
+        ).__geo_interface__
+        == gc.__geo_interface__
+    )
