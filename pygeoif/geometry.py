@@ -227,7 +227,7 @@ class LineString(_Geometry):
         A sequence of Points
     """
 
-    def __init__(self, coordinates: LineType):
+    def __init__(self, coordinates: LineType) -> None:
         """
         Initialize a Linestring.
 
@@ -740,7 +740,7 @@ class GeometryCollection(_MultiGeometry):
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     """
 
-    def __init__(self, geometries: Iterable[Geometry]):
+    def __init__(self, geometries: Iterable[Geometry]) -> None:
         """
         Initialize the MultiGeometry with Geometries.
 
