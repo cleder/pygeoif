@@ -9,11 +9,17 @@ from pygeoif import geometry
 def test_coords():
     polygon = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
 
-    with pytest.raises(
-        NotImplementedError,
-        match="Component rings have coordinate sequences, but the polygon does not",
-    ):
-        polygon.coords
+    assert polygon.coords == (((0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),)
+
+
+def test_coords_with_holes():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon = geometry.Polygon(e, [i])
+    assert polygon.coords == (
+        ((0.0, 0.0), (0.0, 2.0), (2.0, 2.0), (2.0, 0.0), (0.0, 0.0)),
+        (((1.0, 0.0), (0.5, 0.5), (1.0, 1.0), (1.5, 0.5), (1.0, 0.0)),),
+    )
 
 
 def test_geo_interface_shell_only():

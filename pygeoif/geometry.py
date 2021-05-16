@@ -28,6 +28,7 @@ from .types import GeoInterface
 from .types import GeoType
 from .types import LineType
 from .types import PointType
+from .types import PolygonType
 
 
 class DimensionError(IndexError):
@@ -81,7 +82,13 @@ class _Geometry:
         raise NotImplementedError
 
     @property
+    def _wkt_inset(self) -> str:
+        """Return Z for 3 dimensinal geometry or an empty string for 2 dimensions."""
+        raise NotImplementedError
+
+    @property
     def _wkt_type(self) -> str:
+        """Return the WKT name of the geometry."""
         return self.__class__.__name__.upper()
 
     @classmethod
@@ -168,15 +175,18 @@ class Point(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the Well Known Text Representation of the object."""
-        coords = self._wkt_coords
-        inset = " "
-        if len(self._coordinates) == 3:
-            inset = " Z "
-        return f"{self._wkt_type}{inset}({coords})"
+        return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
 
     @property
     def _wkt_coords(self) -> str:
         return " ".join(str(coordinate) for coordinate in self._coordinates)
+
+    @property
+    def _wkt_inset(self) -> str:
+        """Return Z for 3 dimensinal geometry or an empty string for 2 dimensions."""
+        if len(self._coordinates) == 3:
+            return " Z "
+        return " "
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -250,11 +260,7 @@ class LineString(_Geometry):
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the LineSring."""
-        inset = " "
-        if len(self.coords[0]) == 3:  # pragma: no mutate
-            inset = " Z "
-        coords = self._wkt_coords
-        return f"{self._wkt_type}{inset}{coords}"
+        return f"{self._wkt_type}{self._wkt_inset}{self._wkt_coords}"
 
     @property
     def bounds(self) -> Bounds:
@@ -265,6 +271,10 @@ class LineString(_Geometry):
             max(p.x for p in self._geoms),
             max(p.y for p in self._geoms),
         )
+
+    @property
+    def _wkt_inset(self) -> str:
+        return self.geoms[0]._wkt_inset
 
     @property
     def _wkt_coords(self) -> str:
@@ -409,24 +419,20 @@ class Polygon(_Geometry):
         return self.exterior.bounds
 
     @property
-    def coords(self) -> NoReturn:
+    def coords(self) -> PolygonType:
         """
-        Raise a NotImplementedError.
+        Return Coordinates of the Polygon.
 
-        A polygon does not have  coordinate sequences.
+        Note that this is not implemented in Shaply.
         """
-        raise NotImplementedError(
-            "Component rings have coordinate sequences, but the polygon does not",
-        )
+        if self._interiors:
+            return self.exterior.coords, tuple(i.coords for i in self.interiors)
+        return (self.exterior.coords,)
 
     @property
     def wkt(self) -> str:
         """Return the well known text representation of the Polygon."""
-        inset = " "
-        if len(self._exterior.coords[0]) == 3:
-            inset = " Z "
-        coords = self._wkt_coords
-        return f"{self._wkt_type}{inset}{coords}"
+        return f"{self._wkt_type}{self._wkt_inset}{self._wkt_coords}"
 
     @property
     def _wkt_coords(self) -> str:
@@ -435,20 +441,17 @@ class Polygon(_Geometry):
         return f"({ec}{ic})"
 
     @property
+    def _wkt_inset(self) -> str:
+        return self.exterior._wkt_inset
+
+    @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
-        if self._interiors:
-            coords = [self.exterior.coords]
-            coords.extend(hole.coords for hole in self.interiors)
-            return {
-                "type": self.geom_type,
-                "bbox": self.bounds,
-                "coordinates": tuple(coords),
-            }
+        coords = (self.exterior.coords,) + tuple(hole.coords for hole in self.interiors)
         return {
             "type": self.geom_type,
             "bbox": self.bounds,
-            "coordinates": (self._exterior.coords,),
+            "coordinates": coords,
         }
 
     @classmethod
@@ -486,10 +489,10 @@ class _MultiGeometry(_Geometry):
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         return (
-            min(geom.bounds[0] for geom in self.geoms),
-            min(geom.bounds[1] for geom in self.geoms),
-            max(geom.bounds[2] for geom in self.geoms),
-            max(geom.bounds[3] for geom in self.geoms),
+            min(geom.bounds[0] for geom in self.geoms),  # type: ignore
+            min(geom.bounds[1] for geom in self.geoms),  # type: ignore
+            max(geom.bounds[2] for geom in self.geoms),  # type: ignore
+            max(geom.bounds[3] for geom in self.geoms),  # type: ignore
         )
 
 
@@ -621,7 +624,8 @@ class MultiLineString(_MultiGeometry):
 
 
 class MultiPolygon(_MultiGeometry):
-    """A collection of one or more polygons
+    """
+    A collection of one or more polygons.
 
     If component polygons overlap the collection is `invalid` and some
     operations on it may fail.
@@ -632,24 +636,7 @@ class MultiPolygon(_MultiGeometry):
         A sequence of `Polygon` instances
     """
 
-    _geoms = None
-    _type = "MultiPolygon"
-
-    @property
-    def __geo_interface__(self):
-        allcoords = []
-        for geom in self.geoms:
-            coords = [tuple(geom.exterior.coords)]
-            for hole in geom.interiors:
-                coords.append(tuple(hole.coords))
-            allcoords.append(tuple(coords))
-        return {
-            "type": self._type,
-            "bbox": self.bounds,
-            "coordinates": tuple(allcoords),
-        }
-
-    def __init__(self, polygons: Sequence[Sequence[LineType]]) -> None:
+    def __init__(self, polygons: Sequence[PolygonType]) -> None:
         """
         Initialize a Multipolygon.
 
@@ -676,39 +663,41 @@ class MultiPolygon(_MultiGeometry):
           True
         """
         self._geoms = tuple(
-            Polygon(polygon[0], polygon[1] if len(polygon) == 2 else None)
+            Polygon(
+                polygon[0],
+                polygon[1] if len(polygon) == 2 else None,  # type: ignore noqa: IF100
+            )
             for polygon in polygons
         )
-
-    @property
-    def geoms(self) -> Generator[LineString, None, None]:
-        """Return the Polygons in the collection."""
-        yield from self._geoms
-
-    def to_wkt(self) -> str:
-        pc = []
-        for geom in self.geoms:
-            ec = (
-                "("
-                + ", ".join(" ".join(str(x) for x in c) for c in geom.exterior.coords)
-            ) + ")"
-
-            ic = "".join(
-                (
-                    (
-                        ",("
-                        + ", ".join(
-                            " ".join(str(x) for x in c) for c in interior.coords
-                        )
-                    )
-                    + ")"
-                )
-                for interior in geom.interiors
-            )
-
-            pc.append("(" + ec + ic + ")")
-        return self._type.upper() + "(" + ",".join(pc) + ")"
 
     def __len__(self) -> int:
         """Return the number of polygons in the collection."""
         return len(self._geoms)
+
+    @property
+    def geoms(self) -> Generator[Polygon, None, None]:
+        """Return the Polygons in the collection."""
+        yield from self._geoms
+
+    @property
+    def wkt(self) -> str:
+        """Return the well known text representation of the MultiLineString."""
+        inset = ""
+        return f"{self._wkt_type}{inset}({self._wkt_coords})"
+
+    @property
+    def _wkt_coords(self) -> str:
+        return ",".join(poly._wkt_coords for poly in self.geoms)
+
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        """Return the geo interface."""
+        coords = tuple(
+            (geom.exterior.coords,) + tuple(hole.coords for hole in geom.interiors)
+            for geom in self.geoms
+        )
+        return {
+            "type": self.geom_type,
+            "bbox": self.bounds,
+            "coordinates": coords,
+        }

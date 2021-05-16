@@ -23,19 +23,32 @@ from typing import Union
 from typing_extensions import Protocol
 from typing_extensions import TypedDict
 
-Point2D = Tuple[float, float]  # pragma: no mutate
-Point3D = Tuple[float, float, float]  # pragma: no mutate
-PointType = Union[Point2D, Point3D]  # pragma: no mutate
-LineType = Sequence[PointType]  # pragma: no mutate
-PolygonType = Sequence[LineType]  # pragma: no mutate
-Bounds = Tuple[float, float, float, float]  # pragma: no mutate
+Point2D = Tuple[float, float]
+Point3D = Tuple[float, float, float]
+PointType = Union[Point2D, Point3D]
+LineType = Sequence[PointType]
+PolygonType = Union[
+    Tuple[LineType, Sequence[LineType]],
+    Tuple[LineType],
+]
+MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
+Bounds = Tuple[float, float, float, float]
 
-CoordinatesType = Union[PointType, LineType, PolygonType]  # pragma: no mutate
+CoordinatesType = Union[
+    PointType,
+    LineType,
+    Sequence[LineType],
+]
+MultiCoordinatesType = Sequence[CoordinatesType]
 
 GeoInterface = TypedDict(
-    "GeoInterface",  # pragma: no mutate
-    {"type": str, "coordinates": CoordinatesType, "bbox": Bounds},  # pragma: no mutate
-)  # pragma: no mutate
+    "GeoInterface",
+    {
+        "type": str,
+        "coordinates": Union[CoordinatesType, MultiCoordinatesType],
+        "bbox": Bounds,
+    },
+)
 
 
 class GeoType(Protocol):
