@@ -30,7 +30,8 @@ you feel right at home with pygeoif
 It was written to provide clean and python only geometries for
 fastkml_
 
-.. _fastkml: http://pypi.python.org/pypi/fastkml/
+.. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
+
 
 PyGeoIf is continually tested with *Travis CI*
 

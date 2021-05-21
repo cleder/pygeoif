@@ -476,11 +476,12 @@ class _MultiGeometry(_Geometry):
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
+        geom_bounds = list(zip(*(geom.bounds for geom in self.geoms)))  # type: ignore
         return (
-            min(geom.bounds[0] for geom in self.geoms),  # type: ignore
-            min(geom.bounds[1] for geom in self.geoms),  # type: ignore
-            max(geom.bounds[2] for geom in self.geoms),  # type: ignore
-            max(geom.bounds[3] for geom in self.geoms),  # type: ignore
+            min(geom_bounds[0]),
+            min(geom_bounds[1]),
+            max(geom_bounds[2]),
+            max(geom_bounds[3]),
         )
 
 
