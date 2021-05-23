@@ -170,3 +170,62 @@ def test_repr_eval():
         ).__geo_interface__
         == gc.__geo_interface__
     )
+
+
+def test_eq():
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc1 = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+    gc2 = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+
+    assert gc1 == gc2
+
+
+def test_neq_len():
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc1 = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+    gc2 = geometry.GeometryCollection([poly1, poly2, p0, p1, ring])
+
+    assert gc1 != gc2
+
+
+def test_neq_sort():
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc1 = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
+    gc2 = geometry.GeometryCollection([poly1, poly2, p0, p1, line, line])
+
+    assert gc1 != gc2
+
+
+def test_neq_type():
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc1 = geometry.GeometryCollection([line])
+
+    assert gc1 != line
+
+
+def test_neq_interface():
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc1 = geometry.GeometryCollection([line])
+
+    assert gc1 != object()

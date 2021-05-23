@@ -70,9 +70,9 @@ class _Geometry:
             return False
         return bool(
             self.__geo_interface__["type"]
-            == other.__geo_interface__["type"]  # type: ignore
+            == other.__geo_interface__.get("type")  # type: ignore
             and self.__geo_interface__["coordinates"]
-            == other.__geo_interface__["coordinates"],  # type: ignore
+            == other.__geo_interface__.get("coordinates"),  # type: ignore
         )
 
     @property
@@ -791,6 +791,21 @@ class GeometryCollection(_MultiGeometry):
             geometries (Iterable[Geometry]
         """
         self._geoms = tuple(geometries)
+
+    def __eq__(self, other: object) -> bool:
+        if not hasattr(other, "__geo_interface__"):
+            return False
+        if other.__geo_interface__.get("type") != self.geom_type:  # type: ignore
+            return False
+        if len(other.__geo_interface__.get("geometries", [])) != len(self):  # type: ignore
+            return False
+        return all(
+            s["type"] == o.get("type") and s["coordinates"] == o.get("coordinates")
+            for s, o in zip(
+                (geom.__geo_interface__ for geom in self._geoms),
+                other.__geo_interface__.get("geometries", []),  # type:  ignore
+            )
+        )
 
     def __len__(self) -> int:
         """
