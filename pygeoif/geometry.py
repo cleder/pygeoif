@@ -65,20 +65,35 @@ class _Geometry:
     def __str__(self) -> str:
         return self.wkt
 
+    def __eq__(self, other: object) -> bool:
+        if not hasattr(other, "__geo_interface__"):
+            return False
+        return bool(
+            self.__geo_interface__["type"]
+            == other.__geo_interface__["type"]  # type: ignore
+            and self.__geo_interface__["coordinates"]
+            == other.__geo_interface__["coordinates"],  # type: ignore
+        )
+
+    @property
+    def bounds(self) -> Bounds:
+        """Return the X-Y bounding box."""
+        raise NotImplementedError("Must be implemented by subclass")
+
     @property
     def geom_type(self) -> str:
         """Return a string specifying the Geometry Type of the object."""
         return self.__class__.__name__
 
     @property
+    def has_z(self) -> bool:
+        """Return True if the geometry's coordinate sequence(s) have z values."""
+        raise NotImplementedError("Must be implemented by subclass")
+
+    @property
     def wkt(self) -> str:
         """Return the Well Known Text representation of the object."""
         return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
-
-    @property
-    def bounds(self) -> Bounds:
-        """Return the X-Y bounding box."""
-        raise NotImplementedError("Must be implemented by subclass")
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -189,6 +204,11 @@ class Point(_Geometry):
         return self.x, self.y, self.x, self.y
 
     @property
+    def has_z(self) -> bool:
+        """Return True if the geometry's coordinate sequence(s) have z values."""
+        return len(self._coordinates) == 3
+
+    @property
     def _wkt_coords(self) -> str:
         return " ".join(str(coordinate) for coordinate in self._coordinates)
 
@@ -267,12 +287,18 @@ class LineString(_Geometry):
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
+        xy = list(zip(*((p.x, p.y) for p in self._geoms)))
         return (
-            min(p.x for p in self._geoms),
-            min(p.y for p in self._geoms),
-            max(p.x for p in self._geoms),
-            max(p.y for p in self._geoms),
+            min(xy[0]),
+            min(xy[1]),
+            max(xy[0]),
+            max(xy[1]),
         )
+
+    @property
+    def has_z(self) -> bool:
+        """Return True if the geometry's coordinate sequence(s) have z values."""
+        return self._geoms[0].has_z
 
     @property
     def _wkt_inset(self) -> str:
@@ -427,6 +453,11 @@ class Polygon(_Geometry):
         return (self.exterior.coords,)
 
     @property
+    def has_z(self) -> bool:
+        """Return True if the geometry's coordinate sequence(s) have z values."""
+        return self._exterior.has_z
+
+    @property
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords
         ic = "".join(f",({interior._wkt_coords})" for interior in self.interiors)
@@ -445,6 +476,17 @@ class Polygon(_Geometry):
             "bbox": self.bounds,
             "coordinates": coords,
         }
+
+    @classmethod
+    def from_bounds(
+        cls,
+        xmin: float,
+        ymin: float,
+        xmax: float,
+        ymax: float,
+    ) -> "Polygon":
+        """Construct a `Polygon()` from spatial bounds."""
+        return cls([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin)])
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":

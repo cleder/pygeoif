@@ -40,21 +40,32 @@ def test_repr2d():
     point = geometry.Point(1, 0)
 
     assert repr(point) == "Point(1, 0)"
+    assert not point.has_z
 
 
 def test_repr3d():
     point = geometry.Point(1.0, 2.0, 3.0)
 
     assert repr(point) == "Point(1.0, 2.0, 3.0)"
+    assert point.has_z
+
+
+def test_has_z_2d():
+    point = geometry.Point(1, 0)
+
+    assert not point.has_z
+
+
+def test_has_z_3d():
+    point = geometry.Point(1.0, 2.0, 3.0)
+
+    assert point.has_z
 
 
 def test_repr_eval():
     point = geometry.Point(1.0, 2.0, 3.0)
 
-    assert (
-        eval(repr(point), {}, {"Point": geometry.Point}).__geo_interface__
-        == point.__geo_interface__
-    )
+    assert eval(repr(point), {}, {"Point": geometry.Point}) == point
 
 
 def test_wkt2d():
@@ -116,3 +127,14 @@ def test_from_compatible():
     point = geometry.Point._from_interface(not_a_geometry)
 
     assert point.coords == ((0, 1, 2),)
+
+
+def test_eq_interface():
+    not_a_geometry = mock.Mock()
+    not_a_geometry.__geo_interface__ = {
+        "type": "Point",
+        "coordinates": (0.0, 1.0, 2.0),
+    }
+    point = geometry.Point(0, 1, 2)
+
+    assert point == not_a_geometry

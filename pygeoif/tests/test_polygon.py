@@ -191,3 +191,17 @@ def test_repr_eval_shell_only():
         eval(repr(polygon), {}, {"Polygon": geometry.Polygon}).__geo_interface__
         == polygon.__geo_interface__
     )
+
+
+def test_hasz():
+    polygon = geometry.Polygon([(0, 0, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
+
+    assert polygon.has_z
+
+
+def test_from_bounds():
+    polygon = geometry.Polygon(
+        ((0, 0), (0, 1), (1, 1), (1, 0), (0, 0)),
+    )
+
+    assert geometry.Polygon.from_bounds(0, 0, 1, 1) == polygon

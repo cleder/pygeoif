@@ -47,3 +47,17 @@ def test_from_dict():
     with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
 
         assert base_geo._from_dict({"type": "_Geometry"})
+
+
+def test_has_z():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
+
+        assert base_geo.has_z
+
+
+def test_neq_no_interface():
+    obj = object()
+    base_geo = geometry._Geometry()
+
+    assert base_geo != obj

@@ -118,3 +118,15 @@ def test_repr_eval():
         eval(repr(line), {}, {"LineString": geometry.LineString}).__geo_interface__
         == line.__geo_interface__
     )
+
+
+def test_has_z_2d():
+    line = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+
+    assert not line.has_z
+
+
+def test_has_z_3d():
+    line = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+
+    assert line.has_z
