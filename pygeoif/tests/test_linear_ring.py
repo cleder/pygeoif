@@ -128,6 +128,7 @@ def test_set_orientation():
     ring._set_orientation()
 
     assert ring.coords == ((0, 0), (1, 0), (1, 1), (0, 0))
+    assert ring.is_ccw
 
 
 def test_set_orientation_clockwise():
@@ -136,6 +137,7 @@ def test_set_orientation_clockwise():
     ring._set_orientation(True)
 
     assert ring.coords == ((0, 0), (1, 1), (1, 0), (0, 0))
+    assert not ring.is_ccw
 
 
 def test_set_orientation_3d():

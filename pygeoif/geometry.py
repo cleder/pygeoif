@@ -359,6 +359,11 @@ class LinearRing(LineString):
             self._geoms = self._geoms + (self._geoms[0],)
 
     @property
+    def is_ccw(self) -> bool:
+        """Return True if the ring is oriented counter clock-wise."""
+        return signed_area(self.coords) >= 0
+
+    @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
         return super().coords
