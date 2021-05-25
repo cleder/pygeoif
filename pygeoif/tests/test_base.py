@@ -61,3 +61,19 @@ def test_neq_no_interface():
     base_geo = geometry._Geometry()
 
     assert base_geo != obj
+
+
+def test_signed_area():
+    a0 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    a1 = [(0, 0, 1), (0, 2, 2), (2, 2, 3), (2, 0, 4), (0, 0, 1)]
+    assert geometry.signed_area(a0) == geometry.signed_area(a1)
+
+
+def test_signed_area_unequal_len():
+    with pytest.raises(
+        UnboundLocalError,
+        match="^local variable 'xs' referenced before assignment$",
+    ):
+        a2 = [(0, 0, 1, 3), (0, 2, 2)]
+
+        geometry.signed_area(a2)
