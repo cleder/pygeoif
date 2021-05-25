@@ -17,10 +17,35 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data."""
-# from .geometry import Point, LineString, LinearRing, Polygon
-# from .geometry import MultiPoint, MultiLineString, MultiPolygon
-# from .geometry import GeometryCollection
-# from .geometry import Feature, FeatureCollection
-# from .geometry import as_shape, from_wkt, mapping, orient, signed_area
+from .factories import as_shape
+from .factories import from_wkt
+from .factories import mapping
+from .factories import orient
+from .feature import Feature
+from .feature import FeatureCollection
+from .geometry import GeometryCollection
+from .geometry import LinearRing
+from .geometry import LineString
+from .geometry import MultiLineString
+from .geometry import MultiPoint
+from .geometry import MultiPolygon
+from .geometry import Point
+from .geometry import Polygon
 
-# flake8: noqa
+__all__ = [
+    "Feature",
+    "FeatureCollection",
+    "GeometryCollection",
+    "LineString",
+    "LinearRing",
+    "MultiLineString",
+    "MultiPoint",
+    "MultiPolygon",
+    "Point",
+    "Polygon",
+    "as_shape",
+    "from_wkt",
+    "geometry",
+    "mapping",
+    "orient",
+]
