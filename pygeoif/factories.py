@@ -127,7 +127,7 @@ def from_wkt(geo_str: str):
     """
 
     wkt = geo_str.strip()
-    wkt = " ".join([l.strip() for l in wkt.splitlines()])
+    wkt = " ".join(l.strip() for l in wkt.splitlines())
     wkt = wkt_regex.match(wkt).group("wkt")
     ftype = wkt_regex.match(wkt).group("type")
     outerstr = outer.search(wkt)
@@ -142,14 +142,14 @@ def from_wkt(geo_str: str):
         coords = coordinates.split(",")
         return LinearRing([c.split() for c in coords])
     elif ftype == "POLYGON":
-        coords = []
-        for interior in inner.findall(coordinates):
-            coords.append((interior[1:-1]).split(","))
+        coords = [
+            (interior[1:-1]).split(",")
+            for interior in inner.findall(coordinates)
+        ]
+
         if len(coords) > 1:
             # we have a polygon with holes
-            exteriors = []
-            for ext in coords[1:]:
-                exteriors.append([c.split() for c in ext])
+            exteriors = [[c.split() for c in ext] for ext in coords[1:]]
         else:
             exteriors = None
         return Polygon([c.split() for c in coords[0]], exteriors)
@@ -163,9 +163,11 @@ def from_wkt(geo_str: str):
             coords.append(coord.strip())
         return MultiPoint([c.split() for c in coords])
     elif ftype == "MULTILINESTRING":
-        coords = []
-        for lines in inner.findall(coordinates):
-            coords.append([c.split() for c in lines[1:-1].split(",")])
+        coords = [
+            [c.split() for c in lines[1:-1].split(",")]
+            for lines in inner.findall(coordinates)
+        ]
+
         return MultiLineString(coords)
     elif ftype == "MULTIPOLYGON":
         polygons = []
@@ -173,14 +175,14 @@ def from_wkt(geo_str: str):
         for polygon in m:
             if len(polygon) < 3:
                 continue
-            coords = []
-            for interior in inner.findall("(" + polygon + ")"):
-                coords.append((interior[1:-1]).split(","))
+            coords = [
+                (interior[1:-1]).split(",")
+                for interior in inner.findall("(" + polygon + ")")
+            ]
+
             if len(coords) > 1:
                 # we have a polygon with holes
-                exteriors = []
-                for ext in coords[1:]:
-                    exteriors.append([c.split() for c in ext])
+                exteriors = [[c.split() for c in ext] for ext in coords[1:]]
             else:
                 exteriors = None
             polygons.append(Polygon([c.split() for c in coords[0]], exteriors))
