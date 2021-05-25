@@ -53,9 +53,9 @@ def test_geo_interface():
 
 
 def test_bounds():
-    ring = geometry.LinearRing([(0, 0), (1, 1)])
+    ring = geometry.LinearRing([(1, 0), (3, 2)])
 
-    assert ring.bounds == (0.0, 0.0, 1.0, 1.0)
+    assert ring.bounds == (1.0, 0.0, 3.0, 2.0)
 
 
 def test_bounds3d():

@@ -138,3 +138,13 @@ def test_eq_interface():
     point = geometry.Point(0, 1, 2)
 
     assert point == not_a_geometry
+
+def test_neq_interface_coords():
+    not_a_geometry = mock.Mock()
+    not_a_geometry.__geo_interface__ = {
+        "type": "Point",
+        "coordinates": (0.0, 1.0, 2.0),
+    }
+    point = geometry.Point(0, 0, 2)
+
+    assert point != not_a_geometry
