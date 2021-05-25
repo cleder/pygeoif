@@ -853,5 +853,7 @@ class GeometryCollection(_MultiGeometry):
     @property
     def __geo_interface__(self) -> GeoCollectionInterface:  # type: ignore
         """Return the geo interface of the collection."""
-        gifs = tuple(geom.__geo_interface__ for geom in self._geoms)
-        return {"type": self.geom_type, "geometries": gifs}
+        return {
+            "type": self.geom_type,
+            "geometries": tuple(geom.__geo_interface__ for geom in self._geoms),
+        }

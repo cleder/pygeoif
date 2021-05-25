@@ -16,6 +16,8 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Types for geometries."""
+from typing import Any
+from typing import Dict
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -53,6 +55,29 @@ GeoInterface = TypedDict(
 GeoCollectionInterface = TypedDict(
     "GeoCollectionInterface",
     {"type": str, "geometries": Sequence[GeoInterface]},
+)
+
+GeoFeatureInterface = TypedDict(
+    "GeoFeatureInterface",
+    {
+        "type": str,
+        "geometry": GeoInterface,
+        "bbox": Bounds,
+        "properties": Dict[str, Any],
+        "id": Union[str, int],
+    },
+    total=False,
+)
+
+GeoFeatureCollectionInterface = TypedDict(
+    "GeoFeatureCollectionInterface",
+    {
+        "type": str,
+        "bbox": Bounds,
+        "features": Sequence[GeoFeatureInterface],
+        "id": Union[str, int],
+    },
+    total=False,
 )
 
 
