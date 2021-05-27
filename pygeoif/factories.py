@@ -140,6 +140,10 @@ inner = re.compile(r"\([^)]*\)")
 mpre = re.compile(r"\(\((.+?)\)\)")
 
 
+class WKTParserError(AttributeError):
+    """WKT not supported or cannot be parsed."""
+
+
 def _point_from_wkt_coordinates(coordinates: str) -> Point:
     coords = [float(c) for c in coordinates.split()]
     return Point(*coords)
@@ -253,8 +257,11 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
 
     wkt = geo_str.strip()
     wkt = " ".join(line.strip() for line in wkt.splitlines())
-    wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore
-    ftype = wkt_regex.match(wkt).group("type")  # type: ignore
+    try:
+        wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore
+        ftype = wkt_regex.match(wkt).group("type")  # type: ignore
+    except AttributeError:
+        raise WKTParserError(f"Cannot parse {wkt}")
     outerstr = outer.search(wkt)
     coordinates = outerstr.group(1)  # type: ignore
     if ftype == "GEOMETRYCOLLECTION":
@@ -266,10 +273,8 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
             gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
             geometries.append(cast(Geometry, from_wkt(gc_wkt)))
         return GeometryCollection(geometries)
-    constructor = type_map.get(ftype)
-    if constructor:
-        return constructor(coordinates)  # type: ignore
-    raise NotImplementedError(f"{ftype} is nor implemented")
+    constructor = type_map[ftype]
+    return constructor(coordinates)  # type: ignore
 
 
 def mapping(

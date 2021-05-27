@@ -89,7 +89,12 @@ class WKTTestCase(unittest.TestCase):
     ]
 
     # these are valid WKTs but not supported
-    wkt_fail = ["POINT ZM (1 1 5 60)", "POINT EMPTY", "MULTIPOLYGON EMPTY"]
+    wkt_fail = [
+        "POINT ZM (1 1 5 60)",
+        "POINT EMPTY",
+        "MULTIPOLYGON EMPTY",
+        "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))",
+    ]
 
     def test_point(self):
         p = factories.from_wkt("POINT (0.0 1.0)")
@@ -263,6 +268,10 @@ class WKTTestCase(unittest.TestCase):
         for wkt in self.wkt_fail:
             self.assertRaises(Exception, factories.from_wkt, wkt)
 
+    def test_wkt_tin(self):
+        tin = "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))"
+        self.assertRaises(factories.WKTParserError, factories.from_wkt, tin)
+
 
 class AsShapeTestCase(unittest.TestCase):
     def test_point(self):
@@ -331,8 +340,11 @@ class AsShapeTestCase(unittest.TestCase):
     def test_nongeo(self):
         self.assertRaises(AttributeError, factories.shape, "a")
 
-    def test_notimplemented(self):
-        f = geometry._Geometry()
+    def test_empty_dict(self):
+        self.assertRaises(TypeError, factories.shape, {})
+
+    def test_notimplemented_interface(self):
+        f = {"type": "Tin", "geometries": (1, 2, 3)}
         self.assertRaises(NotImplementedError, factories.shape, f)
 
     def test_dict_asshape(self):
