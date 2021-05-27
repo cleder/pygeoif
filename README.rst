@@ -35,12 +35,11 @@ fastkml_
 
 PyGeoIf is continually tested with *Travis CI*
 
-.. image:: https://api.travis-ci.org/cleder/pygeoif.png
+.. image:: https://github.com/cleder/pygeoif/actions/workflows/python-package.yml/badge.svg
     :target: https://travis-ci.org/cleder/pygeoif
 
-.. image:: https://coveralls.io/repos/cleder/pygeoif/badge.png?branch=master
-    :target: https://coveralls.io/r/cleder/pygeoif?branch=master
-
+.. image:: https://codecov.io/gh/cleder/pygeoif/branch/master/graph/badge.svg?token=2EfiwBXs9X
+    :target: https://codecov.io/gh/cleder/pygeoif
 
 
 
@@ -97,7 +96,7 @@ Base class for Geometry, Feature, and FeatureCollection
 
 Geometry
 --------
-Base class for geometry objects. 
+Base class for geometry objects.
 Inherits from Geoobject.
 
 
