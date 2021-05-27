@@ -41,6 +41,8 @@ PyGeoIf is continually tested with *Travis CI*
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/master/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
 
 
 Example
@@ -285,7 +287,7 @@ Example
 Functions
 =========
 
-as_shape
+shape
 --------
 
 Create a pygeoif feature from an object that provides the __geo_interface__
@@ -293,7 +295,7 @@ Create a pygeoif feature from an object that provides the __geo_interface__
 
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry
-    >>> geometry.as_shape(Point(0,0))
+    >>> geometry.shape(Point(0,0))
     <pygeoif.geometry.Point object at 0x...>
 
 
@@ -315,12 +317,19 @@ Return the signed area enclosed by a ring using the linear time
 algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
 indicates a counter-clockwise oriented ring.
 
+
 orient
 -------
+Returns a copy of a polygon with exteriors and interiors in the right orientation.
 
-Returns a copy of the polygon with exterior in counter-clockwise and
-interiors in clockwise orientation for sign=1.0 and the other way round
-for sign=-1.0
+if ccw is True than the exteriror will be in counterclockwise orientation
+and the interiors will be in clockwise orientation, or
+the other way round when ccw is False.
+
+
+box
+---
+Return a rectangular polygon with configurable normal vector.
 
 
 mapping
@@ -342,23 +351,10 @@ You can install PyGeoIf from pypi using pip::
 Testing
 -------
 
-In order to provide a Travis-CI like testing of the PyGeoIf package during
-development, you can use tox (``pip install tox``) to evaluate the tests on
-all supported Python interpreters which you have installed on your system.
+Install the requirements with ``pip install -r test-requirements.txt``
 
-You can run the tests with ``tox --skip-missin-interpreters`` and are looking
-for output similar to the following::
 
-    ______________________________________________________ summary ______________________________________________________
-    SKIPPED:  py26: InterpreterNotFound: python2.6
-      py27: commands succeeded
-    SKIPPED:  py32: InterpreterNotFound: python3.2
-    SKIPPED:  py33: InterpreterNotFound: python3.3
-      py34: commands succeeded
-    SKIPPED:  pypy: InterpreterNotFound: pypy
-    SKIPPED:  pypy3: InterpreterNotFound: pypy3
-      congratulations :)
-
-You are primarily looking for the ``congratulations :)`` line at the bottom,
-signifying that the code is working as expected on all configurations
-available.
+    black pygeoif
+    flake8 pygeoif
+    pytest pygeoif --cov=pygeoif --cov-report=xml --pdb
+    mypy pygeoif
