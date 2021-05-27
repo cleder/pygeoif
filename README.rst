@@ -351,8 +351,7 @@ You can install PyGeoIf from pypi using pip::
 Testing
 -------
 
-Install the requirements with ``pip install -r test-requirements.txt``
-
+Install the requirements with ``pip install -r test-requirements.txt``::
 
     black pygeoif
     flake8 pygeoif
