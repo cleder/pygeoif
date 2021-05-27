@@ -52,7 +52,7 @@ class Feature:
         self._feature_id = feature_id
 
     @property
-    def id(self) -> Optional[Union[str, int]]:
+    def id(self) -> Optional[Union[str, int]]:  # noqa: A003
         """Return the id of the feature."""
         return self._feature_id
 
@@ -82,7 +82,7 @@ class Feature:
 
 
 class FeatureCollection:
-    """A heterogenous collection of Features
+    """A heterogenous collection of Features.
 
     Attributes
     ----------
@@ -112,18 +112,17 @@ class FeatureCollection:
      'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
     """
 
-    @property
-    def __geo_interface__(self) -> GeoFeatureCollectionInterface:
-        """Return the GeoInterface of the feature."""
-        return {
-            "type": self.__class__.__name__,
-            "bbox": self.bounds,
-            "features": tuple(feature.__geo_interface__ for feature in self._features),
-        }
-
     def __init__(self, features: Sequence[Feature]) -> None:
         """Initialize the feature."""
         self._features = tuple(features)
+
+    def __len__(self) -> int:
+        """Return the umber of features in this collection."""
+        return len(self._features)
+
+    def __iter__(self) -> Iterable[Feature]:
+        """Iterate over the features of the collection."""
+        return iter(self._features)
 
     @property
     def features(self) -> Generator[Feature, None, None]:
@@ -134,7 +133,7 @@ class FeatureCollection:
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         geom_bounds = list(
-            zip(*(feature.geometry.bounds for feature in self._features))
+            zip(*(feature.geometry.bounds for feature in self._features)),
         )
         return (
             min(geom_bounds[0]),
@@ -143,10 +142,11 @@ class FeatureCollection:
             max(geom_bounds[3]),
         )
 
-    def __len__(self) -> int:
-        """Number of features in this collection."""
-        return len(self._features)
-
-    def __iter__(self) -> Iterable[Feature]:
-        """Iterate over the features of the collection."""
-        return iter(self._features)
+    @property
+    def __geo_interface__(self) -> GeoFeatureCollectionInterface:
+        """Return the GeoInterface of the feature."""
+        return {
+            "type": self.__class__.__name__,
+            "bbox": self.bounds,
+            "features": tuple(feature.__geo_interface__ for feature in self._features),
+        }

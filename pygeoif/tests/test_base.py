@@ -69,11 +69,11 @@ def test_signed_area():
     assert geometry.signed_area(a0) == geometry.signed_area(a1)
 
 
-def test_signed_area_unequal_len():
+def test_signed_area_unequal_len():  # sourcery skip: move-assign
+    a2 = [(0, 0, 1, 3), (0, 2, 2)]
+
     with pytest.raises(
         UnboundLocalError,
         match="^local variable 'xs' referenced before assignment$",
     ):
-        a2 = [(0, 0, 1, 3), (0, 2, 2)]
-
         geometry.signed_area(a2)

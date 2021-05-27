@@ -86,3 +86,9 @@ class GeoType(Protocol):
     """Any compatible type that implements the __geo_interface__."""
 
     __geo_interface__: GeoInterface
+
+
+class GeoCollectionType(Protocol):
+    """Any compatible type that implements the __geo_interface__."""
+
+    __geo_interface__: GeoCollectionInterface

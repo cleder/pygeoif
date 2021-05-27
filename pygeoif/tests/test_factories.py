@@ -14,7 +14,7 @@ def test_orient_true():
     p1 = factories.orient(p, True)
     assert list(p1.exterior.coords) == ext[::-1]
     interiors = list(p1.interiors)
-    list(interiors[0].coords) == int_1[::-1]
+    assert list(interiors[0].coords) == int_1[::-1]
     assert list(interiors[1].coords) == int_2[::-1]
 
 
@@ -30,7 +30,7 @@ def test_orient_unchanged():
     p1 = factories.orient(p, True)
     assert p1.exterior.coords == exterior
     new_interiors = list(p1.interiors)
-    new_interiors[0].coords == interiors[0]
+    assert new_interiors[0].coords == interiors[0]
     assert new_interiors[1].coords == interiors[1]
 
 
@@ -45,8 +45,28 @@ def test_orient_false():
     p1 = factories.orient(p, False)
     assert p1.exterior.coords == exterior[::-1]
     new_interiors = list(p1.interiors)
-    new_interiors[0].coords == interiors[0][::-1]
+    assert new_interiors[0].coords == interiors[0][::-1]
     assert new_interiors[1].coords == interiors[1][::-1]
+
+
+def test_box():
+    poly = factories.box(1, 2, 3, 4)
+
+    assert poly.__geo_interface__ == {
+        "type": "Polygon",
+        "bbox": (1, 2, 3, 4),
+        "coordinates": (((3, 2), (3, 4), (1, 4), (1, 2), (3, 2)),),
+    }
+
+
+def test_box_cw():
+    poly = factories.box(1, 2, 3, 4, ccw=False)
+
+    assert poly.__geo_interface__ == {
+        "type": "Polygon",
+        "bbox": (1, 2, 3, 4),
+        "coordinates": (((1, 2), (1, 4), (3, 4), (3, 2), (1, 2)),),
+    }
 
 
 class WKTTestCase(unittest.TestCase):
@@ -82,17 +102,17 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.geom_type, "Point")
 
     def test_linestring(self):
-        l = factories.from_wkt(
+        line = factories.from_wkt(
             "LINESTRING(-72.991 46.177,-73.079 46.16,"
-            "-73.146 46.124,-73.177 46.071,-73.164 46.044)"
+            "-73.146 46.124,-73.177 46.071,-73.164 46.044)",
         )
         self.assertEqual(
-            l.wkt,
+            line.wkt,
             "LINESTRING (-72.991 46.177, "
             "-73.079 46.16, -73.146 46.124, "
             "-73.177 46.071, -73.164 46.044)",
         )
-        assert isinstance(l, geometry.LineString)
+        assert isinstance(line, geometry.LineString)
 
     def test_linearring(self):
         r = factories.from_wkt("LINEARRING (0 0,0 1,1 0,0 0)")
@@ -105,13 +125,13 @@ class WKTTestCase(unittest.TestCase):
             "-91.503 76.222,-91.483 76.221,-91.474 76.211,"
             "-91.484 76.197,-91.512 76.193,-91.624 76.2,"
             "-91.638 76.202,-91.647 76.211,-91.648 76.218,"
-            "-91.643 76.221,-91.636 76.222,-91.611 76.227))"
+            "-91.643 76.221,-91.636 76.222,-91.611 76.227))",
         )
         self.assertEqual(p.exterior.coords[0][0], -91.611)
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         self.assertEqual(len(p.exterior.coords), 14)
         p = factories.from_wkt(
-            "POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, " "3 3, 2 3,2 2))"
+            "POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, " "3 3, 2 3,2 2))",
         )
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         self.assertEqual(p.exterior.coords[0], (1.0, 1.0))
@@ -130,7 +150,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         p = factories.from_wkt(
             """POLYGON ((35 10, 10 20, 15 40, 45 45, 35 10),
-            (20 30, 35 35, 30 20, 20 30))"""
+            (20 30, 35 35, 30 20, 20 30))""",
         )
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
 
@@ -151,7 +171,7 @@ class WKTTestCase(unittest.TestCase):
 
     def test_multilinestring(self):
         p = factories.from_wkt(
-            "MULTILINESTRING((3 4,10 50,20 25)," "(-5 -8,-10 -8,-15 -4))"
+            "MULTILINESTRING((3 4,10 50,20 25)," "(-5 -8,-10 -8,-15 -4))",
         )
         self.assertEqual(list(p.geoms)[0].coords, (((3, 4), (10, 50), (20, 25))))
         self.assertEqual(list(p.geoms)[1].coords, (((-5, -8), (-10, -8), (-15, -4))))
@@ -163,14 +183,14 @@ class WKTTestCase(unittest.TestCase):
         )
         p = factories.from_wkt(
             """MULTILINESTRING ((10 10, 20 20, 10 40),
-            (40 40, 30 30, 40 20, 30 10))"""
+            (40 40, 30 30, 40 20, 30 10))""",
         )
 
     def test_multipolygon(self):
         p = factories.from_wkt(
             "MULTIPOLYGON(((0 0,10 20,30 40,0 0),"
             "(1 1,2 2,3 3,1 1)),"
-            "((100 100,110 110,120 120,100 100)))"
+            "((100 100,110 110,120 120,100 100)))",
         )
         # two polygons: the first one has an interior ring
         self.assertEqual(len(list(p.geoms)), 2)
@@ -196,12 +216,12 @@ class WKTTestCase(unittest.TestCase):
         )
         p = factories.from_wkt(
             "MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),"
-            "(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))"
+            "(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))",
         )
         self.assertEqual(len(list(p.geoms)), 2)
         p = factories.from_wkt(
             "MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),"
-            "((15 5, 40 10, 10 20, 5 10, 15 5)))"
+            "((15 5, 40 10, 10 20, 5 10, 15 5)))",
         )
         self.assertEqual(
             p.__geo_interface__,
@@ -225,7 +245,7 @@ class WKTTestCase(unittest.TestCase):
 
     def test_geometrycollection(self):
         gc = factories.from_wkt(
-            "GEOMETRYCOLLECTION(POINT(4 6), " "LINESTRING(4 6,7 10))"
+            "GEOMETRYCOLLECTION(POINT(4 6), " "LINESTRING(4 6,7 10))",
         )
         self.assertEqual(len(list(gc.geoms)), 2)
         self.assertTrue(isinstance(list(gc.geoms)[0], geometry.Point))
@@ -293,23 +313,23 @@ class AsShapeTestCase(unittest.TestCase):
                 (
                     ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
                     [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))],
-                )
-            ]
+                ),
+            ],
         )
         s = factories.shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
 
     def test_geometrycollection(self):
         p = geometry.Point(0, 1)
-        l = geometry.LineString([(0, 0), (1, 1)])
-        f = geometry.GeometryCollection([p, l])
+        line = geometry.LineString([(0, 0), (1, 1)])
+        f = geometry.GeometryCollection([p, line])
         s = factories.shape(f)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)
         self.assertEqual(f.__geo_interface__["geometries"][0], p.__geo_interface__)
-        self.assertEqual(f.__geo_interface__["geometries"][1], l.__geo_interface__)
+        self.assertEqual(f.__geo_interface__["geometries"][1], line.__geo_interface__)
 
     def test_nongeo(self):
-        self.assertRaises(TypeError, factories.shape, "a")
+        self.assertRaises(AttributeError, factories.shape, "a")
 
     def test_notimplemented(self):
         f = geometry._Geometry()

@@ -1,13 +1,17 @@
 """Geometry Factories."""
 import re
-from typing import Union, Optional
+from typing import List
+from typing import Optional
+from typing import Union
+from typing import cast
 
 from pygeoif.types import GeoCollectionInterface
+from pygeoif.types import GeoCollectionType
 from pygeoif.types import GeoInterface
 from pygeoif.types import GeoType
+from pygeoif.types import PointType
+from pygeoif.types import PolygonType
 
-from .feature import Feature
-from .feature import FeatureCollection
 from .geometry import Geometry
 from .geometry import GeometryCollection
 from .geometry import LinearRing
@@ -60,12 +64,43 @@ def box(
 
 
 def shape(
-    geometry: Union[GeoType, GeoCollectionInterface, GeoCollectionInterface],
+    context: Union[
+        GeoType,
+        GeoCollectionType,
+        GeoCollectionInterface,
+        GeoCollectionInterface,
+    ],
 ) -> Union[Geometry, GeometryCollection]:
-    """Creates a pygeoif geometry from an object that
-    provides the __geo_interface__ or a dictionary that
-    is __geo_interface__ compatible"""
-    mapping = {
+    """
+    Return a new geometry with coordinates *copied* from the context.
+
+    Changes to the original context will not be reflected in the
+    geometry object.
+
+    Parameters
+    ----------
+    context :
+        a GeoJSON-like dict, which provides a "type" member describing the type
+        of the geometry and "coordinates" member providing a list of coordinates,
+        or an object which implements __geo_interface__.
+
+    Returns
+    -------
+    Geometry object
+    Example
+    -------
+    Create a Point from GeoJSON, and then create a copy using __geo_interface__.
+    >>> context = {'type': 'Point', 'coordinates': [0, 1]}
+    >>> geom = shape(context)
+    >>> geom.geom_type == 'Point'
+    True
+    >>> geom.wkt
+    'POINT (0 1)'
+    >>> geom2 = shape(geom)
+    >>> geom == geom2
+    True
+    """
+    type_map = {
         "Point": Point,
         "LineString": LineString,
         "LinearRing": LinearRing,
@@ -74,29 +109,18 @@ def shape(
         "MultiLineString": MultiLineString,
         "MultiPolygon": MultiPolygon,
     }
-    gi = None
-    if isinstance(geometry, dict):
-        is_geometryCollection = geometry["type"] == "GeometryCollection"
-        if (
-            "coordinates" in geometry
-            and "type" in geometry
-            or is_geometryCollection
-            and "geometries" in geometry
-        ):
-            gi = geometry
-    elif hasattr(geometry, "__geo_interface__"):
-        gi = geometry.__geo_interface__
-    if not gi:
+    geometry = context if isinstance(context, dict) else mapping(context)  # noqa: IF100
+    if not geometry:
         raise TypeError("Object does not implement __geo_interface__")
 
-    func = mapping.get(gi["type"])
-    if func:
-        return func._from_dict(gi)
-    if gi["type"] == "GeometryCollection":
-        geometries = [shape(fi) for fi in gi["geometries"]]
-        return GeometryCollection(geometries)
+    constructor = type_map.get(geometry["type"])
+    if constructor:
+        return constructor._from_dict(geometry)  # type: ignore
+    if geometry["type"] == "GeometryCollection":
+        geometries = [shape(fi) for fi in geometry["geometries"]]  # type: ignore
+        return GeometryCollection(geometries)  # type: ignore
 
-    raise NotImplementedError
+    raise NotImplementedError(f"[{geometry['type']} is nor implemented")
 
 
 wkt_regex = re.compile(
@@ -111,9 +135,9 @@ wkt_regex = re.compile(
 
 gcre = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
 
-outer = re.compile("\((.+)\)")
-inner = re.compile("\([^)]*\)")
-mpre = re.compile("\(\((.+?)\)\)")
+outer = re.compile(r"\((.+)\)")
+inner = re.compile(r"\([^)]*\)")
+mpre = re.compile(r"\(\((.+?)\)\)")
 
 
 def _point_from_wkt_coordinates(coordinates: str) -> Point:
@@ -123,12 +147,16 @@ def _point_from_wkt_coordinates(coordinates: str) -> Point:
 
 def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
-    return LineString([[float(c) for c in coord.split()] for coord in coords])
+    return LineString(
+        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+    )
 
 
 def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
     coords = coordinates.split(",")
-    return LinearRing([[float(c) for c in coord.split()] for coord in coords])
+    return LinearRing(
+        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+    )
 
 
 def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
@@ -139,30 +167,40 @@ def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
     if len(coords) > 1:
         # we have a polygon with holes
         exteriors = [
-            [[float(c) for c in coord.split()] for coord in ext] for ext in coords[1:]
+            [cast(PointType, tuple(float(c) for c in coord.split())) for coord in ext]
+            for ext in coords[1:]
         ]
     else:
-        exteriors = None
+        exteriors = None  # type: ignore
     return Polygon(
-        [[float(c) for c in coord.split()] for coord in coords[0]], exteriors
+        [
+            cast(PointType, tuple(float(c) for c in coord.split()))
+            for coord in coords[0]
+        ],
+        exteriors,
     )
 
 
-def _multipoint_from_wkt_coordinates(coordinates) -> MultiPoint:
+def _multipoint_from_wkt_coordinates(coordinates: str) -> MultiPoint:
     coords = [coord.strip().strip("()") for coord in coordinates.split(",")]
-    return MultiPoint([[float(c) for c in coord.split()] for coord in coords])
+    return MultiPoint(
+        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+    )
 
 
 def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
     coords = [
-        [[float(c) for c in coord.split()] for coord in lines[1:-1].split(",")]
+        [
+            cast(PointType, tuple(float(c) for c in coord.split()))
+            for coord in lines.strip("()").split(",")
+        ]
         for lines in inner.findall(coordinates)
     ]
     return MultiLineString(coords)
 
 
-def _multipolygon_from_wkt_coordinates(coordinates) -> MultiPolygon:
-    polygons = []
+def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
+    polygons: List[PolygonType] = []
     m = mpre.split(coordinates)
     for polygon in m:
         if len(polygon) < 3:
@@ -174,24 +212,36 @@ def _multipolygon_from_wkt_coordinates(coordinates) -> MultiPolygon:
         if len(coords) > 1:
             # we have a polygon with holes
             exteriors = [
-                [[float(c) for c in coord.split()] for coord in ext]
+                [
+                    cast(PointType, tuple(float(c) for c in coord.split()))
+                    for coord in ext
+                ]
                 for ext in coords[1:]
             ]
             polygons.append(
-                [[[float(c) for c in coord.split()] for coord in coords[0]], exteriors]
+                [  # type: ignore
+                    [
+                        cast(PointType, tuple(float(c) for c in coord.split()))
+                        for coord in coords[0]
+                    ],
+                    exteriors,
+                ],
             )
         else:
             polygons.append(
-                [[[float(c) for c in coord.split()] for coord in coords[0]]]
+                [  # type: ignore
+                    [
+                        cast(PointType, tuple(float(c) for c in coord.split()))
+                        for coord in coords[0]
+                    ],
+                ],
             )
     return MultiPolygon(polygons)
 
 
 def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
-    """
-    Create a geometry from its WKT representation
-    """
-    mapping = {
+    """Create a geometry from its WKT representation."""
+    type_map = {
         "POINT": _point_from_wkt_coordinates,
         "LINESTRING": _line_from_wkt_coordinates,
         "LINEARRING": _ring_from_wkt_coordinates,
@@ -202,24 +252,44 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
     }
 
     wkt = geo_str.strip()
-    wkt = " ".join(l.strip() for l in wkt.splitlines())
-    wkt = wkt_regex.match(wkt).group("wkt")
-    ftype = wkt_regex.match(wkt).group("type")
+    wkt = " ".join(line.strip() for line in wkt.splitlines())
+    wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore
+    ftype = wkt_regex.match(wkt).group("type")  # type: ignore
     outerstr = outer.search(wkt)
-    coordinates = outerstr.group(1)
+    coordinates = outerstr.group(1)  # type: ignore
     if ftype == "GEOMETRYCOLLECTION":
         gc_types = gcre.findall(coordinates)
         gc_coords = gcre.split(coordinates)[1:]
-        assert len(gc_types) == len(gc_coords)
-        geometries = []
+        assert len(gc_types) == len(gc_coords)  # noqa: S101
+        geometries: List[Geometry] = []
         for (gc_type, gc_coord) in zip(gc_types, gc_coords):
             gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
-            geometries.append(from_wkt(gc_wkt))
+            geometries.append(cast(Geometry, from_wkt(gc_wkt)))
         return GeometryCollection(geometries)
-    func = mapping.get(ftype)
-    if func:
-        return func(coordinates)
+    constructor = type_map.get(ftype)
+    if constructor:
+        return constructor(coordinates)  # type: ignore
+    raise NotImplementedError(f"{ftype} is nor implemented")
 
 
-def mapping(ob: GeoType) -> Union[GeoCollectionInterface, GeoInterface]:
+def mapping(
+    ob: Union[GeoType, GeoCollectionType],
+) -> Union[GeoCollectionInterface, GeoInterface]:
+    """
+    Return a GeoJSON-like mapping.
+
+    Parameters
+    ----------
+    ob :
+        An object which implements __geo_interface__.
+
+    Returns
+    -------
+    dict
+    Example
+    -------
+    >>> pt = Point(0, 0)
+    >>> mapping(pt)
+    {'type': 'Point', 'coordinates': (0.0, 0.0)}
+    """
     return ob.__geo_interface__

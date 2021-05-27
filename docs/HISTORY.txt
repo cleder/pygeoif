@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.0 (dev)
+-----------------
+- Add type annotations
+- refactor
+- remove support for python 2
+- minimum python version is 3.6
+- rename as_shape to shape
+- add box factory
+- format with black
+
 0.7 (2017/05/04)
 -----------------
 

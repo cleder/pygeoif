@@ -8,10 +8,10 @@ from pygeoif import geometry
 class FeatureTestCase(unittest.TestCase):
     def setUp(self):
         self.a = geometry.Polygon(
-            ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0))
+            ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),
         )
         self.b = geometry.Polygon(
-            ((0.0, 0.0), (0.0, 2.0), (2.0, 1.0), (2.0, 0.0), (0.0, 0.0))
+            ((0.0, 0.0), (0.0, 2.0), (2.0, 1.0), (2.0, 0.0), (0.0, 0.0)),
         )
         self.f1 = feature.Feature(self.a)
         self.f2 = feature.Feature(self.b)
@@ -79,7 +79,7 @@ class FeatureTestCase(unittest.TestCase):
         self.assertEqual(len(list(self.fc.features)), 2)
         self.assertEqual(len(self.fc), 2)
         self.assertEqual(self.fc.bounds, (0.0, 0.0, 2.0, 2.0))
-        self.assertEqual([self.f1, self.f2], [feature for feature in self.fc])
+        self.assertEqual([self.f1, self.f2], list(self.fc))
         self.assertEqual(
             self.fc.__geo_interface__,
             {

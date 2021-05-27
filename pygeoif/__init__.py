@@ -17,10 +17,10 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data."""
-from .factories import shape
 from .factories import from_wkt
 from .factories import mapping
 from .factories import orient
+from .factories import shape
 from .feature import Feature
 from .feature import FeatureCollection
 from .geometry import GeometryCollection
