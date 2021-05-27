@@ -44,7 +44,8 @@ PyGeoIf is continually tested with *Travis CI*
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-
+.. image:: https://camo.githubusercontent.com/59eab954a267c6e9ff1d80e8055de43a0ad771f5e1f3779aef99d111f20bee40/687474703a2f2f7777772e6d7970792d6c616e672e6f72672f7374617469632f6d7970795f62616467652e737667
+    :target: http://mypy-lang.org/
 Example
 ========
 
@@ -71,8 +72,8 @@ Example
 
 
 You find more examples in the
-`test_main.py <https://github.com/cleder/pygeoif/blob/master/pygeoif/test_main.py>`_
-file which cover every aspect of pygeoif or in fastkml_.
+`tests <https://github.com/cleder/pygeoif/blob/master/pygeoif/tests/>`_
+directory which cover every aspect of pygeoif or in fastkml_.
 
 Classes
 ========
@@ -87,10 +88,6 @@ All geometry classes implement the attributes:
 * bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
 * wkt: Returns the 'Well Known Text' representation of the object
 
-
-and the method:
-
-* to_wkt which also prints the object
 
 GeoObject
 ----------
