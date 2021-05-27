@@ -50,6 +50,7 @@ GeoInterface = TypedDict(
         "coordinates": Union[CoordinatesType, MultiCoordinatesType],
         "bbox": Bounds,
     },
+    total=False,  # bbox is optional
 )
 
 GeoCollectionInterface = TypedDict(
@@ -66,7 +67,7 @@ GeoFeatureInterface = TypedDict(
         "properties": Dict[str, Any],
         "id": Union[str, int],
     },
-    total=False,
+    total=False,  # bbox, propertis and id are optional
 )
 
 GeoFeatureCollectionInterface = TypedDict(
@@ -77,7 +78,7 @@ GeoFeatureCollectionInterface = TypedDict(
         "features": Sequence[GeoFeatureInterface],
         "id": Union[str, int],
     },
-    total=False,
+    total=False,  # bbox and id are optional
 )
 
 
