@@ -1,19 +1,17 @@
 Introduction
 ============
 
-PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data.
-
-see https://gist.github.com/2217756
+PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_ for geo-spatial (GIS) vector data.
 
 Other Python programs and packages that you may have heard of already
 implement this protocol:
 
-* ArcPy http://help.arcgis.com/en/arcgisdesktop/
-* descartes https://docs.descarteslabs.com/
-* geojson http://pypi.python.org/pypi/geojson/
-* PySAL http://pysal.geodacenter.org/
-* Shapely https://github.com/Toblerity/Shapely
-* pyshp https://pypi.python.org/pypi/pyshp
+* `ArcPy <http://help.arcgis.com/en/arcgisdesktop/>`_
+* `descartes <https://docs.descarteslabs.com/>`_
+* `geojson <http://pypi.python.org/pypi/geojson/>`_
+* `PySAL <http://pysal.geodacenter.org/>`_
+* `Shapely <https://github.com/Toblerity/Shapely>`_
+* `pyshp <https://pypi.python.org/pypi/pyshp>`_
 
 So when you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
@@ -32,9 +30,6 @@ fastkml_
 
 .. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
 
-
-PyGeoIf is continually tested with *Travis CI*
-
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/python-package.yml/badge.svg
     :target: https://travis-ci.org/cleder/pygeoif
 
@@ -46,7 +41,8 @@ PyGeoIf is continually tested with *Travis CI*
 
 .. image:: https://camo.githubusercontent.com/59eab954a267c6e9ff1d80e8055de43a0ad771f5e1f3779aef99d111f20bee40/687474703a2f2f7777772e6d7970792d6c616e672e6f72672f7374617469632f6d7970795f62616467652e737667
     :target: http://mypy-lang.org/
-Example
+
+    Example
 ========
 
 
