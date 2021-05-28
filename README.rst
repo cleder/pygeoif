@@ -85,16 +85,6 @@ All geometry classes implement the attributes:
 * wkt: Returns the 'Well Known Text' representation of the object
 
 
-GeoObject
-----------
-Base class for Geometry, Feature, and FeatureCollection
-
-Geometry
---------
-Base class for geometry objects.
-Inherits from Geoobject.
-
-
 Point
 -----
 A zero dimensional geometry
@@ -346,7 +336,7 @@ Testing
 
 Install the requirements with ``pip install -r test-requirements.txt``::
 
+    pytest pygeoif
     black pygeoif
     flake8 pygeoif
-    pytest pygeoif --cov=pygeoif --cov-report=xml --pdb
     mypy pygeoif
