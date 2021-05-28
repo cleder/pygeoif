@@ -102,7 +102,6 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.x, 0.0)
         self.assertEqual(p.y, 1.0)
         self.assertEqual(p.wkt, "POINT (0.0 1.0)")
-        self.assertEqual(p.wkt, p.wkt)
         self.assertEqual(str(p), "POINT (0.0 1.0)")
         self.assertEqual(p.geom_type, "Point")
 
@@ -136,7 +135,7 @@ class WKTTestCase(unittest.TestCase):
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         self.assertEqual(len(p.exterior.coords), 14)
         p = factories.from_wkt(
-            "POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, " "3 3, 2 3,2 2))",
+            "POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2))",
         )
         self.assertEqual(p.exterior.coords[0], p.exterior.coords[-1])
         self.assertEqual(p.exterior.coords[0], (1.0, 1.0))
@@ -250,14 +249,14 @@ class WKTTestCase(unittest.TestCase):
 
     def test_geometrycollection(self):
         gc = factories.from_wkt(
-            "GEOMETRYCOLLECTION(POINT(4 6), " "LINESTRING(4 6,7 10))",
+            "GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))",
         )
         self.assertEqual(len(list(gc.geoms)), 2)
         self.assertTrue(isinstance(list(gc.geoms)[0], geometry.Point))
         self.assertTrue(isinstance(list(gc.geoms)[1], geometry.LineString))
         self.assertEqual(
             gc.wkt,
-            "GEOMETRYCOLLECTION(POINT (4.0 6.0), " "LINESTRING (4.0 6.0, 7.0 10.0))",
+            "GEOMETRYCOLLECTION(POINT (4.0 6.0), LINESTRING (4.0 6.0, 7.0 10.0))",
         )
 
     def test_wkt_ok(self):
