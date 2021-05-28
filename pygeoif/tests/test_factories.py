@@ -266,7 +266,7 @@ class WKTTestCase(unittest.TestCase):
 
     def test_wkt_fail(self):
         for wkt in self.wkt_fail:
-            self.assertRaises(Exception, factories.from_wkt, wkt)
+            self.assertRaises(factories.WKTParserError, factories.from_wkt, wkt)
 
     def test_wkt_tin(self):
         tin = "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))"

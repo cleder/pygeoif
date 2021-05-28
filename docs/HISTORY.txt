@@ -10,6 +10,7 @@ Changelog
 - rename as_shape to shape
 - add box factory
 - format with black
+- you can reconstruct objects from their representation
 
 0.7 (2017/05/04)
 -----------------

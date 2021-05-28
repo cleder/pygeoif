@@ -2,6 +2,7 @@
 import re
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 from typing import cast
 
@@ -9,6 +10,7 @@ from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoCollectionType
 from pygeoif.types import GeoInterface
 from pygeoif.types import GeoType
+from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
@@ -22,6 +24,8 @@ from .geometry import MultiPolygon
 from .geometry import Point
 from .geometry import Polygon
 from .geometry import signed_area
+
+Exteriors = Optional[List[LineType]]
 
 
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
@@ -119,7 +123,6 @@ def shape(
     if geometry["type"] == "GeometryCollection":
         geometries = [shape(fi) for fi in geometry["geometries"]]  # type: ignore
         return GeometryCollection(geometries)  # type: ignore
-
     raise NotImplementedError(f"[{geometry['type']} is nor implemented")
 
 
@@ -163,24 +166,36 @@ def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
     )
 
 
-def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
-    coords = [
-        (interior.strip("()")).split(",") for interior in inner.findall(coordinates)
+def _shell_holes_from_wkt_coords(
+    coords: List[str],
+) -> Tuple[LineType, Exteriors]:
+    interior: LineType = [
+        cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords[0]
     ]
-
     if len(coords) > 1:
         # we have a polygon with holes
         exteriors = [
-            [cast(PointType, tuple(float(c) for c in coord.split())) for coord in ext]
+            cast(
+                LineType,
+                [
+                    cast(PointType, tuple(float(c) for c in coord.split()))
+                    for coord in ext
+                ],
+            )
             for ext in coords[1:]
         ]
     else:
         exteriors = None  # type: ignore
+    return interior, exteriors
+
+
+def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
+    coords = [
+        interior.strip("()").split(",") for interior in inner.findall(coordinates)
+    ]
+    interior, exteriors = _shell_holes_from_wkt_coords(coords)
     return Polygon(
-        [
-            cast(PointType, tuple(float(c) for c in coord.split()))
-            for coord in coords[0]
-        ],
+        interior,
         exteriors,
     )
 
@@ -207,40 +222,29 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
     polygons: List[PolygonType] = []
     m = mpre.split(coordinates)
     for polygon in m:
-        if len(polygon) < 3:
+        if not polygon.strip(", "):
             continue
         coords = [
-            (interior.strip("()")).split(",")
+            interior.strip("()").split(",")
             for interior in inner.findall(f"({polygon})")
         ]
-        if len(coords) > 1:
-            # we have a polygon with holes
-            exteriors = [
-                [
-                    cast(PointType, tuple(float(c) for c in coord.split()))
-                    for coord in ext
-                ]
-                for ext in coords[1:]
-            ]
-            polygons.append(
-                [  # type: ignore
-                    [
-                        cast(PointType, tuple(float(c) for c in coord.split()))
-                        for coord in coords[0]
-                    ],
-                    exteriors,
-                ],
-            )
+        interior, exteriors = _shell_holes_from_wkt_coords(coords)
+        if exteriors:
+            polygons.append(cast(PolygonType, [interior, exteriors]))
         else:
-            polygons.append(
-                [  # type: ignore
-                    [
-                        cast(PointType, tuple(float(c) for c in coord.split()))
-                        for coord in coords[0]
-                    ],
-                ],
-            )
+            polygons.append(cast(PolygonType, [interior]))
     return MultiPolygon(polygons)
+
+
+def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
+    gc_types = gcre.findall(coordinates)
+    gc_coords = gcre.split(coordinates)[1:]
+    assert len(gc_types) == len(gc_coords)  # noqa: S101
+    geometries: List[Geometry] = []
+    for (gc_type, gc_coord) in zip(gc_types, gc_coords):
+        gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
+        geometries.append(cast(Geometry, from_wkt(gc_wkt)))
+    return GeometryCollection(geometries)
 
 
 def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
@@ -253,6 +257,7 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
         "MULTIPOINT": _multipoint_from_wkt_coordinates,
         "MULTILINESTRING": _multiline_from_wkt_coordinates,
         "MULTIPOLYGON": _multipolygon_from_wkt_coordinates,
+        "GEOMETRYCOLLECTION": _multigeometry_from_wkt_coordinates,
     }
 
     wkt = geo_str.strip()
@@ -260,21 +265,15 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
     try:
         wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore
         ftype = wkt_regex.match(wkt).group("type")  # type: ignore
+        outerstr = outer.search(wkt)
+        coordinates = outerstr.group(1)  # type: ignore
     except AttributeError:
         raise WKTParserError(f"Cannot parse {wkt}")
-    outerstr = outer.search(wkt)
-    coordinates = outerstr.group(1)  # type: ignore
-    if ftype == "GEOMETRYCOLLECTION":
-        gc_types = gcre.findall(coordinates)
-        gc_coords = gcre.split(coordinates)[1:]
-        assert len(gc_types) == len(gc_coords)  # noqa: S101
-        geometries: List[Geometry] = []
-        for (gc_type, gc_coord) in zip(gc_types, gc_coords):
-            gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
-            geometries.append(cast(Geometry, from_wkt(gc_wkt)))
-        return GeometryCollection(geometries)
     constructor = type_map[ftype]
-    return constructor(coordinates)  # type: ignore
+    try:
+        return constructor(coordinates)  # type: ignore
+    except TypeError:
+        raise WKTParserError(f"Cannot parse {wkt}")
 
 
 def mapping(
