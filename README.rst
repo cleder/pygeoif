@@ -30,7 +30,7 @@ fastkml_
 
 .. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
 
-.. image:: https://github.com/cleder/pygeoif/actions/workflows/python-package.yml/badge.svg
+.. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
     :target: https://travis-ci.org/cleder/pygeoif
 
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/master/graph/badge.svg?token=2EfiwBXs9X
