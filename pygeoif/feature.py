@@ -68,6 +68,13 @@ class Feature:
         self._properties = properties
         self._feature_id = feature_id
 
+    def __repr__(self) -> str:
+        """Retrun the representation."""
+        return (
+            f"{self.__class__.__name__}({repr(self._geometry)},"
+            f" {self._properties}, {repr(self._feature_id)})"
+        )
+
     @property
     def id(self) -> Optional[Union[str, int]]:  # noqa: A003
         """Return the id of the feature."""
@@ -140,6 +147,10 @@ class FeatureCollection:
     def __iter__(self) -> Iterable[Feature]:
         """Iterate over the features of the collection."""
         return iter(self._features)
+
+    def __repr__(self) -> str:
+        """Retrun the representation."""
+        return f"{self.__class__.__name__}({repr(self._features)})"
 
     @property
     def features(self) -> Generator[Feature, None, None]:

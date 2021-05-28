@@ -15,7 +15,7 @@ class FeatureTestCase(unittest.TestCase):
         )
         self.f1 = feature.Feature(self.a)
         self.f2 = feature.Feature(self.b)
-        self.f3 = feature.Feature(self.a, feature_id="1")
+        self.f3 = feature.Feature(self.a, {}, feature_id="1")
         self.fc = feature.FeatureCollection([self.f1, self.f2])
 
     def test_feature(self):
@@ -124,4 +124,48 @@ class FeatureTestCase(unittest.TestCase):
                 ),
                 "type": "FeatureCollection",
             },
+        )
+
+    def test_feature_repr(self):
+        self.assertEqual(
+            repr(self.f3),
+            "Feature("  # noqa: P103
+            "Polygon(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),"
+            " {}, '1')",
+        )
+
+    def test_feature_repr_eval(self):
+        self.assertEqual(
+            eval(
+                repr(self.f2),
+                {},
+                {"Polygon": geometry.Polygon, "Feature": feature.Feature},
+            ).__geo_interface__,
+            self.f2.__geo_interface__,
+        )
+
+    def test_featurecollection_repr(self):
+        self.assertEqual(
+            repr(self.fc),
+            "FeatureCollection("  # noqa: P103
+            "(Feature("
+            "Polygon(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),"
+            " {}, None), "
+            "Feature("
+            "Polygon(((0.0, 0.0), (0.0, 2.0), (2.0, 1.0), (2.0, 0.0), (0.0, 0.0)),), "
+            "{}, None)))",
+        )
+
+    def test_featurecollection_repr_eval(self):
+        self.assertEqual(
+            eval(
+                repr(self.fc),
+                {},
+                {
+                    "Polygon": geometry.Polygon,
+                    "Feature": feature.Feature,
+                    "FeatureCollection": feature.FeatureCollection,
+                },
+            ).__geo_interface__,
+            self.fc.__geo_interface__,
         )

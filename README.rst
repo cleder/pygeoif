@@ -49,22 +49,16 @@ fastkml_
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
     >>> p.__geo_interface__
-    {'type': 'Point', 'coordinates': (1.0, 1.0)}
-    >>> print p
-    POINT (1.0 1.0)
-    >>> p1 = geometry.Point(0,0)
-    >>> l = geometry.LineString([p,p1])
+    {'type': 'Point', 'bbox': (1, 1, 1, 1), 'coordinates': (1, 1)}
+    >>> print(p)
+    POINT (1 1)
+    >>> p
+    Point(1, 1)
+    >>> l = geometry.LineString([(0.0, 0.0), (1.0, 1.0)])
     >>> l.bounds
     (0.0, 0.0, 1.0, 1.0)
-    >>> dir(l)
-    ['__class__', '__delattr__', '__dict__', '__doc__', '__format__',
-    '__geo_interface__', '__getattribute__', '__hash__', '__init__',
-    '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__',
-    '__setattr__', '__sizeof__', '__str__', '__subclasshook__',
-    '__weakref__', '_coordinates', '_geoms', '_type', 'bounds', 'coords',
-    'geom_type', 'geoms', 'to_wkt']
-    >>> print l
-    LINESTRING (1.0 1.0, 0.0 0.0)
+    >>> print(l)
+    LINESTRING (0.0 0.0, 1.0 1.0)
 
 
 You find more examples in the
@@ -99,9 +93,10 @@ x, y, z : float
 Example
 ~~~~~~~~
 
+      >>> from pygeoif import Point
       >>> p = Point(1.0, -1.0)
-      >>> print p
-      POINT (1.0000000000000000 -1.0000000000000000)
+      >>> print(p)
+      POINT (1.0 -1.0)
       >>> p.y
       -1.0
       >>> p.x
@@ -210,9 +205,6 @@ Example
     >>> p2 = geometry.Point(1.0, -1.0)
     >>> geoms = [p, p2]
     >>> c = geometry.GeometryCollection(geoms)
-    >>> c.__geo_interface__
-    {'type': 'GeometryCollection', 'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},/
-    {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     >>> [geom for geom in geoms]
     [Point(1.0, -1.0), Point(1.0, -1.0)]
 
@@ -229,7 +221,7 @@ properties : dict
 
 Example
 ~~~~~~~~
-
+      >>> from pygeoif import Point, Feature
       >>> p = Point(1.0, -1.0)
       >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
       >>> a = Feature(p, props)
@@ -250,22 +242,17 @@ features: sequence
 Example
 ~~~~~~~~
 
-    >>> from pygeoif import geometry
-    >>> p = geometry.Point(1.0, -1.0)
+    >>> from pygeoif import Point, Feature, FeatureCollection
+    >>> p = Point(1.0, -1.0)
     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
-    >>> a = geometry.Feature(p, props)
-    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> a = Feature(p, props)
+    >>> p2 = Point(1.0, -1.0)
     >>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
-    >>> b = geometry.Feature(p2, props2)
+    >>> b = Feature(p2, props2)
     >>> features = [a, b]
-    >>> c = geometry.FeatureCollection(features)
-    >>> c.__geo_interface__
-    {'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},/
-     'type': 'Feature', 'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},/
-     {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)}, 'type': 'Feature',/
-     'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+    >>> c = FeatureCollection(features)
     >>> [feature for feature in c]
-    [<Feature Instance Point geometry 2 properties>, <Feature Instance Point geometry 2 properties>]
+    [Feature(Point(1.0, -1.0), {'Name': 'Sample Point', 'Other': 'Other Data'},...]
 
 Functions
 =========
@@ -277,9 +264,9 @@ Create a pygeoif feature from an object that provides the __geo_interface__
 
 
     >>> from shapely.geometry import Point
-    >>> from pygeoif import geometry
-    >>> geometry.shape(Point(0,0))
-    <pygeoif.geometry.Point object at 0x...>
+    >>> from pygeoif import geometry, shape
+    >>> shape(Point(0,0))
+    Point(0.0, 0.0)
 
 
 from_wkt
@@ -287,9 +274,9 @@ from_wkt
 
 Create a geometry from its WKT representation
 
-
-    >>> p = geometry.from_wkt('POINT (0 1)')
-    >>> print p
+    >>> from pygeoif import from_wkt
+    >>> p = from_wkt('POINT (0 1)')
+    >>> print(p)
     POINT (0.0 1.0)
 
 
@@ -334,9 +321,11 @@ You can install PyGeoIf from pypi using pip::
 Testing
 -------
 
-Install the requirements with ``pip install -r test-requirements.txt``::
+Install the requirements with ``pip install -r test-requirements.txt``
+and run the unit and static tests with::
 
     pytest pygeoif
+    pytest --doctest-glob="README.rst"
     black pygeoif
     flake8 pygeoif
     mypy pygeoif
