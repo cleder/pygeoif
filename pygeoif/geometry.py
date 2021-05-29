@@ -193,7 +193,7 @@ class Point(_Geometry):
     @property
     def coords(self) -> Tuple[PointType]:
         """Return the geometry coordinates."""
-        return (self._coordinates,)
+        return self._coordinates,
 
     @coords.setter
     def coords(self, coordinates: Tuple[PointType]) -> None:
@@ -457,7 +457,7 @@ class Polygon(_Geometry):
         """
         if self._interiors:
             return self.exterior.coords, tuple(i.coords for i in self.interiors)
-        return (self.exterior.coords,)
+        return self.exterior.coords,
 
     @property
     def has_z(self) -> bool:
@@ -859,3 +859,18 @@ class GeometryCollection(_MultiGeometry):
             "type": self.geom_type,
             "geometries": tuple(geom.__geo_interface__ for geom in self._geoms),
         }
+
+
+__all__ = [
+    'DimensionError',
+    'Geometry',
+    'GeometryCollection',
+    'LineString',
+    'LinearRing',
+    'MultiLineString',
+    'MultiPoint',
+    'MultiPolygon',
+    'Point',
+    'Polygon',
+    'signed_area'
+]

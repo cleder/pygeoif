@@ -326,6 +326,7 @@ and run the unit and static tests with::
 
     pytest pygeoif
     pytest --doctest-glob="README.rst"
+    yesqa pygeoif/*.py
     black pygeoif
     flake8 pygeoif
     mypy pygeoif

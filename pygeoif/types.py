@@ -92,3 +92,22 @@ class GeoCollectionType(Protocol):
     """Any compatible type that implements the __geo_interface__."""
 
     __geo_interface__: GeoCollectionInterface
+
+
+__all__ = [
+    'Bounds',
+    'CoordinatesType',
+    'GeoCollectionInterface',
+    'GeoCollectionType',
+    'GeoFeatureCollectionInterface',
+    'GeoFeatureInterface',
+    'GeoInterface',
+    'GeoType',
+    'LineType',
+    'MultiCoordinatesType',
+    'MultiGeometryType',
+    'Point2D',
+    'Point3D',
+    'PointType',
+    'PolygonType'
+]

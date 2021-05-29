@@ -310,3 +310,13 @@ def mapping(
     {'type': 'Point', 'coordinates': (0.0, 0.0)}
     """
     return ob.__geo_interface__
+
+
+__all__ = [
+    'WKTParserError',
+    'box',
+    'from_wkt',
+    'mapping',
+    'orient',
+    'shape',
+]

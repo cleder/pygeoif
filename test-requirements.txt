@@ -39,3 +39,4 @@ pytest
 pytest-cov
 radon
 yamllint
+yesqa

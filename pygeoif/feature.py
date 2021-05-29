@@ -178,3 +178,9 @@ class FeatureCollection:
             "bbox": self.bounds,
             "features": tuple(feature.__geo_interface__ for feature in self._features),
         }
+
+
+__all__ = [
+    'Feature',
+    'FeatureCollection'
+]
