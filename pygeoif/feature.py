@@ -24,11 +24,10 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
+from pygeoif.geometry import Geometry
+from pygeoif.types import Bounds
 from pygeoif.types import GeoFeatureCollectionInterface
 from pygeoif.types import GeoFeatureInterface
-
-from .geometry import Geometry
-from .types import Bounds
 
 
 class Feature:
@@ -181,6 +180,6 @@ class FeatureCollection:
 
 
 __all__ = [
-    'Feature',
-    'FeatureCollection'
+    "Feature",
+    "FeatureCollection",
 ]

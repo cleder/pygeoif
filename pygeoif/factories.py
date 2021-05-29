@@ -23,6 +23,16 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
+from pygeoif.geometry import Geometry
+from pygeoif.geometry import GeometryCollection
+from pygeoif.geometry import LinearRing
+from pygeoif.geometry import LineString
+from pygeoif.geometry import MultiLineString
+from pygeoif.geometry import MultiPoint
+from pygeoif.geometry import MultiPolygon
+from pygeoif.geometry import Point
+from pygeoif.geometry import Polygon
+from pygeoif.geometry import signed_area
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoCollectionType
 from pygeoif.types import GeoInterface
@@ -30,17 +40,6 @@ from pygeoif.types import GeoType
 from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
-
-from .geometry import Geometry
-from .geometry import GeometryCollection
-from .geometry import LinearRing
-from .geometry import LineString
-from .geometry import MultiLineString
-from .geometry import MultiPoint
-from .geometry import MultiPolygon
-from .geometry import Point
-from .geometry import Polygon
-from .geometry import signed_area
 
 Exteriors = Optional[List[LineType]]
 wkt_regex = re.compile(
@@ -313,10 +312,10 @@ def mapping(
 
 
 __all__ = [
-    'WKTParserError',
-    'box',
-    'from_wkt',
-    'mapping',
-    'orient',
-    'shape',
+    "WKTParserError",
+    "box",
+    "from_wkt",
+    "mapping",
+    "orient",
+    "shape",
 ]

@@ -17,20 +17,20 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data."""
-from .factories import from_wkt
-from .factories import mapping
-from .factories import orient
-from .factories import shape
-from .feature import Feature
-from .feature import FeatureCollection
-from .geometry import GeometryCollection
-from .geometry import LinearRing
-from .geometry import LineString
-from .geometry import MultiLineString
-from .geometry import MultiPoint
-from .geometry import MultiPolygon
-from .geometry import Point
-from .geometry import Polygon
+from pygeoif.factories import from_wkt
+from pygeoif.factories import mapping
+from pygeoif.factories import orient
+from pygeoif.factories import shape
+from pygeoif.feature import Feature
+from pygeoif.feature import FeatureCollection
+from pygeoif.geometry import GeometryCollection
+from pygeoif.geometry import LinearRing
+from pygeoif.geometry import LineString
+from pygeoif.geometry import MultiLineString
+from pygeoif.geometry import MultiPoint
+from pygeoif.geometry import MultiPolygon
+from pygeoif.geometry import Point
+from pygeoif.geometry import Polygon
 
 __all__ = [
     "Feature",

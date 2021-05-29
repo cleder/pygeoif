@@ -27,13 +27,13 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
-from .types import Bounds
-from .types import GeoCollectionInterface
-from .types import GeoInterface
-from .types import GeoType
-from .types import LineType
-from .types import PointType
-from .types import PolygonType
+from pygeoif.types import Bounds
+from pygeoif.types import GeoCollectionInterface
+from pygeoif.types import GeoInterface
+from pygeoif.types import GeoType
+from pygeoif.types import LineType
+from pygeoif.types import PointType
+from pygeoif.types import PolygonType
 
 
 class DimensionError(IndexError):
@@ -193,7 +193,7 @@ class Point(_Geometry):
     @property
     def coords(self) -> Tuple[PointType]:
         """Return the geometry coordinates."""
-        return self._coordinates,
+        return (self._coordinates,)
 
     @coords.setter
     def coords(self, coordinates: Tuple[PointType]) -> None:
@@ -457,7 +457,7 @@ class Polygon(_Geometry):
         """
         if self._interiors:
             return self.exterior.coords, tuple(i.coords for i in self.interiors)
-        return self.exterior.coords,
+        return (self.exterior.coords,)
 
     @property
     def has_z(self) -> bool:
@@ -862,15 +862,15 @@ class GeometryCollection(_MultiGeometry):
 
 
 __all__ = [
-    'DimensionError',
-    'Geometry',
-    'GeometryCollection',
-    'LineString',
-    'LinearRing',
-    'MultiLineString',
-    'MultiPoint',
-    'MultiPolygon',
-    'Point',
-    'Polygon',
-    'signed_area'
+    "DimensionError",
+    "Geometry",
+    "GeometryCollection",
+    "LineString",
+    "LinearRing",
+    "MultiLineString",
+    "MultiPoint",
+    "MultiPolygon",
+    "Point",
+    "Polygon",
+    "signed_area",
 ]

@@ -252,8 +252,8 @@ class WKTTestCase(unittest.TestCase):
             "GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))",
         )
         self.assertEqual(len(list(gc.geoms)), 2)
-        self.assertTrue(isinstance(list(gc.geoms)[0], geometry.Point))
-        self.assertTrue(isinstance(list(gc.geoms)[1], geometry.LineString))
+        self.assertIsInstance(list(gc.geoms)[0], geometry.Point)
+        self.assertIsInstance(list(gc.geoms)[1], geometry.LineString)
         self.assertEqual(
             gc.wkt,
             "GEOMETRYCOLLECTION(POINT (4.0 6.0), LINESTRING (4.0 6.0, 7.0 10.0))",
