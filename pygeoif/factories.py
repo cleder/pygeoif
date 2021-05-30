@@ -23,6 +23,7 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
+from pygeoif.exceptions import WKTParserError
 from pygeoif.geometry import Geometry
 from pygeoif.geometry import GeometryCollection
 from pygeoif.geometry import LinearRing
@@ -33,6 +34,7 @@ from pygeoif.geometry import MultiPolygon
 from pygeoif.geometry import Point
 from pygeoif.geometry import Polygon
 from pygeoif.geometry import signed_area
+from pygeoif.types import Exteriors
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoCollectionType
 from pygeoif.types import GeoInterface
@@ -41,7 +43,6 @@ from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
-Exteriors = Optional[List[LineType]]
 wkt_regex = re.compile(
     r"^(SRID=(?P<srid>\d+);)?"
     r"(?P<wkt>"
@@ -55,10 +56,6 @@ gcre = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
 outer = re.compile(r"\((.+)\)")
 inner = re.compile(r"\([^)]*\)")
 mpre = re.compile(r"\(\((.+?)\)\)")
-
-
-class WKTParserError(AttributeError):
-    """WKT not supported or cannot be parsed."""
 
 
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
@@ -279,13 +276,13 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
         ftype = wkt_regex.match(wkt).group("type")  # type: ignore
         outerstr = outer.search(wkt)
         coordinates = outerstr.group(1)  # type: ignore
-    except AttributeError:
-        raise WKTParserError(f"Cannot parse {wkt}")
+    except AttributeError as exc:
+        raise WKTParserError(f"Cannot parse {wkt}") from exc
     constructor = type_map[ftype]
     try:
         return constructor(coordinates)  # type: ignore
-    except TypeError:
-        raise WKTParserError(f"Cannot parse {wkt}")
+    except TypeError as exc:
+        raise WKTParserError(f"Cannot parse {wkt}") from exc
 
 
 def mapping(
@@ -312,10 +309,14 @@ def mapping(
 
 
 __all__ = [
-    "WKTParserError",
     "box",
     "from_wkt",
+    "gcre",
+    "inner",
     "mapping",
+    "mpre",
     "orient",
+    "outer",
     "shape",
+    "wkt_regex",
 ]

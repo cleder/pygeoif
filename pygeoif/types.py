@@ -18,6 +18,8 @@
 """Types for geometries."""
 from typing import Any
 from typing import Dict
+from typing import List
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -33,6 +35,9 @@ PolygonType = Union[
     Tuple[LineType, Sequence[LineType]],
     Tuple[LineType],
 ]
+
+Exteriors = Optional[List[LineType]]
+
 MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
 Bounds = Tuple[float, float, float, float]
 
@@ -97,6 +102,7 @@ class GeoCollectionType(Protocol):
 __all__ = [
     "Bounds",
     "CoordinatesType",
+    "Exteriors",
     "GeoCollectionInterface",
     "GeoCollectionType",
     "GeoFeatureCollectionInterface",

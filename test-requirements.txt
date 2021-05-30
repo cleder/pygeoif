@@ -4,10 +4,12 @@ absolufy-imports
 add-trailing-comma
 bandit
 black
+#cohesion
 flake8
 flake8-awesome
 flake8-blind-except
 flake8-bugbear
+flake8-class-attributes-order
 flake8-cognitive-complexity
 flake8-continuation
 flake8-commas
@@ -18,14 +20,16 @@ flake8-dunder-all
 flake8-encodings
 flake8-expression-complexity
 flake8-function-order
+#flake8-noqa
 flake8-pep3101
 flake8-print
+flake8-raise
 flake8-rst-docstrings
 flake8-simplify
 flake8-string-format
 flake8-slots
 flake8-super
-# flake8-type-checking
+#flake8-type-checking
 flake8-typing-imports
 flake8-use-fstring
 lizard
@@ -39,5 +43,6 @@ pybetter
 pytest
 pytest-cov
 radon
+removestar
 yamllint
 yesqa

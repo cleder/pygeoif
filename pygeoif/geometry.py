@@ -27,6 +27,7 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
+from pygeoif.exceptions import DimensionError
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
@@ -34,10 +35,6 @@ from pygeoif.types import GeoType
 from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
-
-
-class DimensionError(IndexError):
-    """Geometries must have 2 or 3 dimensions."""
 
 
 def signed_area(coords: LineType) -> float:
@@ -862,7 +859,6 @@ class GeometryCollection(_MultiGeometry):
 
 
 __all__ = [
-    "DimensionError",
     "Geometry",
     "GeometryCollection",
     "LineString",
