@@ -18,6 +18,10 @@ class FeatureTestCase(unittest.TestCase):
         self.f3 = feature.Feature(self.a, {}, feature_id="1")
         self.fc = feature.FeatureCollection([self.f1, self.f2])
 
+    def test_feature_eq(self):
+        self.assertEqual(self.f1, feature.Feature(self.a))
+        self.assertEqual(self.f3, feature.Feature(self.a, {}, feature_id="1"))
+
     def test_feature(self):
         self.assertRaises(TypeError, feature.Feature)
         self.assertEqual(
@@ -73,6 +77,24 @@ class FeatureTestCase(unittest.TestCase):
             },
         )
 
+    def test_feature_repr(self):
+        self.assertEqual(
+            repr(self.f3),
+            "Feature("  # noqa: P103
+            "Polygon(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),"
+            " {}, '1')",
+        )
+
+    def test_feature_repr_eval(self):
+        self.assertEqual(
+            eval(
+                repr(self.f2),
+                {},
+                {"Polygon": geometry.Polygon, "Feature": feature.Feature},
+            ).__geo_interface__,
+            self.f2.__geo_interface__,
+        )
+
     def test_featurecollection(self):
         self.assertRaises(TypeError, feature.FeatureCollection)
         self.assertRaises(TypeError, feature.FeatureCollection, None)
@@ -126,23 +148,8 @@ class FeatureTestCase(unittest.TestCase):
             },
         )
 
-    def test_feature_repr(self):
-        self.assertEqual(
-            repr(self.f3),
-            "Feature("  # noqa: P103
-            "Polygon(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),"
-            " {}, '1')",
-        )
-
-    def test_feature_repr_eval(self):
-        self.assertEqual(
-            eval(
-                repr(self.f2),
-                {},
-                {"Polygon": geometry.Polygon, "Feature": feature.Feature},
-            ).__geo_interface__,
-            self.f2.__geo_interface__,
-        )
+    def test_featurecollection_eq(self):
+        self.assertEqual(self.fc, feature.FeatureCollection([self.f1, self.f2]))
 
     def test_featurecollection_repr(self):
         self.assertEqual(

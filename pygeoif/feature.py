@@ -30,6 +30,23 @@ from pygeoif.types import GeoFeatureCollectionInterface
 from pygeoif.types import GeoFeatureInterface
 
 
+def feature_geo_interface_equals(
+    my_interface: GeoFeatureInterface,
+    other_interface: GeoFeatureInterface,
+) -> bool:
+    """Check if my interface is the same as the other interface."""
+    return all(
+        [
+            my_interface.get("id") == other_interface.get("id"),
+            my_interface["type"] == other_interface.get("type"),
+            my_interface["properties"] == other_interface.get("properties"),
+            my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
+            my_interface["geometry"]["coordinates"]
+            == other_interface["geometry"].get("coordinates"),
+        ],
+    )
+
+
 class Feature:
     """
     Aggregates a geometry instance with associated user-defined properties.
@@ -62,13 +79,23 @@ class Feature:
     ) -> None:
         """Initialize the feature."""
         self._geometry = geometry
-        if properties is None:
-            properties = {}
-        self._properties = properties
+        self._properties = properties or {}
         self._feature_id = feature_id
 
+    def __eq__(self, other: object) -> bool:
+        """Check if the geointerfaces are equal."""
+        if not hasattr(other, "__geo_interface__"):
+            return False
+        if not other.__geo_interface__.get("geometry"):  # type: ignore
+            return False
+
+        return feature_geo_interface_equals(
+            self.__geo_interface__,
+            other.__geo_interface__,  # type: ignore
+        )
+
     def __repr__(self) -> str:
-        """Retrun the representation."""
+        """Return the representation."""
         return (
             f"{self.__class__.__name__}({repr(self._geometry)},"
             f" {self._properties}, {repr(self._feature_id)})"
@@ -138,6 +165,30 @@ class FeatureCollection:
     def __init__(self, features: Sequence[Feature]) -> None:
         """Initialize the feature."""
         self._features = tuple(features)
+
+    def __eq__(self, other: object) -> bool:
+        """Check if the geointerfaces are equal."""
+        if not hasattr(other, "__geo_interface__"):
+            return False
+        if self.__geo_interface__["type"] != other.__geo_interface__.get(  # type: ignore
+            "type",
+        ):
+            return False
+        if not other.__geo_interface__.get("features"):  # type: ignore
+            return False
+        if len(self.__geo_interface__["features"]) != len(
+            other.__geo_interface__.get("features", []),  # type: ignore
+        ):
+            return False
+        return all(
+            (
+                feature_geo_interface_equals(mine, other)
+                for mine, other in zip(
+                    self.__geo_interface__["features"],
+                    other.__geo_interface__["features"],  # type: ignore
+                )
+            ),
+        )
 
     def __len__(self) -> int:
         """Return the umber of features in this collection."""

@@ -178,6 +178,7 @@ def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
 def _shell_holes_from_wkt_coords(
     coords: List[str],
 ) -> Tuple[LineType, Exteriors]:
+    """Extract shell and holes from polygon wkt coordinates."""
     interior: LineType = [
         cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords[0]
     ]
