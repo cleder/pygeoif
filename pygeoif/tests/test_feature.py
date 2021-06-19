@@ -22,6 +22,24 @@ class FeatureTestCase(unittest.TestCase):
         self.assertEqual(self.f1, feature.Feature(self.a))
         self.assertEqual(self.f3, feature.Feature(self.a, {}, feature_id="1"))
 
+    def test_feature_neq_no_geo_interface(self):
+        self.assertNotEqual(self.f1, None)
+
+    def test_feature_neq_no_geo_interface_geometry(self):
+        self.assertNotEqual(self.f1, unittest.mock.Mock(__geo_interface__={}))
+
+    def test_feature_neq_no_geo_interface_type(self):
+        self.assertNotEqual(
+            self.f1,
+            unittest.mock.Mock(__geo_interface__={"type": "foo"}),
+        )
+
+    def test_feature_neq_no_geo_interface_features(self):
+        self.assertNotEqual(
+            self.f1,
+            unittest.mock.Mock(__geo_interface__={"type": "Feature"}),
+        )
+
     def test_feature(self):
         self.assertRaises(TypeError, feature.Feature)
         self.assertEqual(
@@ -150,6 +168,21 @@ class FeatureTestCase(unittest.TestCase):
 
     def test_featurecollection_eq(self):
         self.assertEqual(self.fc, feature.FeatureCollection([self.f1, self.f2]))
+
+    def test_featurecollection_neq_no_geo_interface(self):
+        self.assertNotEqual(self.fc, None)
+
+    def test_featurecollection_neq_no_geo_interface_geometry(self):
+        self.assertNotEqual(self.fc, unittest.mock.Mock(__geo_interface__={}))
+
+    def test_featurecollection_neq_no_geo_interface_features(self):
+        self.assertNotEqual(
+            self.fc,
+            unittest.mock.Mock(__geo_interface__={"type": "FeatureCollection"}),
+        )
+
+    def test_featurecollection_neq_no_geo_interface_len_features(self):
+        self.assertNotEqual(self.fc, feature.FeatureCollection([self.f1]))
 
     def test_featurecollection_repr(self):
         self.assertEqual(
