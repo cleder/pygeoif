@@ -13,6 +13,7 @@ flake8-class-attributes-order
 flake8-cognitive-complexity
 flake8-continuation
 flake8-commas
+flake8-comments
 flake8-complex-f-strings
 flake8-debugger
 flake8-docstrings

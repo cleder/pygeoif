@@ -149,10 +149,15 @@ def shape(
 
     constructor = type_map.get(geometry["type"])
     if constructor:
-        return constructor._from_dict(geometry)  # type: ignore
+        return constructor._from_dict(  # type: ignore [attr-defined, no-any-return]
+            geometry,
+        )
     if geometry["type"] == "GeometryCollection":
-        geometries = [shape(fi) for fi in geometry["geometries"]]  # type: ignore
-        return GeometryCollection(geometries)  # type: ignore
+        geometries = [
+            shape(fi)  # type: ignore [arg-type]
+            for fi in geometry["geometries"]  # type: ignore [misc]
+        ]
+        return GeometryCollection(geometries)  # type: ignore [arg-type]
     raise NotImplementedError(f"[{geometry['type']} is nor implemented")
 
 
@@ -195,7 +200,7 @@ def _shell_holes_from_wkt_coords(
             for ext in coords[1:]
         ]
     else:
-        exteriors = None  # type: ignore
+        exteriors = None  # type: ignore [assignment]
     return interior, exteriors
 
 
@@ -273,15 +278,15 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
     wkt = geo_str.strip()
     wkt = " ".join(line.strip() for line in wkt.splitlines())
     try:
-        wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore
-        ftype = wkt_regex.match(wkt).group("type")  # type: ignore
+        wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore [union-attr]
+        ftype = wkt_regex.match(wkt).group("type")  # type: ignore [union-attr]
         outerstr = outer.search(wkt)
-        coordinates = outerstr.group(1)  # type: ignore
+        coordinates = outerstr.group(1)  # type: ignore [union-attr]
     except AttributeError as exc:
         raise WKTParserError(f"Cannot parse {wkt}") from exc
     constructor = type_map[ftype]
     try:
-        return constructor(coordinates)  # type: ignore
+        return constructor(coordinates)  # type: ignore [return-value]
     except TypeError as exc:
         raise WKTParserError(f"Cannot parse {wkt}") from exc
 

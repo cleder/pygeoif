@@ -88,12 +88,12 @@ class Feature:
         """Check if the geointerfaces are equal."""
         if not hasattr(other, "__geo_interface__"):
             return False
-        if not other.__geo_interface__.get("geometry"):  # type: ignore
+        if not other.__geo_interface__.get("geometry"):  # type: ignore [attr-defined]
             return False
 
         return feature_geo_interface_equals(
             self.__geo_interface__,
-            other.__geo_interface__,  # type: ignore
+            other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __repr__(self) -> str:
@@ -172,14 +172,16 @@ class FeatureCollection:
         """Check if the geointerfaces are equal."""
         if not hasattr(other, "__geo_interface__"):
             return False
-        if self.__geo_interface__["type"] != other.__geo_interface__.get(  # type: ignore
+        if self.__geo_interface__[
+            "type"
+        ] != other.__geo_interface__.get(  # type: ignore [attr-defined]
             "type",
         ):
             return False
-        if not other.__geo_interface__.get("features"):  # type: ignore
+        if not other.__geo_interface__.get("features"):  # type: ignore [attr-defined]
             return False
         if len(self.__geo_interface__["features"]) != len(
-            other.__geo_interface__.get("features", []),  # type: ignore
+            other.__geo_interface__.get("features", []),  # type: ignore [attr-defined]
         ):
             return False
         return all(
@@ -187,7 +189,7 @@ class FeatureCollection:
                 feature_geo_interface_equals(mine, other)
                 for mine, other in zip(
                     self.__geo_interface__["features"],
-                    other.__geo_interface__["features"],  # type: ignore
+                    other.__geo_interface__["features"],  # type: ignore [attr-defined]
                 )
             ),
         )

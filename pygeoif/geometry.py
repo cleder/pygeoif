@@ -51,7 +51,7 @@ def signed_area(coords: LineType) -> float:
     ys.append(ys[1])  # pragma: no mutate
     return (
         sum(
-            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore
+            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore [operator]
             for i in range(1, len(coords))
         )
         / 2.0
@@ -69,9 +69,9 @@ class _Geometry:
             return False
         return bool(
             self.__geo_interface__["type"]
-            == other.__geo_interface__.get("type")  # type: ignore
+            == other.__geo_interface__.get("type")  # type: ignore [attr-defined]
             and self.__geo_interface__["coordinates"]
-            == other.__geo_interface__.get("coordinates"),  # type: ignore
+            == other.__geo_interface__.get("coordinates"),  # type: ignore [attr-defined]
         )
 
     @property
@@ -184,7 +184,7 @@ class Point(_Geometry):
     def z(self) -> float:
         """Return z coordinate."""
         if len(self._coordinates) == 3:
-            return self._coordinates[2]  # type: ignore
+            return self._coordinates[2]  # type: ignore [misc]
         raise DimensionError("This point has no z coordinate")  # pragma: no mutate
 
     @property
@@ -522,7 +522,9 @@ class _MultiGeometry(_Geometry):
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
-        geom_bounds = list(zip(*(geom.bounds for geom in self.geoms)))  # type: ignore
+        geom_bounds = list(
+            zip(*(geom.bounds for geom in self.geoms)),  # type: ignore [attr-defined]
+        )
         return (
             min(geom_bounds[0]),
             min(geom_bounds[1]),
@@ -702,7 +704,9 @@ class MultiPolygon(_MultiGeometry):
         self._geoms = tuple(
             Polygon(
                 polygon[0],
-                polygon[1] if len(polygon) == 2 else None,  # type: ignore # noqa: IF100
+                polygon[1]  # type: ignore [misc] # noqa: IF100
+                if len(polygon) == 2
+                else None,
             )
             for polygon in polygons
         )
@@ -741,7 +745,8 @@ class MultiPolygon(_MultiGeometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPolygon":
         cls._check_dict(geo_interface)
         coords = tuple(
-            (poly[0], poly[1:]) for poly in geo_interface["coordinates"]  # type: ignore
+            (poly[0], poly[1:])  # type: ignore [index]
+            for poly in geo_interface["coordinates"]
         )
         return cls(cast(Sequence[PolygonType], coords))
 
@@ -804,18 +809,28 @@ class GeometryCollection(_MultiGeometry):
         """
         if not hasattr(other, "__geo_interface__"):
             return False
-        if other.__geo_interface__.get("type") != self.geom_type:  # type: ignore
+        if (
+            other.__geo_interface__.get("type")  # type: ignore [attr-defined]
+            != self.geom_type
+        ):
             return False
-        if len(other.__geo_interface__.get("geometries", [])) != len(  # type: ignore
+        if len(
+            other.__geo_interface__.get("geometries", []),  # type: ignore [attr-defined]
+        ) != len(
             self,
         ):
             return False
         return all(
-            s["type"] == o.get("type") and s["coordinates"] == o.get("coordinates")
-            for s, o in zip(
-                (geom.__geo_interface__ for geom in self._geoms),
-                other.__geo_interface__.get("geometries", []),  # type:  ignore
-            )
+            (
+                s["type"] == o.get("type") and s["coordinates"] == o.get("coordinates")
+                for s, o in zip(
+                    (geom.__geo_interface__ for geom in self._geoms),
+                    other.__geo_interface__.get(  # type:  ignore [attr-defined]
+                        "geometries",
+                        [],
+                    ),
+                )
+            ),
         )
 
     def __len__(self) -> int:
@@ -850,7 +865,7 @@ class GeometryCollection(_MultiGeometry):
         return ", ".join(geom.wkt for geom in self.geoms)
 
     @property
-    def __geo_interface__(self) -> GeoCollectionInterface:  # type: ignore
+    def __geo_interface__(self) -> GeoCollectionInterface:  # type: ignore [override]
         """Return the geo interface of the collection."""
         return {
             "type": self.geom_type,

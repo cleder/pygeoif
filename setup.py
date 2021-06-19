@@ -20,7 +20,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = "0.7"
+version = "1.0-dev"
 
 README = open("README.rst").read()
 HISTORY = open(os.path.join("docs", "HISTORY.txt")).read()
