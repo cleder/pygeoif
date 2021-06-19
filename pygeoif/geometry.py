@@ -104,7 +104,7 @@ class _Geometry:
 
     @property
     def _wkt_inset(self) -> str:
-        """Return Z for 3 dimensinal geometry or an empty string for 2 dimensions."""
+        """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
         return ""
 
     @property
@@ -615,7 +615,7 @@ class MultiLineString(_MultiGeometry):
 
     def __init__(self, lines: Sequence[LineType]) -> None:
         """
-        Ititialize the MultiLineString.
+        Initialize the MultiLineString.
 
         Parameters
         ----------

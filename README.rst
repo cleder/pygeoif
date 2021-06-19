@@ -292,7 +292,7 @@ orient
 -------
 Returns a copy of a polygon with exteriors and interiors in the right orientation.
 
-if ccw is True than the exteriror will be in counterclockwise orientation
+if ccw is True than the exterior will be in counterclockwise orientation
 and the interiors will be in clockwise orientation, or
 the other way round when ccw is False.
 

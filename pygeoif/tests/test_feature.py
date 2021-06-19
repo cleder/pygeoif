@@ -210,7 +210,7 @@ class FeatureTestCase(unittest.TestCase):
             self.fc.__geo_interface__,
         )
 
-    def test_featureclloection_bounds(self):
+    def test_featurecollection_bounds(self):
         ls1 = geometry.LineString(((0, 1), (1, 1)))
         ls2 = geometry.LineString(((2, 3), (3, 4)))
         fc = feature.FeatureCollection([feature.Feature(ls1), feature.Feature(ls2)])
