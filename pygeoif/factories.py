@@ -155,7 +155,7 @@ def shape(
     if geometry["type"] == "GeometryCollection":
         geometries = [
             shape(fi)  # type: ignore [arg-type]
-            for fi in geometry["geometries"]  # type: ignore [misc]
+            for fi in geometry["geometries"]  # type: ignore [typeddict-item]
         ]
         return GeometryCollection(geometries)  # type: ignore [arg-type]
     raise NotImplementedError(f"[{geometry['type']} is nor implemented")
