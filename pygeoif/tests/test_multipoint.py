@@ -19,6 +19,14 @@ def test_len():
     assert len(multipoint) == 8
 
 
+def test_bounds():
+    multipoint = geometry.MultiPoint(
+        [(0, 1), (1, 1), (3, 2)],
+    )
+
+    assert multipoint.bounds == (0, 1, 3, 2)
+
+
 def test_geo_interface():
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
 
@@ -50,7 +58,7 @@ def test_coords():
 
     with pytest.raises(
         NotImplementedError,
-        match="Multi-part geometries do not provide a coordinate sequence",
+        match="^Multi-part geometries do not provide a coordinate sequence$",
     ):
         multipoint.coords
 

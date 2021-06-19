@@ -69,6 +69,16 @@ def test_box_cw():
     }
 
 
+def test_shell_holes_from_wkt_coords():
+    shell, holes = factories._shell_holes_from_wkt_coords(
+        [
+            ["0 0", "10 20", "30 40", "0 0"],
+        ],
+    )
+    assert holes is None
+    assert shell == [(0.0, 0.0), (10.0, 20.0), (30.0, 40.0), (0.0, 0.0)]
+
+
 class WKTTestCase(unittest.TestCase):
 
     # valid and supported WKTs

@@ -224,6 +224,16 @@ def test_neq_type():
     assert gc1 != line
 
 
+def test_neq_coords():
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    p2 = geometry.Point(-1, -2)
+    gc1 = geometry.GeometryCollection([p0, p1])
+    gc2 = geometry.GeometryCollection([p0, p2])
+
+    assert gc1 != gc2
+
+
 def test_neq_interface():
     line = geometry.LineString([(0, 0), (1, 1)])
     gc1 = geometry.GeometryCollection([line])
