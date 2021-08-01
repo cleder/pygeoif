@@ -99,8 +99,8 @@ class Feature:
     def __repr__(self) -> str:
         """Return the representation."""
         return (
-            f"{self.__class__.__name__}({repr(self._geometry)},"
-            f" {self._properties}, {repr(self._feature_id)})"
+            f"{self.__class__.__name__}({self._geometry!r},"
+            f" {self._properties}, {self._feature_id!r})"
         )
 
     @property
@@ -204,7 +204,7 @@ class FeatureCollection:
 
     def __repr__(self) -> str:
         """Retrun the representation."""
-        return f"{self.__class__.__name__}({repr(self._features)})"
+        return f"{self.__class__.__name__}({self._features!r})"
 
     @property
     def features(self) -> Generator[Feature, None, None]:
