@@ -66,9 +66,7 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
     and the interiors will be in clockwise orientation, or
     the other way round when ccw is False.
     """
-    s = 1.0
-    if not ccw:
-        s = -1.0
+    s = -1.0 if not ccw else 1.0
     rings = []
     ring = polygon.exterior
     if signed_area(ring.coords) / s >= 0.0:
