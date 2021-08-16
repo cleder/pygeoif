@@ -72,7 +72,7 @@ GeoFeatureInterface = TypedDict(
         "properties": Dict[str, Any],
         "id": Union[str, int],
     },
-    total=False,  # bbox, propertis and id are optional
+    total=False,  # bbox, properties and id are optional
 )
 
 GeoFeatureCollectionInterface = TypedDict(
