@@ -356,7 +356,7 @@ class AsShapeTestCase(unittest.TestCase):
         f = {"type": "Tin", "geometries": (1, 2, 3)}
         self.assertRaises(NotImplementedError, factories.shape, f)
 
-    def test_dict_asshape(self):
+    def test_dict_as_shape(self):
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
         s = factories.shape(f.__geo_interface__)
         self.assertEqual(f.__geo_interface__, s.__geo_interface__)

@@ -35,7 +35,7 @@ def test_wkt_inset():
     assert base_geo._wkt_inset == ""
 
 
-def test_wkt_cordinates():
+def test_wkt_coordinates():
     base_geo = geometry._Geometry()
     with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
 
@@ -66,7 +66,15 @@ def test_neq_no_interface():
 def test_signed_area():
     a0 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     a1 = [(0, 0, 1), (0, 2, 2), (2, 2, 3), (2, 0, 4), (0, 0, 1)]
-    assert geometry.signed_area(a0) == geometry.signed_area(a1)
+    assert geometry.signed_area(a0) == geometry.signed_area(a1) == -4
+
+
+def test_signed_area_0_3d():
+    assert geometry.signed_area(((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))) == 0.0
+
+
+def test_signed_area_0_2d():
+    assert geometry.signed_area(((0.0, 0.0), (0.0, 0.0), (0.0, 0.0))) == 0.0
 
 
 def test_signed_area_unequal_len():  # sourcery skip: move-assign

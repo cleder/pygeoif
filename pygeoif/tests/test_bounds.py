@@ -34,7 +34,7 @@ def test_unzip():
     assert list(zip(*get_bounds())) == [minx, miny, maxx, maxy]
 
 
-def test_bounds_unziped():
+def test_bounds_unzipped():
     tb = list(zip(*get_bounds()))
     new_bounds = (
         min(tb[0]),
