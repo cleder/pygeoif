@@ -130,3 +130,12 @@ def test_has_z_3d():
     line = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
 
     assert line.has_z
+
+
+def test_from_points():
+    p1 = geometry.Point(0, 0)
+    p2 = geometry.Point(1, 1)
+
+    line = geometry.LineString.from_points(p1, p2)
+
+    assert line.coords == ((0, 0), (1, 1))

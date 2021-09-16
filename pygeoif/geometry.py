@@ -213,7 +213,7 @@ class Point(_Geometry):
 
     @property
     def _wkt_inset(self) -> str:
-        """Return Z for 3 dimensinal geometry or an empty string for 2 dimensions."""
+        """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
         if len(self._coordinates) == 3:
             return " Z "
         return " "
@@ -320,6 +320,10 @@ class LineString(_Geometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
         cls._check_dict(geo_interface)
         return cls(cast(LineType, geo_interface["coordinates"]))
+
+    @classmethod
+    def from_points(cls, *args: Point) -> "LineString":
+        return cls([point.coords[0] for point in args])
 
     @staticmethod
     def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:

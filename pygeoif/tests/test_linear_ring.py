@@ -159,3 +159,13 @@ def test_set_orientation_3d_clockwise():
 def test_signed_area():
     assert geometry.signed_area(((0.0, 0.0), (1.0, 1.0), (2, 0), (0, 0))) == -1.0
     assert geometry.signed_area(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5))) == 0.5
+
+
+def test_from_points():
+    p1 = geometry.Point(0, 0)
+    p2 = geometry.Point(1, 1)
+    p3 = geometry.Point(0, 1)
+
+    ring = geometry.LinearRing.from_points(p1, p2, p3)
+
+    assert ring.coords == ((0, 0), (1, 1), (0, 1), (0, 0))
