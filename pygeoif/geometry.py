@@ -317,23 +317,25 @@ class LineString(_Geometry):
         }
 
     @classmethod
+    def from_points(cls, *args: Point) -> "LineString":
+        """Create a linestring from points."""
+        return cls(tuple(point.coords[0] for point in args))
+
+    @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
         cls._check_dict(geo_interface)
         return cls(cast(LineType, geo_interface["coordinates"]))
 
-    @classmethod
-    def from_points(cls, *args: Point) -> "LineString":
-        return cls([point.coords[0] for point in args])
-
     @staticmethod
     def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
         geoms = []
-        l0 = len(coordinates[0])  # pragma: no mutate
+        last_len = None
         for coord in coordinates:
-            if len(coord) != l0:
-                raise ValueError(
-                    "All coordinates must have the same dimension",  # pragma: no mutate
+            if last_len is not None and len(coord) != last_len:
+                raise DimensionError(
+                    "All coordinates must have the same dimension",
                 )
+            last_len = len(coord)
             point = Point(*coord)
             geoms.append(point)
         return tuple(geoms)

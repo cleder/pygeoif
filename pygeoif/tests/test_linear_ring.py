@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from pygeoif import exceptions
 from pygeoif import geometry
 
 
@@ -36,7 +37,7 @@ def test_set_geoms_raises():
     ring = geometry.LinearRing([(0, 0), (1, 0)])  # pragma: no mutate
 
     with pytest.raises(
-        ValueError,
+        exceptions.DimensionError,
         match="^All coordinates must have the same dimension$",
     ):
         ring._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate

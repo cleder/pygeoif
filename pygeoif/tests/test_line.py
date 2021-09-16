@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 
+from pygeoif import exceptions
 from pygeoif import geometry
 
 
@@ -36,8 +37,8 @@ def test_set_geoms_raises():
     line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
 
     with pytest.raises(
-        ValueError,
-        match="All coordinates must have the same dimension",
+        exceptions.DimensionError,
+        match="^All coordinates must have the same dimension$",
     ):
         line._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 
@@ -139,3 +140,20 @@ def test_from_points():
     line = geometry.LineString.from_points(p1, p2)
 
     assert line.coords == ((0, 0), (1, 1))
+
+
+def test_from_points_3d():
+    p1 = geometry.Point(0, 0, 1)
+    p2 = geometry.Point(1, 1, 2)
+
+    line = geometry.LineString.from_points(p1, p2)
+
+    assert line.coords == ((0, 0, 1), (1, 1, 2))
+
+
+def test_from_points_mixed():
+    p1 = geometry.Point(0, 0, 1)
+    p2 = geometry.Point(1, 1)
+
+    with pytest.raises(exceptions.DimensionError):
+        geometry.LineString.from_points(p1, p2)
