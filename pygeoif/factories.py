@@ -277,12 +277,12 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
     wkt = " ".join(line.strip() for line in wkt.splitlines())
     try:
         wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore [union-attr]
-        ftype = wkt_regex.match(wkt).group("type")  # type: ignore [union-attr]
+        geometry_type = wkt_regex.match(wkt).group("type")  # type: ignore [union-attr]
         outerstr = outer.search(wkt)
         coordinates = outerstr.group(1)  # type: ignore [union-attr]
     except AttributeError as exc:
         raise WKTParserError(f"Cannot parse {wkt}") from exc
-    constructor = type_map[ftype]
+    constructor = type_map[geometry_type]
     try:
         return constructor(coordinates)  # type: ignore [return-value]
     except TypeError as exc:

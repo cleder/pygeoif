@@ -331,7 +331,7 @@ class LineString(_Geometry):
         geoms = []
         last_len = None
         for coord in coordinates:
-            if last_len is not None and len(coord) != last_len:
+            if len(coord) != last_len and last_len is not None:
                 raise DimensionError(
                     "All coordinates must have the same dimension",
                 )
