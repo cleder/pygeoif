@@ -23,7 +23,8 @@ def test_xy():
     point = geometry.Point(1.0, 0.0)
 
     with pytest.raises(
-        exceptions.DimensionError, match="^This point has no z coordinate$",
+        exceptions.DimensionError,
+        match="^This point has no z coordinate$",
     ):
         point.z
 
