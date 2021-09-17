@@ -18,7 +18,7 @@
 """Exceptions for pygeoif."""
 
 
-class DimensionError(IndexError):
+class DimensionError(ValueError):
     """Geometries must have 2 or 3 dimensions."""
 
 
