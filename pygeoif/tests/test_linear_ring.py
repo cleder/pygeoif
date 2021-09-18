@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 from pygeoif import exceptions
+from pygeoif import functions
 from pygeoif import geometry
 
 
@@ -17,20 +18,6 @@ def test_coords_get_3d():
     ring = geometry.LinearRing([(0, 0, 0), (1, 1, 1), (1, 2, 3)])
 
     assert ring.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1), (1, 2, 3), (0, 0, 0))
-
-
-def test_coords_set2d():
-    ring = geometry.LinearRing([(0, 0), (1, 2), (0, 2)])  # pragma: no mutate
-    ring.coords = ((0.0, 0.0), (1.0, 1.0), (2, 2))
-
-    assert ring.coords == ((0.0, 0.0), (1.0, 1.0), (2, 2), (0, 0))
-
-
-def test_coords_set_3d():
-    ring = geometry.LinearRing([(0, 0), (1, 0), (1, 1)])  # pragma: no mutate
-    ring.coords = ((0.0, 0.0, 0), (1.0, 1.0, 1), (1, 2, 1))
-
-    assert ring.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1), (1, 2, 1), (0, 0, 0))
 
 
 def test_set_geoms_raises():
@@ -158,8 +145,8 @@ def test_set_orientation_3d_clockwise():
 
 
 def test_signed_area():
-    assert geometry.signed_area(((0.0, 0.0), (1.0, 1.0), (2, 0), (0, 0))) == -1.0
-    assert geometry.signed_area(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5))) == 0.5
+    assert functions.signed_area(((0.0, 0.0), (1.0, 1.0), (2, 0), (0, 0))) == -1.0
+    assert functions.signed_area(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5))) == 0.5
 
 
 def test_from_points():
@@ -170,3 +157,27 @@ def test_from_points():
     ring = geometry.LinearRing.from_points(p1, p2, p3)
 
     assert ring.coords == ((0, 0), (1, 1), (0, 1), (0, 0))
+
+
+def test_convex_hull():
+    line = geometry.LinearRing([(0, 0), (1, 1), (2, 2)])
+
+    assert line.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d():
+    line = geometry.LinearRing([(0, 0, 0), (1, 1, 1), (2, 2, 2)])
+
+    assert line.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d_collapsed_to_point():
+    line = geometry.LinearRing([(0, 0, 0), (0, 0, 1), (0, 0, 2)])
+
+    assert line.convex_hull == geometry.Point(0, 0)
+
+
+def test_convex_hull_linear_ring():
+    line = geometry.LinearRing([(0, 0), (1, 0), (2, 2)])
+
+    assert line.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])

@@ -19,20 +19,6 @@ def test_coords_get_3d():
     assert line.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1))
 
 
-def test_coords_set2d():
-    line = geometry.LineString([(0, 0), (1, 2)])  # pragma: no mutate
-    line.coords = ((0.0, 0.0), (1.0, 1.0))
-
-    assert line.coords == ((0.0, 0.0), (1.0, 1.0))
-
-
-def test_coords_set_3d():
-    line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
-    line.coords = ((0.0, 0.0, 0), (1.0, 1.0, 1))
-
-    assert line.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1))
-
-
 def test_set_geoms_raises():
     line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
 
@@ -157,3 +143,33 @@ def test_from_points_mixed():
 
     with pytest.raises(exceptions.DimensionError):
         geometry.LineString.from_points(p1, p2)
+
+
+def test_convex_hull():
+    line = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+
+    assert line.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d():
+    line = geometry.LineString([(0, 0, 0), (1, 1, 1), (2, 2, 2)])
+
+    assert line.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d_collapsed_to_point():
+    line = geometry.LineString([(0, 0, 0), (0, 0, 1), (0, 0, 2)])
+
+    assert line.convex_hull == geometry.Point(0, 0)
+
+
+def test_convex_hull_linear_ring():
+    line = geometry.LineString([(0, 0), (1, 0), (2, 2)])
+
+    assert line.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
+
+
+def test_convex_hull_empty():
+    line = geometry.LineString([])
+
+    assert line.convex_hull is None

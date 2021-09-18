@@ -99,3 +99,27 @@ def test_repr_eval_single_line():
         ).__geo_interface__
         == lines.__geo_interface__
     )
+
+
+def test_convex_hull():
+    lines = geometry.MultiLineString(([(0, 0), (1, 1)], [[0.0, 0.0], [2.0, 2.0]]))
+
+    assert lines.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d():
+    lines = geometry.MultiLineString(([(0, 0, 0), (1, 1, 1)], [[0, 0, 1], [2, 2, 2]]))
+
+    assert lines.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d_collapsed_to_point():
+    lines = geometry.MultiLineString(([(0, 0, 0), (0, 0, 1)], [[0, 0, 2], [0, 0, 3]]))
+
+    assert lines.convex_hull == geometry.Point(0, 0)
+
+
+def test_convex_hull_linear_ring():
+    lines = geometry.MultiLineString(([(0, 0), (1, 0)], [[1, 1], [2, 2]]))
+
+    assert lines.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])

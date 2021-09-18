@@ -18,6 +18,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+from itertools import chain
 from typing import Generator
 from typing import Iterable
 from typing import NoReturn
@@ -28,34 +29,16 @@ from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import DimensionError
+from pygeoif.functions import convex_hull
+from pygeoif.functions import signed_area
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
 from pygeoif.types import GeoType
 from pygeoif.types import LineType
+from pygeoif.types import Point2D
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
-
-
-def signed_area(coords: LineType) -> float:
-    """Return the signed area enclosed by a ring.
-
-    Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
-    A value >= 0 indicates a counter-clockwise oriented ring.
-    """
-    if len(coords[0]) == 2:  # pragma: no mutate
-        xs, ys = map(list, zip(*coords))
-    elif len(coords[0]) == 3:  # pragma: no mutate
-        xs, ys, _s = map(list, zip(*coords))
-    xs.append(xs[1])  # pragma: no mutate
-    ys.append(ys[1])  # pragma: no mutate
-    return (
-        sum(
-            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore [operator]
-            for i in range(1, len(coords))
-        )
-        / 2.0
-    )
 
 
 class _Geometry:
@@ -78,6 +61,26 @@ class _Geometry:
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         raise NotImplementedError("Must be implemented by subclass")
+
+    @property
+    def convex_hull(self) -> Optional[Union["Point", "LineString", "Polygon"]]:
+        """
+        Return the Convex Hull.
+
+        Returns a representation of the smallest convex Polygon containing
+        all the points in the object unless the number of points in the object
+        is less than three.
+        For two points, the convex hull collapses to a LineString;
+        for 1, a Point.
+        """
+        hull = convex_hull(self._prepare_hull())
+        if len(hull) == 0:
+            return None
+        if len(hull) == 1:
+            return Point(*hull[0])
+        if len(hull) == 2:
+            return LineString(hull)
+        return Polygon(hull)
 
     @property
     def geom_type(self) -> str:
@@ -127,6 +130,9 @@ class _Geometry:
     @classmethod
     def _from_interface(cls, obj: GeoType) -> "_Geometry":
         return cls._from_dict(obj.__geo_interface__)
+
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        raise NotImplementedError("Must be implemented by subclass")
 
 
 class Point(_Geometry):
@@ -192,11 +198,6 @@ class Point(_Geometry):
         """Return the geometry coordinates."""
         return (self._coordinates,)
 
-    @coords.setter
-    def coords(self, coordinates: Tuple[PointType]) -> None:
-        """Set the geometry coordinates."""
-        self._coordinates = coordinates[0]
-
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
@@ -231,6 +232,9 @@ class Point(_Geometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "Point":
         cls._check_dict(geo_interface)
         return cls(*geo_interface["coordinates"])
+
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return ((self.x, self.y),)
 
 
 class LineString(_Geometry):
@@ -277,11 +281,6 @@ class LineString(_Geometry):
         """Return the geometry coordinates."""
         coordinates = [point.coords[0] for point in self.geoms]
         return tuple(coordinates)
-
-    @coords.setter
-    def coords(self, coordinates: LineType) -> None:
-        """Set the geometry coordinates."""
-        self._geoms = self._set_geoms(coordinates)
 
     @property
     def bounds(self) -> Bounds:
@@ -340,6 +339,9 @@ class LineString(_Geometry):
             geoms.append(point)
         return tuple(geoms)
 
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return ((pt.x, pt.y) for pt in self._geoms)
+
 
 class LinearRing(LineString):
     """
@@ -372,13 +374,6 @@ class LinearRing(LineString):
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
         return super().coords
-
-    @coords.setter
-    def coords(self, coordinates: LineType) -> None:
-        """Set the geometry coordinates."""
-        self._geoms = self._set_geoms(coordinates)
-        if self._geoms[0].coords != self._geoms[-1].coords:  # pragma: no mutate
-            self._geoms = self._geoms + (self._geoms[0],)
 
     def _set_orientation(self, clockwise: bool = False) -> None:
         """Set the orientation of the coordinates."""
@@ -506,6 +501,9 @@ class Polygon(_Geometry):
             cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
 
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return self.exterior._prepare_hull()
+
 
 class _MultiGeometry(_Geometry):
     """
@@ -580,7 +578,7 @@ class MultiPoint(_MultiGeometry):
 
     @property
     def geoms(self) -> Generator[Point, None, None]:
-        """Return a sequece of Points."""
+        """Return a sequence of Points."""
         yield from self._geoms
 
     @property
@@ -605,6 +603,9 @@ class MultiPoint(_MultiGeometry):
         """Make Points unique, delete duplicates."""
         coords = [geom.coords for geom in self.geoms]
         self._geoms = tuple(Point(*coord[0]) for coord in set(coords))
+
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return ((pt.x, pt.y) for pt in self._geoms)
 
 
 class MultiLineString(_MultiGeometry):
@@ -666,6 +667,12 @@ class MultiLineString(_MultiGeometry):
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiLineString":
         cls._check_dict(geo_interface)
         return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
+
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return (
+            (pt.x, pt.y)
+            for pt in chain.from_iterable(line.geoms for line in self.geoms)
+        )
 
 
 class MultiPolygon(_MultiGeometry):
@@ -755,6 +762,12 @@ class MultiPolygon(_MultiGeometry):
             for poly in geo_interface["coordinates"]
         )
         return cls(cast(Sequence[PolygonType], coords))
+
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return (
+            (pt.x, pt.y)
+            for pt in chain.from_iterable(poly.exterior.geoms for poly in self.geoms)
+        )
 
 
 Geometry = Union[
@@ -878,6 +891,9 @@ class GeometryCollection(_MultiGeometry):
             "geometries": tuple(geom.__geo_interface__ for geom in self._geoms),
         }
 
+    def _prepare_hull(self) -> Iterable[Point2D]:
+        return chain.from_iterable(geom._prepare_hull() for geom in self.geoms)
+
 
 __all__ = [
     "Geometry",
@@ -889,5 +905,4 @@ __all__ = [
     "MultiPolygon",
     "Point",
     "Polygon",
-    "signed_area",
 ]

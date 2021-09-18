@@ -239,3 +239,19 @@ def test_neq_interface():
     gc1 = geometry.GeometryCollection([line])
 
     assert gc1 != object()
+
+
+def test_convex_hull():
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    p2 = geometry.Point(-1, -2)
+    line = geometry.LineString([(0, 0), (3, 1)])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    gc = geometry.GeometryCollection([p0, p1, p2, line, poly1, poly2])
+
+    assert gc.convex_hull == geometry.Polygon(
+        ((-1, -2), (2, 0), (3, 1), (2, 2), (0, 2), (-1, -1), (-1, -2)),
+    )

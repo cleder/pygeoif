@@ -96,3 +96,27 @@ def test_repr_eval():
         ).__geo_interface__
         == multipoint.__geo_interface__
     )
+
+
+def test_convex_hull():
+    polygon = geometry.MultiPoint([(0, 0), (1, 1), (2, 2)])
+
+    assert polygon.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d():
+    polygon = geometry.MultiPoint([(0, 0, 0), (1, 1, 1), (2, 2, 2)])
+
+    assert polygon.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d_collapsed_to_point():
+    polygon = geometry.MultiPoint([(0, 0, 0), (0, 0, 1), (0, 0, 2)])
+
+    assert polygon.convex_hull == geometry.Point(0, 0)
+
+
+def test_convex_hull_linear_ring():
+    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
+
+    assert polygon.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])

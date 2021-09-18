@@ -132,3 +132,52 @@ def test_repr_eval():
         ).__geo_interface__
         == polys.__geo_interface__
     )
+
+
+def test_convex_hull():
+    polys = geometry.MultiPolygon(
+        [
+            (
+                ((0.0, 0.0), (0.0, 1.0), (0.0, 0.0)),
+                [((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1))],
+            ),
+            (((0.0, 0.0), (0.0, 2.0), (0, 0)),),
+        ],
+    )
+
+    assert polys.convex_hull == geometry.LineString([(0.0, 0.0), (0.0, 2.0)])
+
+
+def test_convex_hull_3d():
+    polys = geometry.MultiPolygon(
+        [
+            (((0, 0, 1), (1, 1, 2), (0, 0, 1)),),
+            (((0, 0, 3), (2, 2, 4), (0, 0, 3)),),
+        ],
+    )
+
+    assert polys.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+
+
+def test_convex_hull_3d_collapsed_to_point():
+    polys = geometry.MultiPolygon(
+        [
+            (((0, 0, 1), (0, 0, 2), (0, 0, 3)),),
+            (((0, 0, 3), (0, 0, 4), (0, 0, 5)),),
+        ],
+    )
+
+    assert polys.convex_hull == geometry.Point(0, 0)
+
+
+def test_convex_hull_linear_ring():
+    polys = geometry.MultiPolygon(
+        [
+            (((0, 0), (1, 0), (2, 2)),),
+            (((0, 0), (1, 1), (1, 2)),),
+        ],
+    )
+
+    assert polys.convex_hull == geometry.Polygon(
+        [(0, 0), (1, 0), (2, 2), (1, 2), (0, 0)],
+    )

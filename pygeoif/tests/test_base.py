@@ -63,25 +63,8 @@ def test_neq_no_interface():
     assert base_geo != obj
 
 
-def test_signed_area():
-    a0 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-    a1 = [(0, 0, 1), (0, 2, 2), (2, 2, 3), (2, 0, 4), (0, 0, 1)]
-    assert geometry.signed_area(a0) == geometry.signed_area(a1) == -4
+def test_convex_hull():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
 
-
-def test_signed_area_0_3d():
-    assert geometry.signed_area(((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))) == 0.0
-
-
-def test_signed_area_0_2d():
-    assert geometry.signed_area(((0.0, 0.0), (0.0, 0.0), (0.0, 0.0))) == 0.0
-
-
-def test_signed_area_unequal_len():  # sourcery skip: move-assign
-    a2 = [(0, 0, 1, 3), (0, 2, 2)]
-
-    with pytest.raises(
-        UnboundLocalError,
-        match="^local variable 'xs' referenced before assignment$",
-    ):
-        geometry.signed_area(a2)
+        assert base_geo.convex_hull()

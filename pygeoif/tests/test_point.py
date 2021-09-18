@@ -90,13 +90,6 @@ def test_coords_get():
     assert point.coords == ((1, 0, 3),)
 
 
-def test_coords_set():
-    point = geometry.Point(1.0, 0.0, 3.0)  # pragma: no mutate
-    point.coords = ((4, 5),)
-
-    assert point.coords == ((4, 5),)
-
-
 def test_geo_interface():
     point = geometry.Point(0, 1, 2)
 
@@ -153,3 +146,15 @@ def test_neq_interface_coords():
     point = geometry.Point(0, 0, 2)
 
     assert point != not_a_geometry
+
+
+def test_convex_hull():
+    point = geometry.Point(1, 0)
+
+    assert point.convex_hull == point
+
+
+def test_convex_hull_3d():
+    point = geometry.Point(1, 2, 3)
+
+    assert point.convex_hull == geometry.Point(1, 2)

@@ -24,6 +24,7 @@ from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import WKTParserError
+from pygeoif.functions import signed_area
 from pygeoif.geometry import Geometry
 from pygeoif.geometry import GeometryCollection
 from pygeoif.geometry import LinearRing
@@ -33,7 +34,6 @@ from pygeoif.geometry import MultiPoint
 from pygeoif.geometry import MultiPolygon
 from pygeoif.geometry import Point
 from pygeoif.geometry import Polygon
-from pygeoif.geometry import signed_area
 from pygeoif.types import Exteriors
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoCollectionType
