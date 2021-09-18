@@ -26,7 +26,7 @@ def test_xy():
         exceptions.DimensionError,
         match="^This point has no z coordinate$",
     ):
-        point.z
+        assert point.z
 
     assert point.x == 1
     assert point.y == 0

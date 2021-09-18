@@ -60,7 +60,7 @@ def test_coords():
         NotImplementedError,
         match="^Multi-part geometries do not provide a coordinate sequence$",
     ):
-        multipoint.coords
+        assert multipoint.coords
 
 
 def test_unique():
