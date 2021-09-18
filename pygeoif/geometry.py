@@ -229,6 +229,11 @@ class Point(_Geometry):
         }
 
     @classmethod
+    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "Point":
+        """Construct a point from coordinates."""
+        return cls(*coordinates[0])
+
+    @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Point":
         cls._check_dict(geo_interface)
         return cls(*geo_interface["coordinates"])
@@ -279,8 +284,7 @@ class LineString(_Geometry):
     @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
-        coordinates = [point.coords[0] for point in self.geoms]
-        return tuple(coordinates)
+        return tuple(point.coords[0] for point in self.geoms)
 
     @property
     def bounds(self) -> Bounds:
@@ -314,6 +318,11 @@ class LineString(_Geometry):
             "bbox": self.bounds,
             "coordinates": self.coords,
         }
+
+    @classmethod
+    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "LineString":
+        """Construct a linestring from coordinates."""
+        return cls(coordinates)
 
     @classmethod
     def from_points(cls, *args: Point) -> "LineString":
@@ -369,11 +378,6 @@ class LinearRing(LineString):
     def is_ccw(self) -> bool:
         """Return True if the ring is oriented counter clock-wise."""
         return signed_area(self.coords) >= 0
-
-    @property
-    def coords(self) -> LineType:
-        """Return the geometry coordinates."""
-        return super().coords
 
     def _set_orientation(self, clockwise: bool = False) -> None:
         """Set the orientation of the coordinates."""
@@ -492,6 +496,16 @@ class Polygon(_Geometry):
     ) -> "Polygon":
         """Construct a `Polygon()` from spatial bounds."""
         return cls([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin)])
+
+    @classmethod
+    def from_coordinates(cls, coordinates: PolygonType) -> "Polygon":
+        """Construct a linestring from coordinates."""
+        return cls(*coordinates)
+
+    @classmethod
+    def from_linear_rings(cls, shell: LinearRing, *args: LinearRing) -> "Polygon":
+        """Construct a Polygon from linear rings."""
+        return cls(shell.coords, tuple(lr.coords for lr in args))
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":

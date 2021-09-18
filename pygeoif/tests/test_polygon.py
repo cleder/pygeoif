@@ -231,3 +231,27 @@ def test_convex_hull_linear_ring():
     polygon = geometry.Polygon([(0, 0), (1, 0), (2, 2)])
 
     assert polygon.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
+
+
+def test_from_linear_rings():
+    ring1 = geometry.LinearRing([(0, 0), (1, 1), (2, 2)])
+    ring2 = geometry.LinearRing(((0, 0), (1, 1), (1, 0), (0, 0)))
+
+    assert geometry.Polygon.from_linear_rings(ring1, ring2) == geometry.Polygon(
+        ((0, 0), (1, 1), (2, 2), (0, 0)),
+        (((0, 0), (1, 1), (1, 0), (0, 0)),),
+    )
+
+
+def test_from_coordinates():
+    polygon = geometry.Polygon([(0, 0, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
+
+    assert geometry.Polygon.from_coordinates(polygon.coords) == polygon
+
+
+def test_from_coordinates_with_holes():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert geometry.Polygon.from_coordinates(polygon.coords) == polygon

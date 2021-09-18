@@ -173,3 +173,9 @@ def test_convex_hull_empty():
     line = geometry.LineString([])
 
     assert line.convex_hull is None
+
+
+def test_from_coordinates():
+    line = geometry.LineString([(0, 0), (1, 0), (2, 2)])
+
+    assert geometry.LineString.from_coordinates(line.coords) == line

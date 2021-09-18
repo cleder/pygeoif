@@ -158,3 +158,15 @@ def test_convex_hull_3d():
     point = geometry.Point(1, 2, 3)
 
     assert point.convex_hull == geometry.Point(1, 2)
+
+
+def test_from_coordinates():
+    point = geometry.Point(1, 2)
+
+    assert geometry.Point.from_coordinates(point.coords) == point
+
+
+def test_from_coordinates_3d():
+    point = geometry.Point(1, 2, 3)
+
+    assert geometry.Point.from_coordinates(point.coords) == point
