@@ -71,7 +71,7 @@ class _Geometry:
         all the points in the object unless the number of points in the object
         is less than three.
         For two points, the convex hull collapses to a LineString;
-        for 1, a Point.
+        for 1, to a Point.
         """
         hull = convex_hull(self._prepare_hull())
         if len(hull) == 0:
