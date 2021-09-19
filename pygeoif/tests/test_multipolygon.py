@@ -229,7 +229,7 @@ def test_from_polygons():
                 ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)),
                 (((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),),
             ),
-        )
+        ),
     )
 
 
@@ -244,10 +244,10 @@ def test_from_polygons_unique():
     polygon3 = geometry.Polygon(e, [i])
 
     polys = geometry.MultiPolygon.from_polygons(
-        polygon1, polygon2, polygon3, unique=True
+        polygon1, polygon2, polygon3, unique=True,
     )
     polys2 = geometry.MultiPolygon.from_polygons(
-        polygon1, polygon2, polygon3, polygon1, polygon2, polygon3, unique=True
+        polygon1, polygon2, polygon3, polygon1, polygon2, polygon3, unique=True,
     )
 
     assert polys == polys2

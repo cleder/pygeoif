@@ -137,7 +137,7 @@ def test_eq_interface():
     assert point == not_a_geometry
 
 
-def test_neq_Missing_interface():
+def test_neq_missing_interface():
 
     point = geometry.Point(0, 1, 2)
 
