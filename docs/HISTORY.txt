@@ -11,6 +11,7 @@ Changelog
 - add box factory
 - format with black
 - reconstruct objects from their representation
+- Parse WKT that is not in upper case.
 
 0.7 (2017/05/04)
 -----------------

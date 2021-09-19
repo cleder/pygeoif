@@ -273,7 +273,7 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
         "GEOMETRYCOLLECTION": _multigeometry_from_wkt_coordinates,
     }
 
-    wkt = geo_str.strip()
+    wkt = geo_str.upper().strip()
     wkt = " ".join(line.strip() for line in wkt.splitlines())
     try:
         wkt = wkt_regex.match(wkt).group("wkt")  # type: ignore [union-attr]

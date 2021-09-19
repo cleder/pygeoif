@@ -115,6 +115,11 @@ class TestWKT:
         assert str(p) == "POINT (0.0 1.0)"
         assert p.geom_type == "Point"
 
+    def test_point_capitalized(self):
+        pts = ["POINT (1 0)", "point (1 0)", "Point(1 0)", "pOinT(1 0)"]
+        for pt in pts:
+            assert factories.from_wkt(pt) == geometry.Point(1, 0)
+
     def test_linestring(self):
         line = factories.from_wkt(
             "LINESTRING(-72.991 46.177,-73.079 46.16,"
