@@ -32,6 +32,10 @@ def test_signed_area_unequal_len():  # sourcery skip: move-assign
         signed_area(a2)
 
 
+def test_empty_hull():
+    assert not convex_hull([])
+
+
 def test_point():
     pts = [(0, 0)]
 
@@ -128,3 +132,15 @@ def test_spiral():
 
         assert set(hull) == set(pts)
         assert len(hull) == len(pts) + 1
+
+
+def test_random():
+    """The convex hull of an exiting hull must be the same as the hull itself."""
+    for i in range(100):
+        pts = (
+            (random.randrange(-x, x + 1), random.randrange(-x, x + 1))
+            for x in range(i + 1)
+        )
+        hull = convex_hull(pts)
+
+        assert convex_hull(hull) == hull

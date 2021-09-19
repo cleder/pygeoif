@@ -75,6 +75,14 @@ def test_repr_single_line():
     assert repr(lines) == "MultiLineString((((0, 0), (1, 1), (1, 2), (2, 2)),))"
 
 
+def test_unique():
+    lines = geometry.MultiLineString(
+        ([(0, 0), (1, 1), (1, 2), (2, 2)], [(0, 0), (1.0, 1.0), (1.0, 2.0), (2, 2)]),
+        unique=True,
+    )
+    assert len(lines) == 1
+
+
 def test_repr_eval():
     lines = geometry.MultiLineString(([(0, 0), (1, 1)], [[0.0, 0.0], [1.0, 2.0]]))
 
@@ -123,3 +131,25 @@ def test_convex_hull_linear_ring():
     lines = geometry.MultiLineString(([(0, 0), (1, 0)], [[1, 1], [2, 2]]))
 
     assert lines.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
+
+
+def test_from_linestrings():
+    line1 = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+    line2 = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+    lines = geometry.MultiLineString.from_linestrings(line1, line2)
+
+    assert lines == geometry.MultiLineString(
+        (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2)))
+    )
+
+
+def test_from_linestrings_unique():
+    line1 = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+    line2 = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+    lines = geometry.MultiLineString.from_linestrings(
+        line1, line2, line1, line2, line1, unique=True
+    )
+
+    assert lines == geometry.MultiLineString(
+        (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2))), unique=True
+    )

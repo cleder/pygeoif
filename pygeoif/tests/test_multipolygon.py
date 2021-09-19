@@ -181,3 +181,73 @@ def test_convex_hull_linear_ring():
     assert polys.convex_hull == geometry.Polygon(
         [(0, 0), (1, 0), (2, 2), (1, 2), (0, 0)],
     )
+
+
+def test_unique():
+    polys = geometry.MultiPolygon(
+        [
+            (
+                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+                (((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)),),
+            ),
+            (((0, 0), (0, 1), (1, 1), (1, 0)),),
+            (
+                ((0, 0), (0, 1), (1, 1), (1, 0)),
+                (((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)),),
+            ),
+            (((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),),
+        ],
+        unique=True,
+    )
+
+    assert len(polys) == 2
+
+
+def test_from_polygons():
+    e1 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i1 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    i2 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon1 = geometry.Polygon(e1, [i1, i2])
+    polygon2 = geometry.Polygon([(0, 0, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon3 = geometry.Polygon(e, [i])
+
+    polys = geometry.MultiPolygon.from_polygons(polygon1, polygon2, polygon3)
+
+    assert polys == geometry.MultiPolygon(
+        (
+            (
+                ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)),
+                (
+                    ((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),
+                    ((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),
+                ),
+            ),
+            (((0, 0, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)),),
+            (
+                ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)),
+                (((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),),
+            ),
+        )
+    )
+
+
+def test_from_polygons_unique():
+    e1 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i1 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    i2 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon1 = geometry.Polygon(e1, [i1, i2])
+    polygon2 = geometry.Polygon([(0, 0, 0), (1, 1, 0), (1, 0, 0), (0, 0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    polygon3 = geometry.Polygon(e, [i])
+
+    polys = geometry.MultiPolygon.from_polygons(
+        polygon1, polygon2, polygon3, unique=True
+    )
+    polys2 = geometry.MultiPolygon.from_polygons(
+        polygon1, polygon2, polygon3, polygon1, polygon2, polygon3, unique=True
+    )
+
+    assert polys == polys2

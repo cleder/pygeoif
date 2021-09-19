@@ -137,6 +137,13 @@ def test_eq_interface():
     assert point == not_a_geometry
 
 
+def test_neq_Missing_interface():
+
+    point = geometry.Point(0, 1, 2)
+
+    assert point != object()
+
+
 def test_neq_interface_coords():
     not_a_geometry = mock.Mock()
     not_a_geometry.__geo_interface__ = {

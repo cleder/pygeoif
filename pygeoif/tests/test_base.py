@@ -56,13 +56,6 @@ def test_has_z():
         assert base_geo.has_z
 
 
-def test_neq_no_interface():
-    obj = object()
-    base_geo = geometry._Geometry()
-
-    assert base_geo != obj
-
-
 def test_convex_hull():
     base_geo = geometry._Geometry()
     with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):

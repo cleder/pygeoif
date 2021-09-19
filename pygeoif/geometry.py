@@ -48,14 +48,15 @@ class _Geometry:
         return self.wkt
 
     def __eq__(self, other: object) -> bool:
-        if not hasattr(other, "__geo_interface__"):
+        try:
+            return bool(
+                self.__geo_interface__["type"]
+                == other.__geo_interface__.get("type")  # type: ignore [attr-defined]
+                and self.__geo_interface__["coordinates"]
+                == other.__geo_interface__.get("coordinates"),  # type: ignore
+            )
+        except AttributeError:
             return False
-        return bool(
-            self.__geo_interface__["type"]
-            == other.__geo_interface__.get("type")  # type: ignore [attr-defined]
-            and self.__geo_interface__["coordinates"]
-            == other.__geo_interface__.get("coordinates"),  # type: ignore [attr-defined]
-        )
 
     @property
     def bounds(self) -> Bounds:
@@ -561,7 +562,7 @@ class MultiPoint(_MultiGeometry):
         A sequence of Points
     """
 
-    def __init__(self, points: Sequence[PointType]) -> None:
+    def __init__(self, points: Sequence[PointType], unique: bool = False) -> None:
         """
         Create a collection of one or more points.
 
@@ -569,6 +570,9 @@ class MultiPoint(_MultiGeometry):
         ----------
         points : sequence
             A sequence of (x, y [,z]) numeric coordinate pairs or triples.
+        unique: boolean,
+            when unique is true duplicates will be removed,
+            the ordering will not be preserved.
 
         Example
         -------
@@ -580,6 +584,8 @@ class MultiPoint(_MultiGeometry):
           >>> type(ob.geoms[0]) == Point
           True
         """
+        if unique:
+            points = set(points)  # type: ignore [assignment]
         self._geoms = tuple(Point(*point) for point in points)
 
     def __len__(self) -> int:
@@ -609,14 +615,14 @@ class MultiPoint(_MultiGeometry):
         }
 
     @classmethod
+    def from_points(cls, *args: Point, unique: bool = False) -> "MultiPoint":
+        """Create a MultiPoint from Points."""
+        return cls([point.coords[0] for point in args], unique=unique)
+
+    @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPoint":
         cls._check_dict(geo_interface)
         return cls(cast(Sequence[PointType], geo_interface["coordinates"]))
-
-    def unique(self) -> None:
-        """Make Points unique, delete duplicates."""
-        coords = [geom.coords for geom in self.geoms]
-        self._geoms = tuple(Point(*coord[0]) for coord in set(coords))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return ((pt.x, pt.y) for pt in self._geoms)
@@ -634,7 +640,7 @@ class MultiLineString(_MultiGeometry):
         A sequence of LineStrings
     """
 
-    def __init__(self, lines: Sequence[LineType]) -> None:
+    def __init__(self, lines: Sequence[LineType], unique: bool = False) -> None:
         """
         Initialize the MultiLineString.
 
@@ -642,6 +648,9 @@ class MultiLineString(_MultiGeometry):
         ----------
         lines : sequence
             A sequence of line-like coordinate sequences.
+        unique: boolean,
+            when unique is true duplicates will be removed,
+            the ordering will not be preserved.
 
         Example
         -------
@@ -649,6 +658,8 @@ class MultiLineString(_MultiGeometry):
 
           >>> lines = MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
         """
+        if unique:
+            lines = {tuple(line) for line in lines}  # type: ignore [assignment]
         self._geoms = tuple(LineString(line) for line in lines)
 
     def __len__(self) -> int:
@@ -678,6 +689,15 @@ class MultiLineString(_MultiGeometry):
         }
 
     @classmethod
+    def from_linestrings(
+        cls,
+        *args: LineString,
+        unique: bool = False,
+    ) -> "MultiLineString":
+        """Create a MultiLineString from LineStrings."""
+        return cls([line.coords for line in args], unique=unique)
+
+    @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiLineString":
         cls._check_dict(geo_interface)
         return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
@@ -702,7 +722,7 @@ class MultiPolygon(_MultiGeometry):
         A sequence of `Polygon` instances
     """
 
-    def __init__(self, polygons: Sequence[PolygonType]) -> None:
+    def __init__(self, polygons: Sequence[PolygonType], unique: bool = False) -> None:
         """
         Initialize a Multipolygon.
 
@@ -710,8 +730,12 @@ class MultiPolygon(_MultiGeometry):
         ----------
         polygons : sequence
             A sequence of (shell, holes) tuples where shell is the sequence
-            representation of a linear ring (see linearring.py) and holes is
+            representation of a linear ring and holes is
             a sequence of such linear rings
+        unique: boolean,
+            when unique is true duplicates will be removed,
+            the ordering will not be preserved.
+
 
         Example
         -------
@@ -728,6 +752,9 @@ class MultiPolygon(_MultiGeometry):
           >>> type(ob.geoms[0]) == Polygon
           True
         """
+        if unique:
+            polygons = set(polygons)  # type: ignore [assignment]
+
         self._geoms = tuple(
             Polygon(
                 polygon[0],
@@ -767,6 +794,11 @@ class MultiPolygon(_MultiGeometry):
             "bbox": self.bounds,
             "coordinates": coords,
         }
+
+    @classmethod
+    def from_polygons(cls, *args: Polygon, unique: bool = False) -> "MultiPolygon":
+        """Create a MultiPolygon from Polygons."""
+        return cls([poly.coords for poly in args], unique=unique)
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPolygon":

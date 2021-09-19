@@ -65,10 +65,9 @@ def test_coords():
 
 def test_unique():
     multipoint = geometry.MultiPoint(
-        [(0, 0), (1, 1), (1, 2), (2, 2), (0, 0), (1, 1), (1, 2), (2, 2)],
+        [(0, 0), (1, 1), (1, 2), (2.0, 2.0), (0, 0), (1.0, 1.0), (1, 2), (2, 2)],
+        unique=True,
     )
-
-    multipoint.unique()
 
     assert len(multipoint) == 4
 
@@ -120,3 +119,24 @@ def test_convex_hull_linear_ring():
     polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
 
     assert polygon.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
+
+
+def test_from_points():
+    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
+    p1 = geometry.Point(0, 0)
+    p2 = geometry.Point(1, 0)
+    p3 = geometry.Point(2.0, 2.0)
+
+    assert geometry.MultiPoint.from_points(p1, p2, p3) == polygon
+
+
+def test_from_points_unique():
+    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)], unique=True)
+    p1 = geometry.Point(0, 0)
+    p2 = geometry.Point(1, 0)
+    p3 = geometry.Point(2.0, 2.0)
+
+    assert (
+        geometry.MultiPoint.from_points(p1, p2, p3, p1, p2, p3, p1, unique=True)
+        == polygon
+    )
