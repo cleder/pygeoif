@@ -147,9 +147,15 @@ def test_from_linestrings_unique():
     line1 = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
     line2 = geometry.LineString([(0, 0), (1, 1), (2, 2)])
     lines = geometry.MultiLineString.from_linestrings(
-        line1, line2, line1, line2, line1, unique=True,
+        line1,
+        line2,
+        line1,
+        line2,
+        line1,
+        unique=True,
     )
 
     assert lines == geometry.MultiLineString(
-        (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2))), unique=True,
+        (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2))),
+        unique=True,
     )
