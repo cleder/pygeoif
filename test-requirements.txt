@@ -40,7 +40,7 @@ pep257
 pep8
 pep8-naming
 pip-check
-pybetter
+pybetter==0.3.7
 pytest
 pytest-cov
 radon
