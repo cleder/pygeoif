@@ -12,7 +12,7 @@ flake8-bugbear
 flake8-class-attributes-order
 flake8-cognitive-complexity
 flake8-continuation
-flake8-commas
+flake8-commas==2.0.0
 flake8-comments
 flake8-complex-f-strings
 flake8-debugger
