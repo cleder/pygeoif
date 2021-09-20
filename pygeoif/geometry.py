@@ -389,8 +389,11 @@ class LinearRing(LineString):
         This only highlights obvious problems with this geometry.
         Even if this test passes the geometry may still be invalid.
         """
+        bbox = self.bounds
+        if bbox[0] >= bbox[2] or bbox[1] >= bbox[3]:
+            return False
         try:
-            center, area = centeroid(self.coords)
+            _, area = centeroid(self.coords)
         except ZeroDivisionError:
             return False
         return abs(area - signed_area(self.coords)) <= 0.000_001 * abs(area)
@@ -484,6 +487,8 @@ class Polygon(_Geometry):
         This only highlights obvious problems with this geometry.
         Even if this test passes the geometry may still be invalid.
         """
+        if not self._check_interior_bounds():
+            return False
         if not self._exterior.is_valid:
             return False
         if not all(interior.is_valid for interior in self.interiors):
@@ -538,6 +543,16 @@ class Polygon(_Geometry):
             cast(LineType, geo_interface["coordinates"][0]),
             cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
+
+    def _check_interior_bounds(self) -> bool:
+        bounds = self.bounds
+        for interior in self.interiors:
+            i_box = interior.bounds
+            if bounds[0] > i_box[0] or bounds[1] > i_box[1]:
+                return False
+            if bounds[2] < i_box[2] or bounds[3] < i_box[3]:
+                return False
+        return True
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return self.exterior._prepare_hull()

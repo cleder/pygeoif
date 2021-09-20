@@ -255,3 +255,50 @@ def test_from_coordinates_with_holes():
     polygon = geometry.Polygon(e, [i])
 
     assert geometry.Polygon.from_coordinates(polygon.coords) == polygon
+
+
+def test_is_valid():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(0.5, 0.5), (1, 1), (0.5, 1)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert polygon.is_valid
+
+
+def test_is_invalid_hole_too_big_y():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(0.5, 0.5), (1, 3), (0.5, 1)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert not polygon.is_valid
+
+
+def test_is_invalid_hole_too_big_x():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(0.5, 0.5), (3, 1), (0.5, 1)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert not polygon.is_valid
+
+
+def test_is_invalid_hole_too_big_min():
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(-0.5, -0.5), (3, 1), (0.5, 1)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert not polygon.is_valid
+
+
+def test_is_invalid_exterior():
+    e = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
+    polygon = geometry.Polygon(e)
+
+    assert not polygon.is_valid
+
+
+def test_is_invalid_interior():
+    e = [(-2, -2), (-2, 2), (2, 2), (2, -2), (-2, -2)]
+    i = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
+    polygon = geometry.Polygon(e, [i])
+
+    assert not polygon.is_valid
