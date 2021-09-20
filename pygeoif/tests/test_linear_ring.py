@@ -179,6 +179,16 @@ def test_is_valid_happy():
     assert line.is_valid
 
 
+def test_valid_3d():
+    line = geometry.LinearRing([(0, 0, 1), (2, 0, 2), (2, 2, 0), (0, 2, 0)])
+
+    with pytest.raises(
+        exceptions.DimensionError,
+        match="^Validation is only implemented for 2D coordinates$",
+    ):
+        assert line.is_valid
+
+
 def test_is_ccw():
     line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, 0)])
 
@@ -195,6 +205,16 @@ def test_centroid_line():
     line = geometry.LinearRing([(0, 0), (0, 1)])
 
     assert line.centroid is None
+
+
+def test_centroid_3d():
+    line = geometry.LinearRing([(0, 0, 1), (2, 0, 2), (2, 2, 0), (0, 2, 0)])
+
+    with pytest.raises(
+        exceptions.DimensionError,
+        match="^Centeroid is only implemented for 2D coordinates$",
+    ):
+        assert line.centroid
 
 
 def test_centroid_crossing():

@@ -377,8 +377,10 @@ class LinearRing(LineString):
             self._geoms = self._geoms + (self._geoms[0],)
 
     @property
-    def centroid(self):
+    def centroid(self) -> Optional[Point]:
         """Return the centroid of the ring."""
+        if self.has_z:
+            raise DimensionError("Centeroid is only implemented for 2D coordinates")
         try:
             cent, area = centroid(self.coords)
         except ZeroDivisionError:
@@ -400,8 +402,10 @@ class LinearRing(LineString):
         This only highlights obvious problems with this geometry.
         Even if this test passes the geometry may still be invalid.
         """
+        if self.has_z:
+            raise DimensionError("Validation is only implemented for 2D coordinates")
         bbox = self.bounds
-        if bbox[0] >= bbox[2] or bbox[1] >= bbox[3]:
+        if bbox[0] == bbox[2] or bbox[1] == bbox[3]:
             return False
         try:
             _, area = centroid(self.coords)
@@ -556,6 +560,7 @@ class Polygon(_Geometry):
         )
 
     def _check_interior_bounds(self) -> bool:
+        """Check that the bounding boxes of holes are inside the bounds of the shell."""
         bounds = self.bounds
         for interior in self.interiors:
             i_box = interior.bounds
