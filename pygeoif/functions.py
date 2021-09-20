@@ -44,7 +44,7 @@ def signed_area(coords: LineType) -> float:
     )
 
 
-def centeroid(coords: LineType) -> Tuple[Point2D, float]:
+def centroid(coords: LineType) -> Tuple[Point2D, float]:
     ans: List[float] = [0, 0]
 
     n = len(coords)

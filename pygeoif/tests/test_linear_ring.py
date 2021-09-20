@@ -189,3 +189,45 @@ def test_is_cw():
     line = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
 
     assert not line.is_ccw
+
+
+def test_centroid_line():
+    line = geometry.LinearRing([(0, 0), (0, 1)])
+
+    assert line.centroid is None
+
+
+def test_centroid_crossing():
+    line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, -1)])
+
+    assert line.centroid is None
+
+
+def test_centroid_valid():
+    line = geometry.LinearRing([(0, 0), (2, 0), (2, 2), (0, 2)])
+
+    assert line.centroid == geometry.Point(1, 1)
+
+
+def test_centroid_invalid():
+    ring = geometry.LinearRing([(0, 0), (2, 0), (2, 2), (0, 2)])
+    line = geometry.LineString(
+        [
+            (28, 16),
+            (37, 31),
+            (21, 50),
+            (-21, 64),
+            (-84, 64),
+            (-148, 46),
+            (-95, 10),
+            (-72, 46),
+            (-40, 64),
+            (-9, 64),
+            (12, 50),
+            (20, 31),
+            (15, 16),
+        ],
+    )
+    ring._geoms = line._geoms
+
+    assert ring.centroid is None

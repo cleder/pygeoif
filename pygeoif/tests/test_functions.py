@@ -2,7 +2,9 @@
 import math
 import random
 
-from pygeoif.functions import centeroid
+import pytest
+
+from pygeoif.functions import centroid
 from pygeoif.functions import convex_hull
 from pygeoif.functions import signed_area
 
@@ -54,12 +56,18 @@ def test_signed_area():
     a0 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     a1 = [(0, 0, 1), (0, 2, 2), (2, 2, 3), (2, 0, 4), (0, 0, 1)]
     assert signed_area(a0) == signed_area(a1) == -4
-    assert centeroid(a0)[1] == centeroid(a1)[1] == -4
+    assert centroid(a0)[1] == centroid(a1)[1] == -4
 
 
 def test_signed_area2():
     a0 = [(0, 0), (0, 1), (1, 1), (0, 0)]
-    assert centeroid(a0)[1] == signed_area(a0)
+    assert centroid(a0)[1] == signed_area(a0)
+
+
+def test_centroid_line():
+    a0 = [(0, 0), (1, 1), (0, 0)]
+    with pytest.raises(ZeroDivisionError):
+        assert centroid(a0)
 
 
 def test_signed_area_0_3d():
@@ -79,8 +87,8 @@ def test_signed_area_circle_ish():
         steps = random.randrange(3, 30 + i)
         pts = circle_ish(x, y, r, steps)
 
-        center1, area1 = centeroid(pts)
-        center2, area2 = centeroid(list(reversed(pts)))
+        center1, area1 = centroid(pts)
+        center2, area2 = centroid(list(reversed(pts)))
 
         # both area computations should be approximately equal
         assert abs((area1 - signed_area(pts)) / r) < 0.000_01
@@ -104,8 +112,8 @@ def test_signed_area_crescent_ish():
         steps = random.randrange(4, 20)
         pts = crescent_ish(x, y, r, steps)
 
-        center1, area1 = centeroid(pts)
-        center2, area2 = centeroid(list(reversed(pts)))
+        center1, area1 = centroid(pts)
+        center2, area2 = centroid(list(reversed(pts)))
 
         assert abs((area1 - signed_area(pts)) / r) < 0.000_01
         assert abs((area2 - signed_area(list(reversed(pts)))) / r) < 0.000_01
@@ -246,5 +254,5 @@ def test_random():
 
         assert convex_hull(hull) == hull
         if len(hull) > 3:
-            _, area = centeroid(tuple(hull))
+            _, area = centroid(tuple(hull))
             assert abs(area - signed_area(hull)) < 0.001

@@ -29,7 +29,7 @@ from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import DimensionError
-from pygeoif.functions import centeroid
+from pygeoif.functions import centroid
 from pygeoif.functions import convex_hull
 from pygeoif.functions import signed_area
 from pygeoif.types import Bounds
@@ -377,6 +377,17 @@ class LinearRing(LineString):
             self._geoms = self._geoms + (self._geoms[0],)
 
     @property
+    def centroid(self):
+        """Return the centroid of the ring."""
+        try:
+            cent, area = centroid(self.coords)
+        except ZeroDivisionError:
+            return None
+        if abs(area - signed_area(self.coords)) > 0.000_001 * abs(area):
+            return None
+        return Point(cent[0], cent[1])
+
+    @property
     def is_ccw(self) -> bool:
         """Return True if the ring is oriented counter clock-wise."""
         return signed_area(self.coords) >= 0
@@ -393,7 +404,7 @@ class LinearRing(LineString):
         if bbox[0] >= bbox[2] or bbox[1] >= bbox[3]:
             return False
         try:
-            _, area = centeroid(self.coords)
+            _, area = centroid(self.coords)
         except ZeroDivisionError:
             return False
         return abs(area - signed_area(self.coords)) <= 0.000_001 * abs(area)
