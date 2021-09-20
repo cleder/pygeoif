@@ -41,7 +41,7 @@ pep8
 pep8-naming
 pip-check
 pybetter
-pytest
+pytest==6.2.5
 pytest-cov
 radon
 removestar
