@@ -43,7 +43,7 @@ pip-check
 pybetter
 pytest
 pytest-cov
-radon
+radon==5.1.0
 removestar
 yamllint
 yesqa
