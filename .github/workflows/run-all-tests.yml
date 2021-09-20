@@ -2,12 +2,7 @@
 # run tests and lint with a variety of Python versions
 ---
 name: Tests
-
-on:
-  push:
-    branches: [*]
-  pull_request:
-    branches: [*]
+on: [push, pull_request]
 
 jobs:
   cpython:
