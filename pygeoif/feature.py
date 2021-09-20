@@ -87,7 +87,9 @@ class Feature:
     def __eq__(self, other: object) -> bool:
         """Check if the geointerfaces are equal."""
         try:
-            if not other.__geo_interface__.get("geometry"):  # type: ignore [attr-defined]
+            if not other.__geo_interface__.get(  # type: ignore [attr-defined]
+                "geometry",
+            ):
                 return False
         except AttributeError:
             return False
@@ -170,22 +172,7 @@ class FeatureCollection:
 
     def __eq__(self, other: object) -> bool:
         """Check if the geointerfaces are equal."""
-        try:
-            if self.__geo_interface__[
-                "type"
-            ] != other.__geo_interface__.get(  # type: ignore [attr-defined]
-                "type",
-            ):
-                return False
-            if not other.__geo_interface__.get("features"):  # type: ignore [attr-defined]
-                return False
-            if len(self.__geo_interface__["features"]) != len(
-                other.__geo_interface__.get("features", []),  # type: ignore [attr-defined]
-            ):
-                return False
-        except AttributeError:
-            return False
-        return all(
+        return self._check_interface(other) and all(
             (
                 feature_geo_interface_equals(mine, other)
                 for mine, other in zip(
@@ -233,6 +220,22 @@ class FeatureCollection:
             "bbox": self.bounds,
             "features": tuple(feature.__geo_interface__ for feature in self._features),
         }
+
+    def _check_interface(self, other: object) -> bool:
+        try:
+            return self.__geo_interface__[
+                "type"
+            ] == other.__geo_interface__.get(  # type: ignore [attr-defined]
+                "type",
+            ) and len(
+                self.__geo_interface__["features"],
+            ) == len(
+                other.__geo_interface__.get(  # type: ignore [attr-defined]
+                    "features", [],
+                ),
+            )
+        except AttributeError:
+            return False
 
 
 __all__ = [
