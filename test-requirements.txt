@@ -5,7 +5,7 @@ add-trailing-comma
 bandit
 black
 #cohesion
-flake8
+flake8==3.9.2
 flake8-awesome
 flake8-blind-except
 flake8-bugbear
