@@ -231,7 +231,8 @@ class FeatureCollection:
                 self.__geo_interface__["features"],
             ) == len(
                 other.__geo_interface__.get(  # type: ignore [attr-defined]
-                    "features", [],
+                    "features",
+                    [],
                 ),
             )
         except AttributeError:
