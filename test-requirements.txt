@@ -8,7 +8,7 @@ black
 flake8
 flake8-awesome
 flake8-blind-except
-flake8-bugbear
+flake8-bugbear==21.9.1
 flake8-class-attributes-order
 flake8-cognitive-complexity
 flake8-continuation
