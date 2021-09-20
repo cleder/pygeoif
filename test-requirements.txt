@@ -42,7 +42,7 @@ pep8-naming
 pip-check
 pybetter
 pytest
-pytest-cov
+pytest-cov==2.12.1
 radon
 removestar
 yamllint
