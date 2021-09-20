@@ -1,6 +1,6 @@
 #flake8-aaa
 #flake8-pytest-style
-absolufy-imports
+absolufy-imports==0.2.1
 add-trailing-comma
 bandit
 black
