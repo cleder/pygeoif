@@ -27,6 +27,12 @@ def test_bounds():
     assert multipoint.bounds == (0, 1, 3, 2)
 
 
+def test_has_z_empty():
+    multipoint = geometry.MultiPoint(())
+
+    assert multipoint.has_z is None
+
+
 def test_geo_interface():
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
 

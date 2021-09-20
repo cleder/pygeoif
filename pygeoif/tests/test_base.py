@@ -1,4 +1,5 @@
 """Test Baseclass."""
+from unittest import mock
 
 import pytest
 
@@ -57,7 +58,11 @@ def test_has_z():
 
 
 def test_convex_hull():
-    base_geo = geometry._Geometry()
-    with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
+    with mock.patch("pygeoif.geometry._Geometry.has_z"):
+        base_geo = geometry._Geometry()
+        with pytest.raises(
+            NotImplementedError,
+            match="^Must be implemented by subclass$",
+        ):
 
-        assert base_geo.convex_hull
+            assert base_geo.convex_hull

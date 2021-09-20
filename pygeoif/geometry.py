@@ -18,6 +18,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+import warnings
 from itertools import chain
 from typing import Generator
 from typing import Iterable
@@ -75,6 +76,8 @@ class _Geometry:
         For two points, the convex hull collapses to a LineString;
         for 1, to a Point.
         """
+        if self.has_z:
+            warnings.warn("The convex Hull will only return the projection to 2 xy")
         hull = convex_hull(self._prepare_hull())
         if len(hull) == 0:
             return None
@@ -90,8 +93,12 @@ class _Geometry:
         return self.__class__.__name__
 
     @property
-    def has_z(self) -> bool:
-        """Return True if the geometry's coordinate sequence(s) have z values."""
+    def has_z(self) -> Optional[bool]:
+        """
+        Return True if the geometry's coordinate sequence(s) have z values.
+
+        Return None if the geometry is empty.
+        """
         raise NotImplementedError("Must be implemented by subclass")
 
     @property
@@ -300,8 +307,10 @@ class LineString(_Geometry):
         )
 
     @property
-    def has_z(self) -> bool:
+    def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
+        if not self.geoms:
+            return None
         return self._geoms[0].has_z
 
     @property
@@ -490,7 +499,7 @@ class Polygon(_Geometry):
         return (self.exterior.coords,)
 
     @property
-    def has_z(self) -> bool:
+    def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._exterior.has_z
 
@@ -604,6 +613,13 @@ class _MultiGeometry(_Geometry):
             max(geom_bounds[2]),
             max(geom_bounds[3]),
         )
+
+    @property
+    def has_z(self) -> Optional[bool]:
+        """Return True if any geometry of the collection have z values."""
+        if not self._geoms:  # type: ignore [attr-defined]
+            return None
+        return any(geom.has_z for geom in self.geoms)  # type: ignore [attr-defined]
 
 
 class MultiPoint(_MultiGeometry):
