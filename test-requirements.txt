@@ -35,7 +35,7 @@ flake8-typing-imports
 flake8-use-fstring
 lizard
 mccabe
-mypy
+mypy==0.910
 pep257
 pep8
 pep8-naming
