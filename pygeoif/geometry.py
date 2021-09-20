@@ -393,14 +393,7 @@ class LinearRing(LineString):
             center, area = centeroid(self.coords)
         except ZeroDivisionError:
             return False
-        if abs(area - signed_area(self.coords)) > 0.000_001 * area:
-            return False
-        bbox = self.bounds
-        if bbox[0] > center[0] > bbox[2]:
-            return False
-        if bbox[1] > center[1] > bbox[3]:
-            return False
-        return True
+        return abs(area - signed_area(self.coords)) <= 0.000_001 * abs(area)
 
 
 class Polygon(_Geometry):
@@ -495,7 +488,7 @@ class Polygon(_Geometry):
             return False
         if not all(interior.is_valid for interior in self.interiors):
             return False
-        return self._check_interior_bounds()
+        return True
 
     @property
     def _wkt_coords(self) -> str:
@@ -548,19 +541,6 @@ class Polygon(_Geometry):
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return self.exterior._prepare_hull()
-
-    def _check_interior_bounds(self) -> bool:
-        bounds = self.bounds
-        for interior in self.interiors:
-            if interior.bounds[0] < bounds[0]:
-                return False
-            if interior.bounds[1] > bounds[1]:
-                return False
-            if interior.bounds[2] < bounds[2]:
-                return False
-            if interior.bounds[3] > bounds[3]:
-                return False
-        return True
 
 
 class _MultiGeometry(_Geometry):

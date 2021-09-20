@@ -76,14 +76,23 @@ def test_signed_area_circle_ish():
         y = random.randrange(20)
         r = random.randrange(1, 20 + i)
         pts = []
-        steps = random.randrange(20)
+        steps = random.randrange(3, 30 + i)
         pts = circle_ish(x, y, r, steps)
-        center1, area = centeroid(pts)
-        assert abs(area - signed_area(pts)) < 0.001
-        center2, area = centeroid(list(reversed(pts)))
-        assert abs(area - signed_area(list(reversed(pts)))) < 0.001
-        assert center2 == center2
-        assert -0.1 < center1[0] - x < 0.1
+
+        center1, area1 = centeroid(pts)
+        center2, area2 = centeroid(list(reversed(pts)))
+
+        # both area computations should be approximately equal
+        assert abs((area1 - signed_area(pts)) / r) < 0.000_01
+        assert abs((area2 - signed_area(list(reversed(pts)))) / r) < 0.000_01
+        assert center1, area1 == (center2, area2)
+        assert abs(center1[0] - x) < 0.000_001
+        assert abs(center1[1] - y) < 0.000_001
+        # we are computing an approximation of math.pi
+        if steps > 12:
+            assert 3.0 * r ** 2 < area1 < 3.2 * r ** 2
+        if steps > 30:
+            assert 3.1 * r ** 2 < area1 < 3.2 * r ** 2
 
 
 def test_signed_area_crescent_ish():
@@ -94,12 +103,13 @@ def test_signed_area_crescent_ish():
         pts = []
         steps = random.randrange(4, 20)
         pts = crescent_ish(x, y, r, steps)
-        center1, area = centeroid(pts)
-        assert abs(area - signed_area(pts)) < 0.001
-        center2, area = centeroid(list(reversed(pts)))
-        assert abs(area - signed_area(list(reversed(pts)))) < 0.001
-        assert 0.001 > abs(center2[0] - center1[0])
-        assert 0.001 > abs(center2[1] - center1[1])
+
+        center1, area1 = centeroid(pts)
+        center2, area2 = centeroid(list(reversed(pts)))
+
+        assert abs((area1 - signed_area(pts)) / r) < 0.000_01
+        assert abs((area2 - signed_area(list(reversed(pts)))) / r) < 0.000_01
+        assert center1, area1 == (center2, area2)
 
 
 def test_empty_hull():
