@@ -33,7 +33,7 @@ flake8-super
 #flake8-type-checking
 flake8-typing-imports
 flake8-use-fstring
-lizard
+lizard==1.17.9
 mccabe
 mypy
 pep257
