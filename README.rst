@@ -30,7 +30,7 @@ It was written to provide clean and python only geometries for fastkml_
 .. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
 
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
-    :target: https://travis-ci.org/cleder/pygeoif
+    :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
 
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
