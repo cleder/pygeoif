@@ -37,7 +37,7 @@ lizard
 mccabe
 mypy
 pep257
-pep8
+pep8==1.7.1
 pep8-naming
 pip-check
 pybetter
