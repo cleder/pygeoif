@@ -2,7 +2,7 @@
 #flake8-pytest-style
 absolufy-imports
 add-trailing-comma
-bandit
+bandit==1.7.0
 black
 #cohesion
 flake8
