@@ -1,8 +1,11 @@
 ---
-on:
-  push:
-    branches: [main]
 name: Publish to PyPI and TestPyPI
+on:
+  workflow_run:
+    workflows: ["Tests"]
+    branches: [main]
+    types:
+      - completed
 jobs:
   build-and-publish:
     name: Build and publish to PyPI and TestPyPI

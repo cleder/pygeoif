@@ -25,24 +25,23 @@ polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with shapely
 you feel right at home with pygeoif
 
-It was written to provide clean and python only geometries for
-fastkml_
+It was written to provide clean and python only geometries for fastkml_
 
 .. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
 
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
     :target: https://travis-ci.org/cleder/pygeoif
 
-.. image:: https://codecov.io/gh/cleder/pygeoif/branch/master/graph/badge.svg?token=2EfiwBXs9X
+.. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. image:: https://camo.githubusercontent.com/59eab954a267c6e9ff1d80e8055de43a0ad771f5e1f3779aef99d111f20bee40/687474703a2f2f7777772e6d7970792d6c616e672e6f72672f7374617469632f6d7970795f62616467652e737667
+.. image:: https://img.shields.io/badge/type%20checker-mypy-blue
     :target: http://mypy-lang.org/
 
-    Example
+Example
 ========
 
 
@@ -70,7 +69,7 @@ Classes
 
 All classes implement the attribute:
 
-* __geo_interface__: as dicussed above
+* __geo_interface__: as discussed above
 
 All geometry classes implement the attributes:
 
