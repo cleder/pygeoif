@@ -8,8 +8,6 @@ on:
     types:
       - completed
   workflow_dispatch:
-    branches:
-      - main
 jobs:
   on-success:
     name: Build and publish to PyPI and TestPyPI
