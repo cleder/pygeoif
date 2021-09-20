@@ -2,8 +2,6 @@
 import math
 import random
 
-import pytest
-
 from pygeoif.functions import centeroid
 from pygeoif.functions import convex_hull
 from pygeoif.functions import signed_area

@@ -19,6 +19,8 @@
 """Functions for geometries."""
 from typing import Iterable
 from typing import List
+from typing import Tuple
+from typing import cast
 
 from pygeoif.types import LineType
 from pygeoif.types import Point2D
@@ -42,11 +44,11 @@ def signed_area(coords: LineType) -> float:
     )
 
 
-def centeroid(coords: LineType):
-    ans = [0, 0]
+def centeroid(coords: LineType) -> Tuple[Point2D, float]:
+    ans: List[float] = [0, 0]
 
     n = len(coords)
-    signed_area = 0
+    signed_area = 0.0
 
     # For all vertices
     for i, coord in enumerate(coords):
@@ -63,7 +65,7 @@ def centeroid(coords: LineType):
     ans[0] = (ans[0]) / (3 * signed_area)
     ans[1] = (ans[1]) / (3 * signed_area)
 
-    return ans, signed_area / 2.0
+    return cast(Point2D, tuple(ans)), signed_area / 2.0
 
 
 def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:

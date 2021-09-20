@@ -25,8 +25,10 @@ class DimensionError(ValueError):
 class WKTParserError(AttributeError):
     """WKT not supported or cannot be parsed."""
 
+
 class InvalidGeometryError(ValueError):
     """This geometry is not valid."""
+
 
 __all__ = [
     "DimensionError",

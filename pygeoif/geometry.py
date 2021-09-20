@@ -28,10 +28,10 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
-from pygeoif.exceptions import DimensionError, InvalidGeometryError
+from pygeoif.exceptions import DimensionError
+from pygeoif.functions import centeroid
 from pygeoif.functions import convex_hull
 from pygeoif.functions import signed_area
-from pygeoif.functions import centeroid
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
@@ -382,12 +382,12 @@ class LinearRing(LineString):
         return signed_area(self.coords) >= 0
 
     @property
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         Check validity of the coordinates.
 
         This only highlights obvious problems with this geometry.
-        Even if this test passes the geometry could still be invalid.
+        Even if this test passes the geometry may still be invalid.
         """
         try:
             center, area = centeroid(self.coords)
@@ -401,6 +401,7 @@ class LinearRing(LineString):
         if bbox[1] > center[1] > bbox[3]:
             return False
         return True
+
 
 class Polygon(_Geometry):
     """
@@ -482,6 +483,19 @@ class Polygon(_Geometry):
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._exterior.has_z
 
+    @property
+    def is_valid(self) -> bool:
+        """
+        Check validity of the coordinates.
+
+        This only highlights obvious problems with this geometry.
+        Even if this test passes the geometry may still be invalid.
+        """
+        if not self._exterior.is_valid:
+            return False
+        if not all(interior.is_valid for interior in self.interiors):
+            return False
+        return self._check_interior_bounds()
 
     @property
     def _wkt_coords(self) -> str:
@@ -534,6 +548,19 @@ class Polygon(_Geometry):
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return self.exterior._prepare_hull()
+
+    def _check_interior_bounds(self) -> bool:
+        bounds = self.bounds
+        for interior in self.interiors:
+            if interior.bounds[0] < bounds[0]:
+                return False
+            if interior.bounds[1] > bounds[1]:
+                return False
+            if interior.bounds[2] < bounds[2]:
+                return False
+            if interior.bounds[3] > bounds[3]:
+                return False
+        return True
 
 
 class _MultiGeometry(_Geometry):
