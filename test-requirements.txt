@@ -38,7 +38,7 @@ mccabe
 mypy
 pep257
 pep8
-pep8-naming
+pep8-naming==0.12.1
 pip-check
 pybetter
 pytest
