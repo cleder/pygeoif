@@ -32,7 +32,7 @@ flake8-slots
 flake8-super
 #flake8-type-checking
 flake8-typing-imports
-flake8-use-fstring
+flake8-use-fstring==1.1
 lizard
 mccabe
 mypy
