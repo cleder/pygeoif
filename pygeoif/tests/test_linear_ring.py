@@ -110,40 +110,6 @@ def test_repr_eval():
     )
 
 
-def test_set_orientation():
-    ring = geometry.LinearRing(((0, 0), (1, 1), (1, 0), (0, 0)))
-
-    ring._set_orientation()
-
-    assert ring.coords == ((0, 0), (1, 0), (1, 1), (0, 0))
-    assert ring.is_ccw
-
-
-def test_set_orientation_clockwise():
-    ring = geometry.LinearRing(((0, 0), (1, 0), (1, 1), (0, 0)))
-
-    ring._set_orientation(True)
-
-    assert ring.coords == ((0, 0), (1, 1), (1, 0), (0, 0))
-    assert not ring.is_ccw
-
-
-def test_set_orientation_3d():
-    ring = geometry.LinearRing(((0, 0, 3), (1, 1, 2), (1, 0, 3), (0, 0, 3)))
-
-    ring._set_orientation(False)
-
-    assert ring.coords == ((0, 0, 3), (1, 0, 3), (1, 1, 2), (0, 0, 3))
-
-
-def test_set_orientation_3d_clockwise():
-    ring = geometry.LinearRing(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5)))
-
-    ring._set_orientation(True)
-
-    assert ring.coords == ((0, 0, 5), (1, 1, 7), (1, 0, 6), (0, 0, 5))
-
-
 def test_signed_area():
     assert functions.signed_area(((0.0, 0.0), (1.0, 1.0), (2, 0), (0, 0))) == -1.0
     assert functions.signed_area(((0, 0, 5), (1, 0, 6), (1, 1, 7), (0, 0, 5))) == 0.5

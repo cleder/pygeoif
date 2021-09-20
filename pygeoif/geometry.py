@@ -402,14 +402,6 @@ class LinearRing(LineString):
             return False
         return True
 
-    def _set_orientation(self, clockwise: bool = False) -> None:
-        """Set the orientation of the coordinates."""
-        area = signed_area(self.coords)
-        if area >= 0 and clockwise or area < 0 and not clockwise:  # pragma: no mutate
-            self._geoms = self._geoms[::-1]
-
-
-
 class Polygon(_Geometry):
     """
     A two-dimensional figure bounded by a linear ring.
@@ -489,6 +481,7 @@ class Polygon(_Geometry):
     def has_z(self) -> bool:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._exterior.has_z
+
 
     @property
     def _wkt_coords(self) -> str:
