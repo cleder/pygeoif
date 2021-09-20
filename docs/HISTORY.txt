@@ -50,7 +50,7 @@ Changelog
 
 - add GeometryCollection
 - len(Multi*) and len(GeometryCollection) returns the number of contained Geometries
-- add orient function to get clockwise or counterclockwise oriented poygons
+- add orient function to get clockwise or counterclockwise oriented polygons
 - add signed_area function
 - add _set_orientation method to lineStrings, Polygons and MultiPolygons
 
@@ -58,7 +58,8 @@ Changelog
 0.2.1 (2012/08/02)
 -------------------
 
-- as_shape also accepts an object that is neither a dictionary nor has a __geo_interface__ but can be converted into a __geo_interface__ compliant dictionary
+- as_shape also accepts an object that is neither a dictionary nor has a __geo_interface__
+  but can be converted into a __geo_interface__ compliant dictionary
 
 
 0.2 (2012/08/01)

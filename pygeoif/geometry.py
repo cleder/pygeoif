@@ -28,9 +28,10 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
-from pygeoif.exceptions import DimensionError
+from pygeoif.exceptions import DimensionError, InvalidGeometryError
 from pygeoif.functions import convex_hull
 from pygeoif.functions import signed_area
+from pygeoif.functions import centeroid
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
@@ -380,11 +381,33 @@ class LinearRing(LineString):
         """Return True if the ring is oriented counter clock-wise."""
         return signed_area(self.coords) >= 0
 
+    @property
+    def is_valid(self):
+        """
+        Check validity of the coordinates.
+
+        This only highlights obvious problems with this geometry.
+        Even if this test passes the geometry could still be invalid.
+        """
+        try:
+            center, area = centeroid(self.coords)
+        except ZeroDivisionError:
+            return False
+        if abs(area - signed_area(self.coords)) > 0.000_001 * area:
+            return False
+        bbox = self.bounds
+        if bbox[0] > center[0] > bbox[2]:
+            return False
+        if bbox[1] > center[1] > bbox[3]:
+            return False
+        return True
+
     def _set_orientation(self, clockwise: bool = False) -> None:
         """Set the orientation of the coordinates."""
         area = signed_area(self.coords)
         if area >= 0 and clockwise or area < 0 and not clockwise:  # pragma: no mutate
             self._geoms = self._geoms[::-1]
+
 
 
 class Polygon(_Geometry):

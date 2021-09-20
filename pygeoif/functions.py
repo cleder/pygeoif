@@ -30,10 +30,7 @@ def signed_area(coords: LineType) -> float:
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.
     """
-    if len(coords[0]) == 2:  # pragma: no mutate
-        xs, ys = map(list, zip(*coords))
-    elif len(coords[0]) == 3:  # pragma: no mutate
-        xs, ys, _s = map(list, zip(*coords))
+    xs, ys = map(list, zip(*(coord[:2] for coord in coords)))
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
     return (
@@ -43,6 +40,30 @@ def signed_area(coords: LineType) -> float:
         )
         / 2.0
     )
+
+
+def centeroid(coords: LineType):
+    ans = [0, 0]
+
+    n = len(coords)
+    signed_area = 0
+
+    # For all vertices
+    for i, coord in enumerate(coords):
+
+        next_coord = coords[(i + 1) % n]
+        # Calculate area using shoelace formula
+        area = (coord[0] * next_coord[1]) - (next_coord[0] * coord[1])
+        signed_area += area
+
+        # Calculate coordinates of centroid of polygon
+        ans[0] += (coord[0] + next_coord[0]) * area
+        ans[1] += (coord[1] + next_coord[1]) * area
+
+    ans[0] = (ans[0]) / (3 * signed_area)
+    ans[1] = (ans[1]) / (3 * signed_area)
+
+    return ans, signed_area / 2.0
 
 
 def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
