@@ -7,7 +7,7 @@ on:
     types:
       - completed
 jobs:
-  build-and-publish:
+  on-success:
     name: Build and publish to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
