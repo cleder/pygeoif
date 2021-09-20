@@ -72,7 +72,7 @@ jobs:
           pytest pygeoif
 
   publish:
-    if: "github.event_name == 'push' && github.repository == 'cleder/pygeoif"
+    if: "github.event_name == 'push' && github.repository == 'cleder/pygeoif'
     needs: [cpython, static-tests, pypy]
     name: Build and publish to PyPI and TestPyPI
     runs-on: ubuntu-latest
