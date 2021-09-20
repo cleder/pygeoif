@@ -27,7 +27,7 @@ flake8-print
 flake8-raise
 flake8-rst-docstrings
 flake8-simplify
-flake8-string-format
+flake8-string-format==0.3.0
 flake8-slots
 flake8-super
 #flake8-type-checking
