@@ -942,18 +942,22 @@ class GeometryCollection(_MultiGeometry):
 
         Types and coordinates from all contained geometries must be equal.
         """
-        if not hasattr(other, "__geo_interface__"):
-            return False
-        if (
-            other.__geo_interface__.get("type")  # type: ignore [attr-defined]
-            != self.geom_type
-        ):
-            return False
-        if len(
-            other.__geo_interface__.get("geometries", []),  # type: ignore [attr-defined]
-        ) != len(
-            self,
-        ):
+        try:
+            if (
+                other.__geo_interface__.get("type")  # type: ignore [attr-defined]
+                != self.geom_type
+            ):
+                return False
+            if len(
+                other.__geo_interface__.get(  # type: ignore [attr-defined]
+                    "geometries",
+                    [],
+                ),
+            ) != len(
+                self,
+            ):
+                return False
+        except AttributeError:
             return False
         return all(
             (

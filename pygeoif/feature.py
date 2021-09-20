@@ -86,11 +86,11 @@ class Feature:
 
     def __eq__(self, other: object) -> bool:
         """Check if the geointerfaces are equal."""
-        if not hasattr(other, "__geo_interface__"):
+        try:
+            if not other.__geo_interface__.get("geometry"):  # type: ignore [attr-defined]
+                return False
+        except AttributeError:
             return False
-        if not other.__geo_interface__.get("geometry"):  # type: ignore [attr-defined]
-            return False
-
         return feature_geo_interface_equals(
             self.__geo_interface__,
             other.__geo_interface__,  # type: ignore [attr-defined]
@@ -170,19 +170,20 @@ class FeatureCollection:
 
     def __eq__(self, other: object) -> bool:
         """Check if the geointerfaces are equal."""
-        if not hasattr(other, "__geo_interface__"):
-            return False
-        if self.__geo_interface__[
-            "type"
-        ] != other.__geo_interface__.get(  # type: ignore [attr-defined]
-            "type",
-        ):
-            return False
-        if not other.__geo_interface__.get("features"):  # type: ignore [attr-defined]
-            return False
-        if len(self.__geo_interface__["features"]) != len(
-            other.__geo_interface__.get("features", []),  # type: ignore [attr-defined]
-        ):
+        try:
+            if self.__geo_interface__[
+                "type"
+            ] != other.__geo_interface__.get(  # type: ignore [attr-defined]
+                "type",
+            ):
+                return False
+            if not other.__geo_interface__.get("features"):  # type: ignore [attr-defined]
+                return False
+            if len(self.__geo_interface__["features"]) != len(
+                other.__geo_interface__.get("features", []),  # type: ignore [attr-defined]
+            ):
+                return False
+        except AttributeError:
             return False
         return all(
             (
