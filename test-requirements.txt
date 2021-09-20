@@ -39,7 +39,7 @@ mypy
 pep257
 pep8
 pep8-naming
-pip-check
+pip-check==2.6
 pybetter
 pytest
 pytest-cov
