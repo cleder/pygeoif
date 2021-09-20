@@ -3,7 +3,7 @@
 absolufy-imports
 add-trailing-comma
 bandit
-black
+black==21.9b0
 #cohesion
 flake8
 flake8-awesome
