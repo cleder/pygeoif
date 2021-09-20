@@ -1,7 +1,7 @@
 #flake8-aaa
 #flake8-pytest-style
 absolufy-imports
-add-trailing-comma
+add-trailing-comma==2.1.0
 bandit
 black
 #cohesion
