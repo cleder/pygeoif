@@ -407,7 +407,7 @@ class LinearRing(LineString):
         return signed_area(self.coords) >= 0
 
     @property
-    def is_valid(self) -> bool:
+    def maybe_valid(self) -> bool:
         """
         Check validity of the coordinates.
 
@@ -507,7 +507,7 @@ class Polygon(_Geometry):
         return self._exterior.has_z
 
     @property
-    def is_valid(self) -> bool:
+    def maybe_valid(self) -> bool:
         """
         Check validity of the coordinates.
 
@@ -516,11 +516,9 @@ class Polygon(_Geometry):
         """
         if not self._check_interior_bounds():
             return False
-        if not self._exterior.is_valid:
+        if not self._exterior.maybe_valid:
             return False
-        if not all(interior.is_valid for interior in self.interiors):
-            return False
-        return True
+        return all(interior.maybe_valid for interior in self.interiors)
 
     @property
     def _wkt_coords(self) -> str:
