@@ -201,14 +201,6 @@ def test_hasz():
     assert polygon.has_z
 
 
-def test_from_bounds():
-    polygon = geometry.Polygon(
-        ((0, 0), (0, 1), (1, 1), (1, 0), (0, 0)),
-    )
-
-    assert geometry.Polygon.from_bounds(0, 0, 1, 1) == polygon
-
-
 def test_convex_hull():
     polygon = geometry.Polygon([(0, 0), (1, 1), (2, 2)])
 

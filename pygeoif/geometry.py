@@ -541,17 +541,6 @@ class Polygon(_Geometry):
         }
 
     @classmethod
-    def from_bounds(
-        cls,
-        xmin: float,
-        ymin: float,
-        xmax: float,
-        ymax: float,
-    ) -> "Polygon":
-        """Construct a `Polygon()` from spatial bounds."""
-        return cls([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin)])
-
-    @classmethod
     def from_coordinates(cls, coordinates: PolygonType) -> "Polygon":
         """Construct a linestring from coordinates."""
         return cls(*coordinates)
