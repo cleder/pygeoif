@@ -77,7 +77,7 @@ class _Geometry:
         for 1, to a Point.
         """
         if self.has_z:
-            warnings.warn("The convex Hull will only return the projection to 2 xy")
+            warnings.warn("The convex Hull will only return the projection to 2 dimensions xy coordinates")
         hull = convex_hull(self._prepare_hull())
         if len(hull) == 0:
             return None

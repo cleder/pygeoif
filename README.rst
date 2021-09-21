@@ -6,7 +6,7 @@ PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_ fo
 Other Python programs and packages that you may have heard of already
 implement this protocol:
 
-* `ArcPy <http://help.arcgis.com/en/arcgisdesktop/>`_
+* `ArcPy <https://www.esri.com/about/newsroom/arcuser/geojson/>`_
 * `descartes <https://docs.descarteslabs.com/>`_
 * `geojson <http://pypi.python.org/pypi/geojson/>`_
 * `PySAL <http://pysal.geodacenter.org/>`_
@@ -23,14 +23,14 @@ reading and writing geometries from/to WKT, constructing line strings
 out of points, polygons from linear rings, multi polygons from
 polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with shapely
-you feel right at home with pygeoif
+you feel right at home with pygeoif.
 
 It was written to provide clean and python only geometries for fastkml_
 
-.. _fastkml: http://pypi.python.org/pypi/fastkml/- Add Travis continuous deployment.
+.. _fastkml: http://pypi.python.org/pypi/fastkml/
 
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
-    :target: https://travis-ci.org/cleder/pygeoif
+    :target: https://github.com/cleder/pygeoif/
 
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
@@ -43,7 +43,6 @@ It was written to provide clean and python only geometries for fastkml_
 
 Example
 ========
-
 
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
@@ -61,7 +60,7 @@ Example
 
 
 You find more examples in the
-`tests <https://github.com/cleder/pygeoif/blob/master/pygeoif/tests/>`_
+`tests <https://github.com/cleder/pygeoif/tree/main/pygeoif/tests>`_
 directory which cover every aspect of pygeoif or in fastkml_.
 
 Classes
@@ -69,20 +68,28 @@ Classes
 
 All classes implement the attribute:
 
-* __geo_interface__: as discussed above
+* __geo_interface__: as discussed above, an interface to ``GeoJSON``.
 
 All geometry classes implement the attributes:
 
 * geom_type: Returns a string specifying the Geometry Type of the object
-* bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
+* bounds: Returns a (minx, miny, maxx, maxy) tuple that bounds the object.
 * wkt: Returns the 'Well Known Text' representation of the object
+
+For two-dimensional geometries the following methods are implemented:
+
+* convex_hull: Returns a representation of the smallest convex Polygon containing
+  all the points in the object unless the number of points in the object is less than three.
+  For two points, the convex hull collapses to a LineString; for 1, a Point.
+  For three dimensional objects only their projection in the xy plane is taken into consideration.
+  Empty objects without coordinates return ``None`` for the convex_hull.
 
 
 Point
 -----
 A zero dimensional geometry
 
-A point has zero length and zero area.
+A point has zero length and zero area. A point cannot be empty.
 
 Attributes
 ~~~~~~~~~~~
@@ -116,8 +123,6 @@ Attributes
 geoms : sequence
     A sequence of Points
 
-
-
 LinearRing
 -----------
 
@@ -126,8 +131,7 @@ A closed one-dimensional geometry comprising one or more line segments
 A LinearRing that crosses itself or touches itself at a single point is
 invalid and operations on it may fail.
 
-A Linear Ring is self closing
-
+A LinearRing is self closing.
 
 
 Polygon
@@ -146,21 +150,25 @@ exterior : LinearRing
     The ring which bounds the positive space of the polygon.
 interiors : sequence
     A sequence of rings which bound all existing holes.
-
+is_valid: boolean
+    When a polygon has obvious problems such as self crossing
+    lines or holes that are outside the exterior bounds this will
+    return False. Even if this returns True the geometry may still be invalid,
+    but if this returns False you do have a problem.
 
 MultiPoint
 ----------
-A collection of one or more points
+A collection of one or more points.
 
 Attributes
 ~~~~~~~~~~~
 
 geoms : sequence
-    A sequence of Points
+    A sequence of Points.
 
 MultiLineString
 ----------------
-A collection of one or more line strings
+A collection of one or more line strings.
 
 A MultiLineString has non-zero length and zero area.
 
@@ -173,7 +181,7 @@ geoms : sequence
 MultiPolygon
 -------------
 
-A collection of one or more polygons
+A collection of one or more polygons.
 
 Attributes
 ~~~~~~~~~~~~~
@@ -184,7 +192,7 @@ geoms : sequence
 GeometryCollection
 -------------------
 A heterogenous collection of geometries (Points, LineStrings, LinearRings
-and Polygons)
+and Polygons).
 
 Attributes
 ~~~~~~~~~~~
@@ -192,7 +200,7 @@ geoms : sequence
     A sequence of geometry instances
 
 Please note:
-GEOMETRYCOLLECTION isn't supported by the Shapefile format.
+``GEOMETRYCOLLECTION`` isn't supported by the Shapefile format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
@@ -259,8 +267,7 @@ Functions
 shape
 --------
 
-Create a pygeoif feature from an object that provides the __geo_interface__
-
+Create a pygeoif feature from an object that provides the ``__geo_interface__``.
 
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry, shape
@@ -304,7 +311,7 @@ Return a rectangular polygon with configurable normal vector.
 mapping
 -------
 
-Returns the __geo_interface__ dictionary
+Return the ``__geo_interface__`` dictionary.
 
 
 Development
@@ -329,3 +336,11 @@ and run the unit and static tests with::
     black pygeoif
     flake8 pygeoif
     mypy pygeoif
+
+
+Acknowledgments
+================
+
+The tests were improved with mutmut_ which discovered some nasty edge cases.
+
+.. _mutmut: https://github.com/boxed/mutmut
