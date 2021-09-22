@@ -1,11 +1,18 @@
 Changelog
 =========
 
-0.8 (unreleased)
------------------
+1.0.beta.1 (2021-09-20)
+------------------------
 
-- Parses WKT that is not in upper case.
-
+- Add type annotations
+- refactor
+- remove support for python 2
+- minimum python version is 3.6
+- rename as_shape to shape
+- add box factory
+- format with black
+- reconstruct objects from their representation
+- Parse WKT that is not in upper case.
 
 0.7 (2017/05/04)
 -----------------
@@ -44,7 +51,7 @@ Changelog
 
 - add GeometryCollection
 - len(Multi*) and len(GeometryCollection) returns the number of contained Geometries
-- add orient function to get clockwise or counterclockwise oriented poygons
+- add orient function to get clockwise or counterclockwise oriented polygons
 - add signed_area function
 - add _set_orientation method to lineStrings, Polygons and MultiPolygons
 
@@ -52,7 +59,8 @@ Changelog
 0.2.1 (2012/08/02)
 -------------------
 
-- as_shape also accepts an object that is neither a dictionary nor has a __geo_interface__ but can be converted into a __geo_interface__ compliant dictionary
+- as_shape also accepts an object that is neither a dictionary nor has a __geo_interface__
+  but can be converted into a __geo_interface__ compliant dictionary
 
 
 0.2 (2012/08/01)

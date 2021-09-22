@@ -1,19 +1,17 @@
 Introduction
 ============
 
-PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data.
-
-see https://gist.github.com/2217756
+PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_ for geo-spatial (GIS) vector data.
 
 Other Python programs and packages that you may have heard of already
 implement this protocol:
 
-* ArcPy http://help.arcgis.com/en/arcgisdesktop/
-* descartes https://bitbucket.org/sgillies/descartes/
-* geojson http://pypi.python.org/pypi/geojson/
-* PySAL http://pysal.geodacenter.org/
-* Shapely https://github.com/Toblerity/Shapely
-* pyshp https://pypi.python.org/pypi/pyshp
+* `ArcPy <https://www.esri.com/about/newsroom/arcuser/geojson/>`_
+* `descartes <https://docs.descarteslabs.com/>`_
+* `geojson <http://pypi.python.org/pypi/geojson/>`_
+* `PySAL <http://pysal.geodacenter.org/>`_
+* `Shapely <https://github.com/Toblerity/Shapely>`_
+* `pyshp <https://pypi.python.org/pypi/pyshp>`_
 
 So when you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
@@ -25,86 +23,73 @@ reading and writing geometries from/to WKT, constructing line strings
 out of points, polygons from linear rings, multi polygons from
 polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with shapely
-you feel right at home with pygeoif
+you feel right at home with pygeoif.
 
-It was written to provide clean and python only geometries for
-fastkml_
+It was written to provide clean and python only geometries for fastkml_
 
 .. _fastkml: http://pypi.python.org/pypi/fastkml/
 
-PyGeoIf is continually tested with *Travis CI*
+.. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
+    :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
 
-.. image:: https://api.travis-ci.org/cleder/pygeoif.png
-    :target: https://travis-ci.org/cleder/pygeoif
+.. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
+    :target: https://codecov.io/gh/cleder/pygeoif
 
-.. image:: https://coveralls.io/repos/cleder/pygeoif/badge.png?branch=master
-    :target: https://coveralls.io/r/cleder/pygeoif?branch=master
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
 
-
-
+.. image:: https://img.shields.io/badge/type%20checker-mypy-blue
+    :target: http://mypy-lang.org/
 
 Example
 ========
 
-
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
     >>> p.__geo_interface__
-    {'type': 'Point', 'coordinates': (1.0, 1.0)}
-    >>> print p
-    POINT (1.0 1.0)
-    >>> p1 = geometry.Point(0,0)
-    >>> l = geometry.LineString([p,p1])
+    {'type': 'Point', 'bbox': (1, 1, 1, 1), 'coordinates': (1, 1)}
+    >>> print(p)
+    POINT (1 1)
+    >>> p
+    Point(1, 1)
+    >>> l = geometry.LineString([(0.0, 0.0), (1.0, 1.0)])
     >>> l.bounds
     (0.0, 0.0, 1.0, 1.0)
-    >>> dir(l)
-    ['__class__', '__delattr__', '__dict__', '__doc__', '__format__',
-    '__geo_interface__', '__getattribute__', '__hash__', '__init__',
-    '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__',
-    '__setattr__', '__sizeof__', '__str__', '__subclasshook__',
-    '__weakref__', '_coordinates', '_geoms', '_type', 'bounds', 'coords',
-    'geom_type', 'geoms', 'to_wkt']
-    >>> print l
-    LINESTRING (1.0 1.0, 0.0 0.0)
+    >>> print(l)
+    LINESTRING (0.0 0.0, 1.0 1.0)
 
 
 You find more examples in the
-`test_main.py <https://github.com/cleder/pygeoif/blob/master/pygeoif/test_main.py>`_
-file which cover every aspect of pygeoif or in fastkml_.
+`tests <https://github.com/cleder/pygeoif/tree/main/pygeoif/tests>`_
+directory which cover every aspect of pygeoif or in fastkml_.
 
 Classes
 ========
 
 All classes implement the attribute:
 
-* __geo_interface__: as dicussed above
+* __geo_interface__: as discussed above, an interface to ``GeoJSON``.
 
 All geometry classes implement the attributes:
 
 * geom_type: Returns a string specifying the Geometry Type of the object
-* bounds: Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
+* bounds: Returns a (minx, miny, maxx, maxy) tuple that bounds the object.
 * wkt: Returns the 'Well Known Text' representation of the object
 
+For two-dimensional geometries the following methods are implemented:
 
-and the method:
-
-* to_wkt which also prints the object
-
-GeoObject
-----------
-Base class for Geometry, Feature, and FeatureCollection
-
-Geometry
---------
-Base class for geometry objects. 
-Inherits from Geoobject.
+* convex_hull: Returns a representation of the smallest convex Polygon containing
+  all the points in the object unless the number of points in the object is less than three.
+  For two points, the convex hull collapses to a LineString; for 1, a Point.
+  For three dimensional objects only their projection in the xy plane is taken into consideration.
+  Empty objects without coordinates return ``None`` for the convex_hull.
 
 
 Point
 -----
 A zero dimensional geometry
 
-A point has zero length and zero area.
+A point has zero length and zero area. A point cannot be empty.
 
 Attributes
 ~~~~~~~~~~~
@@ -114,9 +99,10 @@ x, y, z : float
 Example
 ~~~~~~~~
 
+      >>> from pygeoif import Point
       >>> p = Point(1.0, -1.0)
-      >>> print p
-      POINT (1.0000000000000000 -1.0000000000000000)
+      >>> print(p)
+      POINT (1.0 -1.0)
       >>> p.y
       -1.0
       >>> p.x
@@ -137,8 +123,6 @@ Attributes
 geoms : sequence
     A sequence of Points
 
-
-
 LinearRing
 -----------
 
@@ -147,8 +131,7 @@ A closed one-dimensional geometry comprising one or more line segments
 A LinearRing that crosses itself or touches itself at a single point is
 invalid and operations on it may fail.
 
-A Linear Ring is self closing
-
+A LinearRing is self closing.
 
 
 Polygon
@@ -167,21 +150,25 @@ exterior : LinearRing
     The ring which bounds the positive space of the polygon.
 interiors : sequence
     A sequence of rings which bound all existing holes.
-
+is_valid: boolean
+    When a polygon has obvious problems such as self crossing
+    lines or holes that are outside the exterior bounds this will
+    return False. Even if this returns True the geometry may still be invalid,
+    but if this returns False you do have a problem.
 
 MultiPoint
 ----------
-A collection of one or more points
+A collection of one or more points.
 
 Attributes
 ~~~~~~~~~~~
 
 geoms : sequence
-    A sequence of Points
+    A sequence of Points.
 
 MultiLineString
 ----------------
-A collection of one or more line strings
+A collection of one or more line strings.
 
 A MultiLineString has non-zero length and zero area.
 
@@ -194,7 +181,7 @@ geoms : sequence
 MultiPolygon
 -------------
 
-A collection of one or more polygons
+A collection of one or more polygons.
 
 Attributes
 ~~~~~~~~~~~~~
@@ -205,7 +192,7 @@ geoms : sequence
 GeometryCollection
 -------------------
 A heterogenous collection of geometries (Points, LineStrings, LinearRings
-and Polygons)
+and Polygons).
 
 Attributes
 ~~~~~~~~~~~
@@ -213,7 +200,7 @@ geoms : sequence
     A sequence of geometry instances
 
 Please note:
-GEOMETRYCOLLECTION isn't supported by the Shapefile format.
+``GEOMETRYCOLLECTION`` isn't supported by the Shapefile format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
@@ -225,9 +212,6 @@ Example
     >>> p2 = geometry.Point(1.0, -1.0)
     >>> geoms = [p, p2]
     >>> c = geometry.GeometryCollection(geoms)
-    >>> c.__geo_interface__
-    {'type': 'GeometryCollection', 'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},/
-    {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     >>> [geom for geom in geoms]
     [Point(1.0, -1.0), Point(1.0, -1.0)]
 
@@ -244,7 +228,7 @@ properties : dict
 
 Example
 ~~~~~~~~
-
+      >>> from pygeoif import Point, Feature
       >>> p = Point(1.0, -1.0)
       >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
       >>> a = Feature(p, props)
@@ -265,36 +249,30 @@ features: sequence
 Example
 ~~~~~~~~
 
-    >>> from pygeoif import geometry
-    >>> p = geometry.Point(1.0, -1.0)
+    >>> from pygeoif import Point, Feature, FeatureCollection
+    >>> p = Point(1.0, -1.0)
     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
-    >>> a = geometry.Feature(p, props)
-    >>> p2 = geometry.Point(1.0, -1.0)
+    >>> a = Feature(p, props)
+    >>> p2 = Point(1.0, -1.0)
     >>> props2 = {'Name': 'Sample Point2', 'Other': 'Other Data2'}
-    >>> b = geometry.Feature(p2, props2)
+    >>> b = Feature(p2, props2)
     >>> features = [a, b]
-    >>> c = geometry.FeatureCollection(features)
-    >>> c.__geo_interface__
-    {'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},/
-     'type': 'Feature', 'properties': {'Other': 'Other Data', 'Name': 'Sample Point'}},/
-     {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)}, 'type': 'Feature',/
-     'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+    >>> c = FeatureCollection(features)
     >>> [feature for feature in c]
-    [<Feature Instance Point geometry 2 properties>, <Feature Instance Point geometry 2 properties>]
+    [Feature(Point(1.0, -1.0), {'Name': 'Sample Point', 'Other': 'Other Data'},...]
 
 Functions
 =========
 
-as_shape
+shape
 --------
 
-Create a pygeoif feature from an object that provides the __geo_interface__
-
+Create a pygeoif feature from an object that provides the ``__geo_interface__``.
 
     >>> from shapely.geometry import Point
-    >>> from pygeoif import geometry
-    >>> geometry.as_shape(Point(0,0))
-    <pygeoif.geometry.Point object at 0x...>
+    >>> from pygeoif import geometry, shape
+    >>> shape(Point(0,0))
+    Point(0.0, 0.0)
 
 
 from_wkt
@@ -302,9 +280,9 @@ from_wkt
 
 Create a geometry from its WKT representation
 
-
-    >>> p = geometry.from_wkt('POINT (0 1)')
-    >>> print p
+    >>> from pygeoif import from_wkt
+    >>> p = from_wkt('POINT (0 1)')
+    >>> print(p)
     POINT (0.0 1.0)
 
 
@@ -315,18 +293,25 @@ Return the signed area enclosed by a ring using the linear time
 algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
 indicates a counter-clockwise oriented ring.
 
+
 orient
 -------
+Returns a copy of a polygon with exteriors and interiors in the right orientation.
 
-Returns a copy of the polygon with exterior in counter-clockwise and
-interiors in clockwise orientation for sign=1.0 and the other way round
-for sign=-1.0
+if ccw is True than the exterior will be in counterclockwise orientation
+and the interiors will be in clockwise orientation, or
+the other way round when ccw is False.
+
+
+box
+---
+Return a rectangular polygon with configurable normal vector.
 
 
 mapping
 -------
 
-Returns the __geo_interface__ dictionary
+Return the ``__geo_interface__`` dictionary.
 
 
 Development
@@ -342,23 +327,20 @@ You can install PyGeoIf from pypi using pip::
 Testing
 -------
 
-In order to provide a Travis-CI like testing of the PyGeoIf package during
-development, you can use tox (``pip install tox``) to evaluate the tests on
-all supported Python interpreters which you have installed on your system.
+Install the requirements with ``pip install -r test-requirements.txt``
+and run the unit and static tests with::
 
-You can run the tests with ``tox --skip-missin-interpreters`` and are looking
-for output similar to the following::
+    pytest pygeoif
+    pytest --doctest-glob="README.rst"
+    yesqa pygeoif/*.py
+    black pygeoif
+    flake8 pygeoif
+    mypy pygeoif
 
-    ______________________________________________________ summary ______________________________________________________
-    SKIPPED:  py26: InterpreterNotFound: python2.6
-      py27: commands succeeded
-    SKIPPED:  py32: InterpreterNotFound: python3.2
-    SKIPPED:  py33: InterpreterNotFound: python3.3
-      py34: commands succeeded
-    SKIPPED:  pypy: InterpreterNotFound: pypy
-    SKIPPED:  pypy3: InterpreterNotFound: pypy3
-      congratulations :)
 
-You are primarily looking for the ``congratulations :)`` line at the bottom,
-signifying that the code is working as expected on all configurations
-available.
+Acknowledgments
+================
+
+The tests were improved with mutmut_ which discovered some nasty edge cases.
+
+.. _mutmut: https://github.com/boxed/mutmut

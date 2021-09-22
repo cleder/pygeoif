@@ -2,9 +2,11 @@
 .tox/
 *.egg/
 *.egg-info/
+build/
+dist/
 .idea/
-
+.vscode/
 *.pyc
-
-
-
+venv/
+coverage.xml
+.mutmut-cache
