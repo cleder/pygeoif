@@ -51,6 +51,11 @@ jobs:
           flake8 pygeoif
           black --check pygeoif
           yamllint .github/workflows/
+      - name: Check complexity
+        run: |
+          radon cc --min B pygeoif
+          radon mi --min B pygeoif
+          lizard -l python -w pygeoif
 
   pypy:
     runs-on: ubuntu-latest
