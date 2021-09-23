@@ -43,6 +43,7 @@ pip-check
 pybetter
 pytest
 pytest-cov
+pytest-randomly
 radon
 removestar
 yamllint
