@@ -17,13 +17,16 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """Functions for geometries."""
+from itertools import groupby
 from typing import Iterable
 from typing import List
 from typing import Tuple
+from typing import Union
 from typing import cast
 
 from pygeoif.types import LineType
 from pygeoif.types import Point2D
+from pygeoif.types import PointType
 
 
 def signed_area(coords: LineType) -> float:
@@ -126,4 +129,9 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
     return lower[:-1] + upper
 
 
-__all__ = ["convex_hull", "signed_area"]
+def dedupe(coords: LineType) -> Union[LineType, PointType]:
+    """Use itertools.groupby to remove duplicate Points from a LineString."""
+    return tuple(coord for coord, _count in groupby(coords))
+
+
+__all__ = ["convex_hull", "dedupe", "signed_area"]
