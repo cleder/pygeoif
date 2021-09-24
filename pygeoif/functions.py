@@ -129,7 +129,7 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 
 
 def dedupe(coords: LineType) -> LineType:
-    """Use itertools.groupby to remove duplicate Points from a LineString."""
+    """Remove duplicate Points from a LineString."""
     return tuple(coord for coord, _count in groupby(coords))
 
 

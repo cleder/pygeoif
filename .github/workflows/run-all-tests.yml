@@ -23,11 +23,12 @@ jobs:
           pip install pytest pytest-cov typing_extensions
       - name: Test with pytest
         run: |
-          pytest pygeoif --cov=pygeoif --cov-fail-under=100
+          pytest pygeoif --cov=pygeoif --cov-fail-under=100 --cov-report=xml
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v2
         with:
           fail_ci_if_error: true
+          verbose: true
 
   static-tests:
     runs-on: ubuntu-latest
