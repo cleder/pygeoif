@@ -21,12 +21,10 @@ from itertools import groupby
 from typing import Iterable
 from typing import List
 from typing import Tuple
-from typing import Union
 from typing import cast
 
 from pygeoif.types import LineType
 from pygeoif.types import Point2D
-from pygeoif.types import PointType
 
 
 def signed_area(coords: LineType) -> float:
@@ -48,6 +46,7 @@ def signed_area(coords: LineType) -> float:
 
 
 def centroid(coords: LineType) -> Tuple[Point2D, float]:
+    """Calculate the coordinates of the centroid and the area of a LineString."""
     ans: List[float] = [0, 0]
 
     n = len(coords)
@@ -129,9 +128,9 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
     return lower[:-1] + upper
 
 
-def dedupe(coords: LineType) -> Union[LineType, PointType]:
+def dedupe(coords: LineType) -> LineType:
     """Use itertools.groupby to remove duplicate Points from a LineString."""
     return tuple(coord for coord, _count in groupby(coords))
 
 
-__all__ = ["convex_hull", "dedupe", "signed_area"]
+__all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]

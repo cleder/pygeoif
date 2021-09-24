@@ -6,6 +6,7 @@ import pytest
 
 from pygeoif.functions import centroid
 from pygeoif.functions import convex_hull
+from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
 
 
@@ -256,3 +257,24 @@ def test_random():
         if len(hull) > 3:
             _, area = centroid(tuple(hull))
             assert abs(area - signed_area(hull)) < 0.001
+
+
+def test_dedupe_point():
+
+    assert dedupe(((1, 2, 3),) * 10) == ((1, 2, 3),)
+
+
+def test_dedupe_line():
+
+    assert dedupe(((1, 2, 3), (4, 5, 6)) * 3) == (
+        (1, 2, 3),
+        (4, 5, 6),
+        (1, 2, 3),
+        (4, 5, 6),
+        (1, 2, 3),
+        (4, 5, 6),
+    )
+
+
+def test_dedupe_line2():
+    assert dedupe(((1, 2, 3),) * 2 + ((4, 5, 6),) * 3) == ((1, 2, 3), (4, 5, 6))
