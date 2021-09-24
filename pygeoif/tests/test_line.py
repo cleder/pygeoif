@@ -179,3 +179,18 @@ def test_from_coordinates():
     line = geometry.LineString([(0, 0), (1, 0), (2, 2)])
 
     assert geometry.LineString.from_coordinates(line.coords) == line
+
+def test_maybe_valid():
+    line = geometry.LineString([(0, 0), (1, 0)])
+
+    assert line.maybe_valid
+
+def test_maybe_valid_point():
+    line = geometry.LineString([(0, 0), (0, 0)])
+
+    assert not line.maybe_valid
+
+def test_maybe_empty():
+    line = geometry.LineString([])
+
+    assert not line.maybe_valid

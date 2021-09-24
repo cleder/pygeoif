@@ -317,6 +317,17 @@ class LineString(_Geometry):
         return self._geoms[0].has_z
 
     @property
+    def maybe_valid(self) -> bool:
+        """
+        Check validity of the coordinates.
+
+        Returns False if the coordinates colapse to a single Point
+        This only highlights obvious problems with this geometry.
+        Even if this test passes the geometry may still be invalid.
+        """
+        return len({p.coords[0] for p in self._geoms}) > 1
+
+    @property
     def _wkt_inset(self) -> str:
         return self.geoms[0]._wkt_inset
 
