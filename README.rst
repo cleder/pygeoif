@@ -8,7 +8,6 @@ implement this protocol:
 
 * `ArcPy <https://www.esri.com/about/newsroom/arcuser/geojson/>`_
 * `descartes <https://docs.descarteslabs.com/>`_
-* `geojson <http://pypi.python.org/pypi/geojson/>`_
 * `PySAL <http://pysal.geodacenter.org/>`_
 * `Shapely <https://github.com/Toblerity/Shapely>`_
 * `pyshp <https://pypi.python.org/pypi/pyshp>`_
