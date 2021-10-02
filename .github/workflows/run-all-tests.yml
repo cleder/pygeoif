@@ -23,10 +23,13 @@ jobs:
           pip install pytest pytest-cov typing_extensions
       - name: Test with pytest
         run: |
-          pytest pygeoif --cov=pygeoif -cov-fail-under=100
-          pytest --doctest-glob="README.rst"
+          pytest pygeoif --cov=pygeoif --cov-fail-under=100 --cov-report=xml
       - name: "Upload coverage to Codecov"
-        uses: codecov/codecov-action@v1
+        if: ${{ matrix.python-version==3.9 }}
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+          verbose: true
 
   static-tests:
     runs-on: ubuntu-latest
@@ -52,6 +55,11 @@ jobs:
           flake8 pygeoif
           black --check pygeoif
           yamllint .github/workflows/
+      - name: Check complexity
+        run: |
+          radon cc --min B pygeoif
+          radon mi --min B pygeoif
+          lizard -l python -w pygeoif
 
   pypy:
     runs-on: ubuntu-latest

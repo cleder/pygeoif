@@ -40,9 +40,11 @@ pep257
 pep8
 pep8-naming
 pip-check
+pre-commit
 pybetter
 pytest
 pytest-cov
+pytest-randomly
 radon
 removestar
 yamllint
