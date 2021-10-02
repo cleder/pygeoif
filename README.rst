@@ -69,7 +69,7 @@ Classes
 
 All classes implement the attribute:
 
-* ``__geo_interface__``: as discussed above, an interface to GeoJson_.
+* ``__geo_interface__``: as discussed above, an interface to GeoJSON_.
 
 All geometry classes implement the attributes:
 
@@ -201,7 +201,7 @@ geoms : sequence
     A sequence of geometry instances
 
 Please note:
-``GEOMETRYCOLLECTION`` isn't supported by the Shapefile or GeoJson_ format.
+``GEOMETRYCOLLECTION`` isn't supported by the Shapefile or GeoJSON_ format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
@@ -346,5 +346,5 @@ Acknowledgments
 The tests were improved with mutmut_ which discovered some nasty edge cases.
 
 .. _mutmut: https://github.com/boxed/mutmut
-.. _GeoJson: https://geojson.org/
+.. _GeoJSON: https://geojson.org/
 .. _fastkml: http://pypi.python.org/pypi/fastkml/
