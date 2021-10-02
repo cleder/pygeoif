@@ -77,7 +77,10 @@ class _Geometry:
         for 1, to a Point.
         """
         if self.has_z:
-            warnings.warn("The convex Hull will only return the projection to 2 xy")
+            warnings.warn(
+                "The convex Hull will only return the projection "
+                "to 2 dimensions xy coordinates",
+            )
         hull = convex_hull(self._prepare_hull())
         if len(hull) == 0:
             return None
@@ -314,6 +317,17 @@ class LineString(_Geometry):
         return self._geoms[0].has_z
 
     @property
+    def maybe_valid(self) -> bool:
+        """
+        Check validity of the coordinates.
+
+        Returns False if the coordinates colapse to a single Point.
+        This only highlights obvious problems with this geometry.
+        Even if this test passes the geometry may still be invalid.
+        """
+        return len({p.coords[0] for p in self._geoms}) > 1
+
+    @property
     def _wkt_inset(self) -> str:
         return self.geoms[0]._wkt_inset
 
@@ -404,7 +418,7 @@ class LinearRing(LineString):
         return signed_area(self.coords) >= 0
 
     @property
-    def is_valid(self) -> bool:
+    def maybe_valid(self) -> bool:
         """
         Check validity of the coordinates.
 
@@ -504,7 +518,7 @@ class Polygon(_Geometry):
         return self._exterior.has_z
 
     @property
-    def is_valid(self) -> bool:
+    def maybe_valid(self) -> bool:
         """
         Check validity of the coordinates.
 
@@ -513,11 +527,9 @@ class Polygon(_Geometry):
         """
         if not self._check_interior_bounds():
             return False
-        if not self._exterior.is_valid:
+        if not self._exterior.maybe_valid:
             return False
-        if not all(interior.is_valid for interior in self.interiors):
-            return False
-        return True
+        return all(interior.maybe_valid for interior in self.interiors)
 
     @property
     def _wkt_coords(self) -> str:
@@ -538,17 +550,6 @@ class Polygon(_Geometry):
             "bbox": self.bounds,
             "coordinates": coords,
         }
-
-    @classmethod
-    def from_bounds(
-        cls,
-        xmin: float,
-        ymin: float,
-        xmax: float,
-        ymax: float,
-    ) -> "Polygon":
-        """Construct a `Polygon()` from spatial bounds."""
-        return cls([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin)])
 
     @classmethod
     def from_coordinates(cls, coordinates: PolygonType) -> "Polygon":

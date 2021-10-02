@@ -17,6 +17,7 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """Functions for geometries."""
+from itertools import groupby
 from typing import Iterable
 from typing import List
 from typing import Tuple
@@ -45,6 +46,7 @@ def signed_area(coords: LineType) -> float:
 
 
 def centroid(coords: LineType) -> Tuple[Point2D, float]:
+    """Calculate the coordinates of the centroid and the area of a LineString."""
     ans: List[float] = [0, 0]
 
     n = len(coords)
@@ -126,4 +128,9 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
     return lower[:-1] + upper
 
 
-__all__ = ["convex_hull", "signed_area"]
+def dedupe(coords: LineType) -> LineType:
+    """Remove duplicate Points from a LineString."""
+    return tuple(coord for coord, _count in groupby(coords))
+
+
+__all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]

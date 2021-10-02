@@ -48,43 +48,54 @@ CoordinatesType = Union[
 ]
 MultiCoordinatesType = Sequence[CoordinatesType]
 
-GeoInterface = TypedDict(
-    "GeoInterface",
-    {
-        "type": str,
-        "coordinates": Union[CoordinatesType, MultiCoordinatesType],
-        "bbox": Bounds,
-    },
-    total=False,  # bbox is optional
-)
 
-GeoCollectionInterface = TypedDict(
-    "GeoCollectionInterface",
-    {"type": str, "geometries": Sequence[GeoInterface]},
-)
+class GeoInterfaceBase(TypedDict):
+    """Required keys for the GeoInterface."""
 
-GeoFeatureInterface = TypedDict(
-    "GeoFeatureInterface",
-    {
-        "type": str,
-        "geometry": GeoInterface,
-        "bbox": Bounds,
-        "properties": Dict[str, Any],
-        "id": Union[str, int],
-    },
-    total=False,  # bbox, properties and id are optional
-)
+    type: str
+    coordinates: Union[CoordinatesType, MultiCoordinatesType]
 
-GeoFeatureCollectionInterface = TypedDict(
-    "GeoFeatureCollectionInterface",
-    {
-        "type": str,
-        "bbox": Bounds,
-        "features": Sequence[GeoFeatureInterface],
-        "id": Union[str, int],
-    },
-    total=False,  # bbox and id are optional
-)
+
+class GeoInterface(GeoInterfaceBase, total=False):
+    """Geointerfaces provides an optional bbox."""
+
+    bbox: Bounds
+
+
+class GeoCollectionInterface(TypedDict):
+    """Geometry Collection Interface."""
+
+    type: str
+    geometries: Sequence[GeoInterface]
+
+
+class GeoFeatureInterfaceBase(TypedDict):
+    """Required keys for the GeoInterface for Features."""
+
+    type: str
+    geometry: GeoInterface
+
+
+class GeoFeatureInterface(GeoFeatureInterfaceBase, total=False):
+    """The GeoFeatureInterface has optional keys."""
+
+    bbox: Bounds
+    properties: Dict[str, Any]
+    id: Union[str, int]
+
+
+class GeoFeatureCollectionInterfaceBase(TypedDict):
+    """Required Keys for the GeoInterface of a FeatureCollection."""
+
+    type: str
+    features: Sequence[GeoFeatureInterface]
+
+
+class GeoFeatureCollectionInterface(GeoFeatureCollectionInterfaceBase, total=False):
+    """Bbox and id are optional keys for the GeoFeatureCollectionInterface."""
+
+    bbox: Bounds
+    id: Union[str, int]
 
 
 class GeoType(Protocol):

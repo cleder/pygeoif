@@ -201,14 +201,6 @@ def test_hasz():
     assert polygon.has_z
 
 
-def test_from_bounds():
-    polygon = geometry.Polygon(
-        ((0, 0), (0, 1), (1, 1), (1, 0), (0, 0)),
-    )
-
-    assert geometry.Polygon.from_bounds(0, 0, 1, 1) == polygon
-
-
 def test_convex_hull():
     polygon = geometry.Polygon([(0, 0), (1, 1), (2, 2)])
 
@@ -257,12 +249,12 @@ def test_from_coordinates_with_holes():
     assert geometry.Polygon.from_coordinates(polygon.coords) == polygon
 
 
-def test_is_valid():
+def test_maybe_valid():
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(0.5, 0.5), (1, 1), (0.5, 1)]
     polygon = geometry.Polygon(e, [i])
 
-    assert polygon.is_valid
+    assert polygon.maybe_valid
 
 
 def test_is_invalid_hole_too_big_y():
@@ -270,7 +262,7 @@ def test_is_invalid_hole_too_big_y():
     i = [(0.5, 0.5), (1, 3), (0.5, 1)]
     polygon = geometry.Polygon(e, [i])
 
-    assert not polygon.is_valid
+    assert not polygon.maybe_valid
 
 
 def test_is_invalid_hole_too_big_x():
@@ -278,7 +270,7 @@ def test_is_invalid_hole_too_big_x():
     i = [(0.5, 0.5), (3, 1), (0.5, 1)]
     polygon = geometry.Polygon(e, [i])
 
-    assert not polygon.is_valid
+    assert not polygon.maybe_valid
 
 
 def test_is_invalid_hole_too_big_min():
@@ -286,14 +278,14 @@ def test_is_invalid_hole_too_big_min():
     i = [(-0.5, -0.5), (3, 1), (0.5, 1)]
     polygon = geometry.Polygon(e, [i])
 
-    assert not polygon.is_valid
+    assert not polygon.maybe_valid
 
 
 def test_is_invalid_exterior():
     e = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
     polygon = geometry.Polygon(e)
 
-    assert not polygon.is_valid
+    assert not polygon.maybe_valid
 
 
 def test_is_invalid_interior():
@@ -301,4 +293,4 @@ def test_is_invalid_interior():
     i = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
     polygon = geometry.Polygon(e, [i])
 
-    assert not polygon.is_valid
+    assert not polygon.maybe_valid

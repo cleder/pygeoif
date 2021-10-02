@@ -20,7 +20,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = "1.0.beta.5"
+version = "1.0.beta.7"
 
 README = open("README.rst").read()
 HISTORY = open(os.path.join("docs", "HISTORY.txt")).read()
@@ -34,8 +34,8 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -44,7 +44,7 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Development Status :: 4 - Beta",
-        #"Development Status :: 5 - Production/Stable",
+        # "Development Status :: 5 - Production/Stable",
         "Operating System :: OS Independent",
     ],
     # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers

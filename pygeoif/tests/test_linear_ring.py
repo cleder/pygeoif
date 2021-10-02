@@ -149,34 +149,34 @@ def test_convex_hull_linear_ring():
     assert line.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
 
 
-def test_is_valid_cossing():
+def test_maybe_valid_cossing():
     line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, -1)])
 
-    assert not line.is_valid
+    assert not line.maybe_valid
 
 
-def test_is_valid_no_area():
+def test_maybe_valid_no_area():
     line = geometry.LinearRing([(0, 0), (1, 1)])
 
-    assert not line.is_valid
+    assert not line.maybe_valid
 
 
-def test_is_valid_x_line():
+def test_maybe_valid_x_line():
     line = geometry.LinearRing([(0, 0), (1, 0)])
 
-    assert not line.is_valid
+    assert not line.maybe_valid
 
 
-def test_is_valid_y_line():
+def test_maybe_valid_y_line():
     line = geometry.LinearRing([(0, 0), (0, 1)])
 
-    assert not line.is_valid
+    assert not line.maybe_valid
 
 
-def test_is_valid_happy():
+def test_maybe_valid_happy():
     line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, 0)])
 
-    assert line.is_valid
+    assert line.maybe_valid
 
 
 def test_valid_3d():
@@ -186,7 +186,7 @@ def test_valid_3d():
         exceptions.DimensionError,
         match="^Validation is only implemented for 2D coordinates$",
     ):
-        assert line.is_valid
+        assert line.maybe_valid
 
 
 def test_is_ccw():

@@ -1,6 +1,11 @@
 """Mutmut configuration."""
 
-files_to_mutate = ["pygeoif/geometry.py", "pygeoif/feature.py", "pygeoif/factories.py", 'pygeoif/functions.py']
+files_to_mutate = [
+    "pygeoif/geometry.py",
+    "pygeoif/feature.py",
+    "pygeoif/factories.py",
+    "pygeoif/functions.py",
+]
 
 
 def pre_mutation(context):
