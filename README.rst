@@ -69,17 +69,17 @@ Classes
 
 All classes implement the attribute:
 
-* __geo_interface__: as discussed above, an interface to GeoJSON_.
+* ``__geo_interface__``: as discussed above, an interface to GeoJson_.
 
 All geometry classes implement the attributes:
 
-* geom_type: Returns a string specifying the Geometry Type of the object
-* bounds: Returns a (minx, miny, maxx, maxy) tuple that bounds the object.
-* wkt: Returns the 'Well Known Text' representation of the object
+* ``geom_type``: Returns a string specifying the Geometry Type of the object
+* ``bounds``: Returns a (minx, miny, maxx, maxy) tuple that bounds the object.
+* ``wkt``: Returns the 'Well Known Text' representation of the object
 
 For two-dimensional geometries the following methods are implemented:
 
-* convex_hull: Returns a representation of the smallest convex Polygon containing
+* ``convex_hull``: Returns a representation of the smallest convex Polygon containing
   all the points in the object unless the number of points in the object is less than three.
   For two points, the convex hull collapses to a LineString; for 1, a Point.
   For three dimensional objects only their projection in the xy plane is taken into consideration.
