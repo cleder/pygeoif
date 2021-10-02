@@ -27,8 +27,6 @@ you feel right at home with pygeoif.
 
 It was written to provide clean and python only geometries for fastkml_
 
-.. _fastkml: http://pypi.python.org/pypi/fastkml/
-
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
 
@@ -40,6 +38,9 @@ It was written to provide clean and python only geometries for fastkml_
 
 .. image:: https://img.shields.io/badge/type%20checker-mypy-blue
     :target: http://mypy-lang.org/
+
+.. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
+    :target: https://www.openhub.net/p/pygeoif/
 
 Example
 ========
@@ -68,7 +69,7 @@ Classes
 
 All classes implement the attribute:
 
-* __geo_interface__: as discussed above, an interface to ``GeoJSON``.
+* __geo_interface__: as discussed above, an interface to GeoJSON_.
 
 All geometry classes implement the attributes:
 
@@ -150,7 +151,7 @@ exterior : LinearRing
     The ring which bounds the positive space of the polygon.
 interiors : sequence
     A sequence of rings which bound all existing holes.
-is_valid: boolean
+maybe_valid: boolean
     When a polygon has obvious problems such as self crossing
     lines or holes that are outside the exterior bounds this will
     return False. Even if this returns True the geometry may still be invalid,
@@ -200,7 +201,7 @@ geoms : sequence
     A sequence of geometry instances
 
 Please note:
-``GEOMETRYCOLLECTION`` isn't supported by the Shapefile format.
+``GEOMETRYCOLLECTION`` isn't supported by the Shapefile or GeoJson_ format.
 And this sub-class isn't generally supported by ordinary GIS sw (viewers and so on).
 So it's very rarely used in the real GIS professional world.
 
@@ -267,7 +268,8 @@ Functions
 shape
 --------
 
-Create a pygeoif feature from an object that provides the ``__geo_interface__``.
+Create a pygeoif feature from an object that provides the ``__geo_interface__``
+or any GeoJSON_ compatible dictionary.
 
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry, shape
@@ -344,3 +346,5 @@ Acknowledgments
 The tests were improved with mutmut_ which discovered some nasty edge cases.
 
 .. _mutmut: https://github.com/boxed/mutmut
+.. _GeoJson: https://geojson.org/
+.. _fastkml: http://pypi.python.org/pypi/fastkml/
