@@ -20,8 +20,8 @@
 """Geometries in pure Python."""
 import warnings
 from itertools import chain
-from typing import Iterator
 from typing import Iterable
+from typing import Iterator
 from typing import NoReturn
 from typing import Optional
 from typing import Sequence
