@@ -6,6 +6,7 @@ bandit
 black
 #cohesion
 flake8
+flake8-absolute-import
 flake8-awesome
 flake8-blind-except
 flake8-bugbear
