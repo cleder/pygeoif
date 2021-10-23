@@ -20,7 +20,7 @@
 """Geometries in pure Python."""
 import warnings
 from itertools import chain
-from typing import Generator
+from typing import Iterator
 from typing import Iterable
 from typing import NoReturn
 from typing import Optional
@@ -102,6 +102,11 @@ class _Geometry:
 
         Return None if the geometry is empty.
         """
+        raise NotImplementedError("Must be implemented by subclass")
+
+    @property
+    def is_empty(self) -> bool:
+        """Return if this geometry is empty."""
         raise NotImplementedError("Must be implemented by subclass")
 
     @property
@@ -187,6 +192,11 @@ class Point(_Geometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}{self._coordinates}"
+
+    @property
+    def is_empty(self) -> bool:
+        """A Point is considered empty when it has less than 2 coordinates."""
+        return len(self._coordinates) < 2
 
     @property
     def x(self) -> float:
@@ -310,6 +320,11 @@ class LineString(_Geometry):
         )
 
     @property
+    def is_empty(self) -> bool:
+        """A Linestring is considered empty when it has less than 2 geoms."""
+        return len(self._geoms) < 2
+
+    @property
     def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         if not self.geoms:
@@ -370,7 +385,8 @@ class LineString(_Geometry):
                 )
             last_len = len(coord)
             point = Point(*coord)
-            geoms.append(point)
+            if not point.is_empty:
+                geoms.append(point)
         return tuple(geoms)
 
     def _prepare_hull(self) -> Iterable[Point2D]:
@@ -491,10 +507,15 @@ class Polygon(_Geometry):
         return self._exterior
 
     @property
-    def interiors(self) -> Generator[LinearRing, None, None]:
+    def interiors(self) -> Iterator[LinearRing]:
         """Interiors (Holes) of the polygon."""
         if self._interiors:
             yield from self._interiors
+
+    @property
+    def is_empty(self) -> bool:
+        """A polygon is empty when it does not have an exterior."""
+        return self._exterior.is_empty
 
     @property
     def bounds(self) -> Bounds:
@@ -668,9 +689,13 @@ class MultiPoint(_MultiGeometry):
         return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
 
     @property
-    def geoms(self) -> Generator[Point, None, None]:
+    def geoms(self) -> Iterator[Point]:
         """Return a sequence of Points."""
         yield from self._geoms
+
+    @property
+    def is_empty(self) -> bool:
+        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -742,9 +767,13 @@ class MultiLineString(_MultiGeometry):
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
 
     @property
-    def geoms(self) -> Generator[LineString, None, None]:
+    def geoms(self) -> Iterator[LineString]:
         """Return the LineStrings in the collection."""
         yield from self._geoms
+
+    @property
+    def is_empty(self) -> bool:
+        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -845,7 +874,7 @@ class MultiPolygon(_MultiGeometry):
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
 
     @property
-    def geoms(self) -> Generator[Polygon, None, None]:
+    def geoms(self) -> Iterator[Polygon]:
         """Return the Polygons in the collection."""
         yield from self._geoms
 
@@ -935,7 +964,7 @@ class GeometryCollection(_MultiGeometry):
         Args:
             geometries (Iterable[Geometry]
         """
-        self._geoms = tuple(geometries)
+        self._geoms = tuple(geom for geom in geometries if not geom.is_empty)
 
     def __eq__(self, other: object) -> bool:
         """
@@ -996,9 +1025,13 @@ class GeometryCollection(_MultiGeometry):
         return f"{self.geom_type}({tuple(self._geoms)})"
 
     @property
-    def geoms(self) -> Generator[Geometry, None, None]:
+    def geoms(self) -> Iterator[Geometry]:
         """Iterate over the geometries."""
         yield from self._geoms
+
+    @property
+    def is_empty(self) -> bool:
+        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
