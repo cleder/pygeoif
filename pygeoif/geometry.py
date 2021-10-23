@@ -32,6 +32,7 @@ from typing import cast
 from pygeoif.exceptions import DimensionError
 from pygeoif.functions import centroid
 from pygeoif.functions import convex_hull
+from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
@@ -378,7 +379,7 @@ class LineString(_Geometry):
     def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
         geoms = []
         last_len = None
-        for coord in coordinates:
+        for coord in dedupe(coordinates):
             if len(coord) != last_len and last_len is not None:
                 raise DimensionError(
                     "All coordinates must have the same dimension",
@@ -643,6 +644,11 @@ class _MultiGeometry(_Geometry):
             return None
         return any(geom.has_z for geom in self.geoms)  # type: ignore [attr-defined]
 
+    @property
+    def is_empty(self) -> bool:
+        """Return if collection is not empty and all its member are not empty."""
+        return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
+
 
 class MultiPoint(_MultiGeometry):
     """
@@ -692,10 +698,6 @@ class MultiPoint(_MultiGeometry):
     def geoms(self) -> Iterator[Point]:
         """Return a sequence of Points."""
         yield from self._geoms
-
-    @property
-    def is_empty(self) -> bool:
-        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -770,10 +772,6 @@ class MultiLineString(_MultiGeometry):
     def geoms(self) -> Iterator[LineString]:
         """Return the LineStrings in the collection."""
         yield from self._geoms
-
-    @property
-    def is_empty(self) -> bool:
-        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -1028,10 +1026,6 @@ class GeometryCollection(_MultiGeometry):
     def geoms(self) -> Iterator[Geometry]:
         """Iterate over the geometries."""
         yield from self._geoms
-
-    @property
-    def is_empty(self) -> bool:
-        return bool(self._geoms)
 
     @property
     def _wkt_coords(self) -> str:
