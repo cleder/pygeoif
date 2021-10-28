@@ -199,7 +199,11 @@ class Point(_Geometry):
 
     @property
     def is_empty(self) -> bool:
-        """A Point is considered empty when it has less than 2 coordinates."""
+        """
+        Return if this geometry is empty.
+
+        A Point is considered empty when it has less than 2 coordinates.
+        """
         return len(self._coordinates) < 2
 
     @property
@@ -325,7 +329,11 @@ class LineString(_Geometry):
 
     @property
     def is_empty(self) -> bool:
-        """A Linestring is considered empty when it has less than 2 geoms."""
+        """
+        Return if this geometry is empty.
+
+        A Linestring is considered empty when it has less than 2 points.
+        """
         return len(self._geoms) < 2
 
     @property
@@ -518,7 +526,11 @@ class Polygon(_Geometry):
 
     @property
     def is_empty(self) -> bool:
-        """A polygon is empty when it does not have an exterior."""
+        """
+        Return if this geometry is empty.
+
+        A polygon is empty when it does not have an exterior.
+        """
         return self._exterior.is_empty
 
     @property
