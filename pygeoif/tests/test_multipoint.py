@@ -104,45 +104,51 @@ def test_repr_eval():
 
 
 def test_convex_hull():
-    polygon = geometry.MultiPoint([(0, 0), (1, 1), (2, 2)])
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (2, 2)])
 
-    assert polygon.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+    assert multipoint.convex_hull == geometry.LineString([(0, 0), (2, 2)])
 
 
 def test_convex_hull_3d():
-    polygon = geometry.MultiPoint([(0, 0, 0), (1, 1, 1), (2, 2, 2)])
+    multipoint = geometry.MultiPoint([(0, 0, 0), (1, 1, 1), (2, 2, 2)])
 
-    assert polygon.convex_hull == geometry.LineString([(0, 0), (2, 2)])
+    assert multipoint.convex_hull == geometry.LineString([(0, 0), (2, 2)])
 
 
 def test_convex_hull_3d_collapsed_to_point():
-    polygon = geometry.MultiPoint([(0, 0, 0), (0, 0, 1), (0, 0, 2)])
+    multipoint = geometry.MultiPoint([(0, 0, 0), (0, 0, 1), (0, 0, 2)])
 
-    assert polygon.convex_hull == geometry.Point(0, 0)
+    assert multipoint.convex_hull == geometry.Point(0, 0)
 
 
 def test_convex_hull_linear_ring():
-    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
+    multipoint = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
 
-    assert polygon.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
+    assert multipoint.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
 
 
 def test_from_points():
-    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
+    multipoint = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
     p1 = geometry.Point(0, 0)
     p2 = geometry.Point(1, 0)
     p3 = geometry.Point(2.0, 2.0)
 
-    assert geometry.MultiPoint.from_points(p1, p2, p3) == polygon
+    assert geometry.MultiPoint.from_points(p1, p2, p3) == multipoint
 
 
 def test_from_points_unique():
-    polygon = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)], unique=True)
+    multipoint = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)], unique=True)
     p1 = geometry.Point(0, 0)
     p2 = geometry.Point(1, 0)
     p3 = geometry.Point(2.0, 2.0)
 
     assert (
         geometry.MultiPoint.from_points(p1, p2, p3, p1, p2, p3, p1, unique=True)
-        == polygon
+        == multipoint
     )
+
+
+def test_empty():
+    multipoint = geometry.MultiPoint([(1, None)])
+
+    assert multipoint.is_empty

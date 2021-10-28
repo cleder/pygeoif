@@ -255,3 +255,9 @@ def test_convex_hull():
     assert gc.convex_hull == geometry.Polygon(
         ((-1, -2), (2, 0), (3, 1), (2, 2), (0, 2), (-1, -1), (-1, -2)),
     )
+
+
+def test_is_empty():
+    gc = geometry.GeometryCollection([])
+
+    assert gc.is_empty

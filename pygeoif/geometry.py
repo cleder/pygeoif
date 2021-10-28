@@ -61,6 +61,9 @@ class _Geometry:
         except AttributeError:
             return False
 
+    def __bool__(self) -> bool:
+        return self.is_empty is False
+
     @property
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
@@ -413,7 +416,7 @@ class LinearRing(LineString):
                 A sequence of (x, y [,z]) numeric coordinate pairs or triples
         """
         super().__init__(coordinates)
-        if self._geoms[0].coords != self._geoms[-1].coords:
+        if not self.is_empty and self._geoms[0].coords != self._geoms[-1].coords:
             self._geoms = self._geoms + (self._geoms[0],)
 
     @property

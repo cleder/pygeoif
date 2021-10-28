@@ -159,3 +159,9 @@ def test_from_linestrings_unique():
         (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2))),
         unique=True,
     )
+
+
+def test_is_empty():
+    lines = geometry.MultiLineString([])
+
+    assert lines.is_empty
