@@ -8,7 +8,7 @@ def test_geoms():
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
 
     for point in multipoint.geoms:
-        assert type(point) == geometry.Point
+        assert type(point) is geometry.Point
 
 
 def test_len():

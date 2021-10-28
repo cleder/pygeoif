@@ -8,7 +8,7 @@ def test_geoms():
     )
 
     for line in lines.geoms:
-        assert type(line) == geometry.LineString
+        assert type(line) is geometry.LineString
 
 
 def test_len():

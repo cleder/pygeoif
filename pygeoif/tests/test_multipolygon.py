@@ -13,7 +13,7 @@ def test_geoms():
     )
 
     for poly in polys.geoms:
-        assert type(poly) == geometry.Polygon
+        assert type(poly) is geometry.Polygon
 
 
 def test_len():
