@@ -64,6 +64,12 @@ def test_xyz():
     assert point.z == 2
 
 
+def test_repr_empty():
+    point = geometry.Point(None, None)
+
+    assert repr(point) == "Point()"
+
+
 def test_repr2d():
     point = geometry.Point(1, 0)
 
