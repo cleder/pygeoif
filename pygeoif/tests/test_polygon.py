@@ -300,3 +300,9 @@ def test_empty():
     polygon = geometry.Polygon([])
 
     assert polygon.is_empty
+
+
+def test_empty_wkt():
+    polygon = geometry.Polygon([])
+
+    assert polygon.wkt == "POLYGON EMPTY"

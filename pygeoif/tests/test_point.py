@@ -25,6 +25,12 @@ def test_bool_empty():
     assert not point
 
 
+def test_empty_wkt():
+    point = geometry.Point(None, None)
+
+    assert point.wkt == "POINT EMPTY"
+
+
 def test_bounds():
     point = geometry.Point(1.0, 0.0)
 

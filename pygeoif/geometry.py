@@ -116,6 +116,8 @@ class _Geometry:
     @property
     def wkt(self) -> str:
         """Return the Well Known Text representation of the object."""
+        if self.is_empty:
+            return f"{self._wkt_type} EMPTY"
         return f"{self._wkt_type}{self._wkt_inset}({self._wkt_coords})"
 
     @property

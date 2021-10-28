@@ -261,3 +261,9 @@ def test_is_empty():
     gc = geometry.GeometryCollection([])
 
     assert gc.is_empty
+
+
+def test_empty_wkt():
+    gc = geometry.GeometryCollection([])
+
+    assert gc.wkt == "GEOMETRYCOLLECTION EMPTY"
