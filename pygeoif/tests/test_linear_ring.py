@@ -224,9 +224,9 @@ def test_centroid_crossing():
 
 
 def test_centroid_valid():
-    line = geometry.LinearRing([(0, 0), (2, 0), (2, 2), (0, 2)])
+    line = geometry.LinearRing([(0, 0), (4, 0), (4, 2), (0, 2)])
 
-    assert line.centroid == geometry.Point(1, 1)
+    assert line.centroid == geometry.Point(2, 1)
 
 
 def test_centroid_invalid():

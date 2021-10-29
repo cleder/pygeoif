@@ -283,7 +283,7 @@ def test_is_invalid_hole_too_big_y():
         (4, -1),
     )
     interiors_gen = (
-        ((1 + (i & 1), 1), (3 - (i & 1), 3), outside[i]) for i in range(len(e))
+        ((1 + (i & 1), 1), (3, 3 - (i & 1)), outside[i]) for i in range(len(e))
     )
     for polygon in (geometry.Polygon(e, [interior]) for interior in interiors_gen):
         assert not polygon.maybe_valid
