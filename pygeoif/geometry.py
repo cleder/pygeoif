@@ -479,7 +479,7 @@ class LinearRing(LineString):
         if self.has_z:
             raise DimensionError("Validation is only implemented for 2D coordinates")
         bbox = self.bounds
-        if bbox[0] == bbox[2] or bbox[1] == bbox[3]:
+        if bbox[0] == bbox[2] or bbox[1] == bbox[3]:  # type: ignore [misc]
             return False
         try:
             _, area = centroid(self.coords)
@@ -625,16 +625,18 @@ class Polygon(_Geometry):
     def _check_interior_bounds(self) -> bool:
         """Check that the bounding boxes of holes are inside the bounds of the shell."""
         bounds = self.bounds
+        if not bounds:
+            return False
         for interior in self.interiors:
             i_box = interior.bounds
-            if bounds[0] > i_box[0] or bounds[1] > i_box[1]:
+            if bounds[0] > i_box[0] or bounds[1] > i_box[1]:  # type: ignore [misc]
                 return False
-            if bounds[2] < i_box[2] or bounds[3] < i_box[3]:
+            if bounds[2] < i_box[2] or bounds[3] < i_box[3]:  # type: ignore [misc]
                 return False
         return True
 
     def _get_bounds(self) -> Bounds:
-        return self.exterior.bounds
+        return self.exterior._get_bounds()
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return self.exterior._prepare_hull()
@@ -737,6 +739,11 @@ class MultiPoint(_MultiGeometry):
         return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
 
     @property
+    def geoms(self) -> Iterator[Point]:
+        """Iterate over the points."""
+        yield from (cast(Point, p) for p in super().geoms)
+
+    @property
     def _wkt_coords(self) -> str:
         return ", ".join(point._wkt_coords for point in self.geoms)
 
@@ -802,6 +809,11 @@ class MultiLineString(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
+
+    @property
+    def geoms(self) -> Iterator[LineString]:
+        """Iterate over the points."""
+        yield from (cast(LineString, line) for line in super().geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -898,6 +910,11 @@ class MultiPolygon(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
+
+    @property
+    def geoms(self) -> Iterator[Polygon]:
+        """Iterate over the points."""
+        yield from (cast(Polygon, p) for p in super().geoms)
 
     @property
     def _wkt_coords(self) -> str:
