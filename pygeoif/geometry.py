@@ -51,6 +51,11 @@ class _Geometry:
         return self.wkt
 
     def __eq__(self, other: object) -> bool:
+        """
+        Check if the geometry objects have the same coordinates and type.
+
+        Empty geometries are always considered as not equal.
+        """
         try:
             return bool(
                 self.__geo_interface__["type"]
@@ -124,7 +129,13 @@ class _Geometry:
 
     @property
     def __geo_interface__(self) -> GeoInterface:
-        raise NotImplementedError("Must be implemented by subclass")
+        if self.is_empty:
+            raise AttributeError("Empty Geometry")
+        return {
+            "type": self.geom_type,
+            "bbox": cast(Bounds, self.bounds),
+            "coordinates": (),
+        }
 
     @property
     def _wkt_coords(self) -> str:
@@ -254,11 +265,13 @@ class Point(_Geometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": cast(PointType, tuple(self._coordinates)),
-        }
+        geo_interface = super().__geo_interface__
+        geo_interface.update(
+            {
+                "coordinates": cast(PointType, tuple(self._coordinates)),
+            }
+        )
+        return geo_interface
 
     @classmethod
     def from_coordinates(cls, coordinates: Tuple[PointType]) -> "Point":
@@ -359,11 +372,13 @@ class LineString(_Geometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": self.coords,
-        }
+        geo_interface = super().__geo_interface__
+        geo_interface.update(
+            {
+                "coordinates": self.coords,
+            }
+        )
+        return geo_interface
 
     @classmethod
     def from_coordinates(cls, coordinates: Tuple[PointType]) -> "LineString":
@@ -580,12 +595,10 @@ class Polygon(_Geometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
+        geo_interface = super().__geo_interface__
         coords = (self.exterior.coords,) + tuple(hole.coords for hole in self.interiors)
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": coords,
-        }
+        geo_interface["coordinates"] = coords
+        return geo_interface
 
     @classmethod
     def from_coordinates(cls, coordinates: PolygonType) -> "Polygon":
@@ -675,8 +688,6 @@ class _MultiGeometry(_Geometry):
         return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
 
 
-
-
 class MultiPoint(_MultiGeometry):
     """
     A collection of one or more points.
@@ -728,11 +739,9 @@ class MultiPoint(_MultiGeometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": tuple(g.coords[0] for g in self._geoms),
-        }
+        geo_interface = super().__geo_interface__
+        geo_interface["coordinates"] = tuple(geom.coords[0] for geom in self.geoms)
+        return geo_interface
 
     @classmethod
     def from_points(cls, *args: Point, unique: bool = False) -> "MultiPoint":
@@ -797,11 +806,9 @@ class MultiLineString(_MultiGeometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": tuple(tuple(g.coords) for g in self.geoms),
-        }
+        geo_interface = super().__geo_interface__
+        geo_interface["coordinates"] = tuple(geom.coords for geom in self.geoms)
+        return geo_interface
 
     @classmethod
     def from_linestrings(
@@ -895,15 +902,13 @@ class MultiPolygon(_MultiGeometry):
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
+        geo_interface = super().__geo_interface__
         coords = tuple(
             (geom.exterior.coords,) + tuple(hole.coords for hole in geom.interiors)
             for geom in self.geoms
         )
-        return {
-            "type": self.geom_type,
-            "bbox": self.bounds,
-            "coordinates": coords,
-        }
+        geo_interface["coordinates"] = coords
+        return geo_interface
 
     @classmethod
     def from_polygons(cls, *args: Polygon, unique: bool = False) -> "MultiPolygon":
@@ -974,7 +979,7 @@ class GeometryCollection(_MultiGeometry):
         Args:
             geometries (Iterable[Geometry]
         """
-        self._geoms = tuple(geom for geom in geometries if not geom.is_empty)
+        self._geoms = tuple(geom for geom in geometries if geom)
 
     def __eq__(self, other: object) -> bool:
         """
