@@ -266,3 +266,16 @@ def test_is_empty():
     polys = geometry.MultiPolygon([])
 
     assert polys.is_empty
+
+
+def test_empty_wkt():
+    polys = geometry.MultiPolygon([])
+
+    assert polys.wkt == "MULTIPOLYGON EMPTY"
+
+
+def test_repr_empty():
+
+    polys = geometry.MultiPolygon([])
+
+    assert repr(polys) == "MultiPolygon(())"

@@ -66,7 +66,9 @@ class _Geometry:
 
     @property
     def bounds(self) -> Bounds:
-        """Return the X-Y bounding box."""
+        """Returns minimum bounding region (minx, miny, maxx, maxy)"""
+        if self.is_empty:
+            return ()
         raise NotImplementedError("Must be implemented by subclass")
 
     @property
@@ -662,6 +664,11 @@ class _MultiGeometry(_Geometry):
         return any(geom.has_z for geom in self.geoms)  # type: ignore [attr-defined]
 
     @property
+    def geoms(self) -> Iterator[_Geometry]:
+        """Iterate over the geometries."""
+        yield from (geom for geom in self._geoms if not geom.is_empty)
+
+    @property
     def is_empty(self) -> bool:
         """Return if collection is not empty and all its member are not empty."""
         return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
@@ -710,11 +717,6 @@ class MultiPoint(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
-
-    @property
-    def geoms(self) -> Iterator[Point]:
-        """Return a sequence of Points."""
-        yield from self._geoms
 
     @property
     def _wkt_coords(self) -> str:
@@ -784,11 +786,6 @@ class MultiLineString(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
-
-    @property
-    def geoms(self) -> Iterator[LineString]:
-        """Return the LineStrings in the collection."""
-        yield from self._geoms
 
     @property
     def _wkt_coords(self) -> str:
@@ -887,11 +884,6 @@ class MultiPolygon(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
-
-    @property
-    def geoms(self) -> Iterator[Polygon]:
-        """Return the Polygons in the collection."""
-        yield from self._geoms
 
     @property
     def _wkt_coords(self) -> str:
@@ -1037,12 +1029,7 @@ class GeometryCollection(_MultiGeometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}({tuple(self._geoms)})"
-
-    @property
-    def geoms(self) -> Iterator[Geometry]:
-        """Iterate over the geometries."""
-        yield from self._geoms
+        return f"{self.geom_type}({tuple(self.geoms)})"
 
     @property
     def _wkt_coords(self) -> str:

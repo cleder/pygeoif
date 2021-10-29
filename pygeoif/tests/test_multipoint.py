@@ -152,3 +152,9 @@ def test_empty():
     multipoint = geometry.MultiPoint([(1, None)])
 
     assert multipoint.is_empty
+
+
+def test_repr_empty():
+    multipoint = geometry.MultiPoint([(None, None)])
+
+    assert repr(multipoint) == "MultiPoint(((),))"

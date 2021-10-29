@@ -165,3 +165,9 @@ def test_is_empty():
     lines = geometry.MultiLineString([])
 
     assert lines.is_empty
+
+
+def test_repr_empty():
+    lines = geometry.MultiLineString([])
+
+    assert repr(lines) == "MultiLineString(())"
