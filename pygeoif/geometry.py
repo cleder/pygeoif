@@ -675,8 +675,6 @@ class _MultiGeometry(_Geometry):
         return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
 
 
-
-
 class MultiPoint(_MultiGeometry):
     """
     A collection of one or more points.
