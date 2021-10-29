@@ -622,8 +622,7 @@ class Polygon(_Geometry):
             return False
         for interior in self.interiors:
             i_box = interior.bounds
-            if not i_box:
-                continue
+            assert i_box  # noqa: S101 # nosec
             if (
                 bounds[0] > i_box[0]
                 or bounds[1] > i_box[1]
