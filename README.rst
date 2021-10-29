@@ -26,7 +26,7 @@ you feel right at home with pygeoif.
 
 It was written to provide clean and python only geometries for fastkml_
 
-.. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg
+.. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg?branch=main
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
 
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X

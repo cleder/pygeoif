@@ -130,6 +130,13 @@ def test_geo_interface():
     }
 
 
+def test_geo_interface_empty():
+    point = geometry.Point(None, None)
+
+    with pytest.raises(AttributeError, match="^Empty Geometry$"):
+        point.__geo_interface__
+
+
 def test_from_dict():
     point = geometry.Point._from_dict({"type": "Point", "coordinates": (0.0, 1.0, 2.0)})
 
@@ -207,3 +214,9 @@ def test_from_coordinates_3d():
     point = geometry.Point(1, 2, 3)
 
     assert geometry.Point.from_coordinates(point.coords) == point
+
+
+def test_empty_bounds():
+    point = geometry.Point(None, None)
+
+    assert point.bounds == ()

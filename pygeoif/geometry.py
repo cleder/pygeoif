@@ -71,7 +71,11 @@ class _Geometry:
 
     @property
     def bounds(self) -> Union[Bounds, Tuple[()]]:
-        """Returns minimum bounding region (min x, min y, max x, max y)"""
+        """
+        Return minimum bounding region (min x, min y, max x, max y)
+
+        An empty geometry returns an empty tuple.
+        """
         if self.is_empty:
             return ()
         return self._get_bounds()

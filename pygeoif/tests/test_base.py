@@ -73,3 +73,10 @@ def test_convex_hull():
         ):
 
             assert base_geo.convex_hull
+
+
+def test_get_bounds():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
+
+        assert base_geo._get_bounds()
