@@ -256,13 +256,25 @@ def test_maybe_valid():
 
     assert polygon.maybe_valid
 
+def test_maybe_valid_touching_hole():
+    """A Hole may touch an exterior at one point."""
+    e = [(0, 0), (0, 4), (4, 4), (4, 0)]
+    interiors_gen = (((1, 1), (2, 3), e[pt]) for pt in range(len(e)))
+    for polygon in (geometry.Polygon(e, [interior]) for interior in interiors_gen):
+        assert polygon.maybe_valid
+
 
 def test_is_invalid_hole_too_big_y():
-    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-    i = [(0.5, 0.5), (1, 3), (0.5, 1)]
-    polygon = geometry.Polygon(e, [i])
-
-    assert not polygon.maybe_valid
+    """A Hole may not cross an exterior."""
+    e = [(0, 0), (0, 4), (4, 4), (4, 0)]
+    outside = (
+        (-1, -1), (-1, 5), (5, 5), (5, -1),
+        (-1, 0), (-1, 4), (5, 4), (5, 0),
+        (0, -1), (0, 5), (4, 5), (4, -1),
+        )
+    interiors_gen = (((1, 1), (2, 3), outside[pt]) for pt in range(len(e)))
+    for polygon in (geometry.Polygon(e, [interior]) for interior in interiors_gen):
+        assert not polygon.maybe_valid
 
 
 def test_is_invalid_hole_too_big_x():

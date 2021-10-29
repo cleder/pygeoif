@@ -134,7 +134,7 @@ def test_geo_interface_empty():
     point = geometry.Point(None, None)
 
     with pytest.raises(AttributeError, match="^Empty Geometry$"):
-        point.__geo_interface__
+        assert point.__geo_interface__
 
 
 def test_from_dict():

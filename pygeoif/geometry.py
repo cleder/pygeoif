@@ -470,8 +470,8 @@ class LinearRing(LineString):
         """
         if self.has_z:
             raise DimensionError("Validation is only implemented for 2D coordinates")
-        bbox = self.bounds
-        if bbox[0] == bbox[2] or bbox[1] == bbox[3]:  # type: ignore [misc]
+        min_x, min_y, max_x, max_y = self.bounds  # type: ignore [misc]
+        if min_x == max_x or min_y == max_y:
             return False
         try:
             _, area = centroid(self.coords)
