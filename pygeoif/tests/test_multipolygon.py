@@ -279,3 +279,9 @@ def test_repr_empty():
     polys = geometry.MultiPolygon([])
 
     assert repr(polys) == "MultiPolygon(())"
+
+
+def test_empty_bounds():
+    polys = geometry.MultiPolygon([])
+
+    assert polys.bounds == ()

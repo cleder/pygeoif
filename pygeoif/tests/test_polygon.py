@@ -312,3 +312,15 @@ def test_repr_empty():
     polygon = geometry.Polygon([])
 
     assert repr(polygon) == "Polygon((),)"
+
+
+def test_empty_bounds():
+    polygon = geometry.Polygon([])
+
+    assert polygon.bounds == ()
+
+
+def test_maybe_valid_empty():
+    polygon = geometry.Polygon([])
+
+    assert not polygon.maybe_valid

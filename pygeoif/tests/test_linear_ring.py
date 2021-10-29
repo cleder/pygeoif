@@ -257,3 +257,9 @@ def test_empty():
     ring = geometry.LinearRing([])
 
     assert ring.is_empty
+
+
+def test_empty_bounds():
+    ring = geometry.LinearRing([])
+
+    assert ring.bounds == ()

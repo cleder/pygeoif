@@ -258,3 +258,9 @@ def test_repr_empty():
     gc = geometry.GeometryCollection([])
 
     assert repr(gc) == "GeometryCollection(())"
+
+
+def test_empty_bounds():
+    gc = geometry.GeometryCollection([])
+
+    assert gc.bounds == ()

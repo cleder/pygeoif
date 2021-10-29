@@ -72,7 +72,7 @@ class _Geometry:
     @property
     def bounds(self) -> Union[Bounds, Tuple[()]]:
         """
-        Return minimum bounding region (min x, min y, max x, max y)
+        Return minimum bounding region (min x, min y, max x, max y).
 
         An empty geometry returns an empty tuple.
         """
@@ -270,11 +270,7 @@ class Point(_Geometry):
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface.update(
-            {
-                "coordinates": cast(PointType, tuple(self._coordinates)),
-            }
-        )
+        geo_interface["coordinates"] = cast(PointType, tuple(self._coordinates))
         return geo_interface
 
     @classmethod
@@ -377,11 +373,7 @@ class LineString(_Geometry):
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface.update(
-            {
-                "coordinates": self.coords,
-            }
-        )
+        geo_interface["coordinates"] = self.coords
         return geo_interface
 
     @classmethod
@@ -544,8 +536,7 @@ class Polygon(_Geometry):
     @property
     def interiors(self) -> Iterator[LinearRing]:
         """Interiors (Holes) of the polygon."""
-        if self._interiors:
-            yield from self._interiors
+        yield from (interior for interior in self._interiors if interior)
 
     @property
     def is_empty(self) -> bool:
@@ -564,7 +555,9 @@ class Polygon(_Geometry):
         Note that this is not implemented in Shaply.
         """
         if self._interiors:
-            return self.exterior.coords, tuple(i.coords for i in self.interiors)
+            return self.exterior.coords, tuple(
+                interior.coords for interior in self.interiors if interior
+            )
         return (self.exterior.coords,)
 
     @property
@@ -629,9 +622,14 @@ class Polygon(_Geometry):
             return False
         for interior in self.interiors:
             i_box = interior.bounds
-            if bounds[0] > i_box[0] or bounds[1] > i_box[1]:  # type: ignore [misc]
-                return False
-            if bounds[2] < i_box[2] or bounds[3] < i_box[3]:  # type: ignore [misc]
+            if not i_box:
+                continue
+            if (
+                bounds[0] > i_box[0]
+                or bounds[1] > i_box[1]
+                or bounds[2] < i_box[2]
+                or bounds[3] < i_box[3]
+            ):
                 return False
         return True
 
@@ -676,6 +674,11 @@ class _MultiGeometry(_Geometry):
             if not geom.is_empty
         )
 
+    @property
+    def is_empty(self) -> bool:
+        """Return if collection is not empty and all its member are not empty."""
+        return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
+
     def _get_bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         geom_bounds = list(
@@ -687,11 +690,6 @@ class _MultiGeometry(_Geometry):
             max(geom_bounds[2]),
             max(geom_bounds[3]),
         )
-
-    @property
-    def is_empty(self) -> bool:
-        """Return if collection is not empty and all its member are not empty."""
-        return all(geom.is_empty for geom in self._geoms)  # type: ignore [attr-defined]
 
 
 class MultiPoint(_MultiGeometry):
@@ -765,7 +763,7 @@ class MultiPoint(_MultiGeometry):
         return cls(cast(Sequence[PointType], geo_interface["coordinates"]))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return ((pt.x, pt.y) for pt in self._geoms)
+        return ((pt.x, pt.y) for pt in self.geoms)
 
 
 class MultiLineString(_MultiGeometry):
@@ -909,7 +907,7 @@ class MultiPolygon(_MultiGeometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}({tuple(geom.coords for geom in self._geoms)})"
+        return f"{self.geom_type}({tuple(geom.coords for geom in self.geoms)})"
 
     @property
     def geoms(self) -> Iterator[Polygon]:
@@ -1029,7 +1027,7 @@ class GeometryCollection(_MultiGeometry):
             (
                 s["type"] == o.get("type") and s["coordinates"] == o.get("coordinates")
                 for s, o in zip(
-                    (geom.__geo_interface__ for geom in self._geoms),
+                    (geom.__geo_interface__ for geom in self.geoms),
                     other.__geo_interface__.get(  # type:  ignore [attr-defined]
                         "geometries",
                         [],
