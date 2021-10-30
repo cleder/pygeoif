@@ -197,3 +197,15 @@ def test_maybe_empty():
     line = geometry.LineString([])
 
     assert not line.maybe_valid
+
+
+def test_empty():
+    line = geometry.LineString([])
+
+    assert line.is_empty
+
+
+def test_empty_1_pt():
+    line = geometry.LineString([(0, 0)])
+
+    assert line.is_empty
