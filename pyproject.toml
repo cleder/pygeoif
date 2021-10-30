@@ -4,3 +4,29 @@ force_single_line = true
 
 [tool.flake8]
 max_line_length = 88
+
+[tool.mypy]
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+ignore_errors = false
+ignore_missing_imports = true
+implicit_reexport = false
+strict_optional = true
+strict_equality = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = true
+warn_return_any = true
+show_error_codes = true
+
+# mypy per-module options:
+
+[[tool.mypy.overrides]]
+module = "pygeoif.tests.*"
+disallow_untyped_defs = false
