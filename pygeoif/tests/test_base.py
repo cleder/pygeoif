@@ -30,6 +30,13 @@ def test_wkt():
         assert base_geo.wkt
 
 
+def test_empty():
+    base_geo = geometry._Geometry()
+    with pytest.raises(NotImplementedError, match="^Must be implemented by subclass$"):
+
+        assert base_geo.is_empty
+
+
 def test_wkt_inset():
     base_geo = geometry._Geometry()
 

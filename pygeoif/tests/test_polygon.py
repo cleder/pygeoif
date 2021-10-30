@@ -294,3 +294,21 @@ def test_is_invalid_interior():
     polygon = geometry.Polygon(e, [i])
 
     assert not polygon.maybe_valid
+
+
+def test_empty():
+    polygon = geometry.Polygon([])
+
+    assert polygon.is_empty
+
+
+def test_empty_wkt():
+    polygon = geometry.Polygon([])
+
+    assert polygon.wkt == "POLYGON EMPTY"
+
+
+def test_repr_empty():
+    polygon = geometry.Polygon([])
+
+    assert repr(polygon) == "Polygon((),)"
