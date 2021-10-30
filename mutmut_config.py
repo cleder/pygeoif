@@ -1,4 +1,5 @@
 """Mutmut configuration."""
+from typing import Any
 
 files_to_mutate = [
     "pygeoif/geometry.py",
@@ -8,6 +9,6 @@ files_to_mutate = [
 ]
 
 
-def pre_mutation(context):
+def pre_mutation(context: Any) -> None:
     if context.filename not in files_to_mutate:
         context.skip = True

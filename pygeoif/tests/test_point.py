@@ -7,6 +7,30 @@ from pygeoif import exceptions
 from pygeoif import geometry
 
 
+def test_empty():
+    point = geometry.Point(1, None)
+
+    assert point.is_empty
+
+
+def test_bool():
+    point = geometry.Point(1.0, 0.0)
+
+    assert point
+
+
+def test_bool_empty():
+    point = geometry.Point(None, None)
+
+    assert not point
+
+
+def test_empty_wkt():
+    point = geometry.Point(None, None)
+
+    assert point.wkt == "POINT EMPTY"
+
+
 def test_bounds():
     point = geometry.Point(1.0, 0.0)
 
@@ -38,6 +62,12 @@ def test_xyz():
     assert point.x == 1
     assert point.y == 0
     assert point.z == 2
+
+
+def test_repr_empty():
+    point = geometry.Point(None, None)
+
+    assert repr(point) == "Point()"
 
 
 def test_repr2d():

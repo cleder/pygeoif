@@ -13,7 +13,7 @@ def test_geoms():
     )
 
     for poly in polys.geoms:
-        assert type(poly) == geometry.Polygon
+        assert type(poly) is geometry.Polygon
 
 
 def test_len():
@@ -260,3 +260,9 @@ def test_from_polygons_unique():
     )
 
     assert polys == polys2
+
+
+def test_is_empty():
+    polys = geometry.MultiPolygon([])
+
+    assert polys.is_empty
