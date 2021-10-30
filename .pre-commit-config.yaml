@@ -3,22 +3,23 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
-      - id: trailing-whitespace
-      - id: mixed-line-ending
-      - id: check-toml
-      - id: check-yaml
-      - id: debug-statements
-      - id: check-xml
-      - id: check-json
       - id: check-added-large-files
       - id: check-docstring-first
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
       - id: check-vcs-permalinks
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
       - id: end-of-file-fixer
+      - id: mixed-line-ending
       - id: name-tests-test
         args: ['--django']
       - id: no-commit-to-branch
       - id: pretty-format-json
       - id: requirements-txt-fixer
+      - id: trailing-whitespace
   - repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
@@ -35,4 +36,8 @@ repos:
     rev: v0.910
     hooks:
       - id: mypy
+  - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
+    rev: v1.0.1
+    hooks:
+    - id: rst-linter
 ...
