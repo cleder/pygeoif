@@ -1,4 +1,4 @@
- Set update schedule for GitHub Actions
+# Set update schedule for GitHub Actions
 
 version: 2
 updates:
