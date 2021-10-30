@@ -1,6 +1,8 @@
 import os
 import sys
-from typing import List, Any
+from typing import Any
+from typing import List
+
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
