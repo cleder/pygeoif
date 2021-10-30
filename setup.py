@@ -1,5 +1,7 @@
 import os
 import sys
+from typing import Any
+from typing import List
 
 from setuptools import find_packages
 from setuptools import setup
@@ -7,12 +9,12 @@ from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         TestCommand.finalize_options(self)
-        self.test_args = []
+        self.test_args: List[Any] = []
         self.test_suite = True
 
-    def run_tests(self):
+    def run_tests(self) -> None:
         # import here, cause outside the eggs aren't loaded
         import pytest
 
@@ -20,7 +22,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = "1.0.beta.7"
+version = "1.0.beta.8"
 
 README = open("README.rst").read()
 HISTORY = open(os.path.join("docs", "HISTORY.txt")).read()

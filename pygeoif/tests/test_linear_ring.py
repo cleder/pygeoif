@@ -251,3 +251,9 @@ def test_centroid_invalid():
     ring._geoms = line._geoms
 
     assert ring.centroid is None
+
+
+def test_empty():
+    ring = geometry.LinearRing([])
+
+    assert ring.is_empty

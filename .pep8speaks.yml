@@ -1,14 +1,16 @@
+---
 scanner:
-    diff_only: True  # If True, only the diff is scanned.
-    linter: flake8
+  diff_only: true  # If True, only the diff is scanned.
+  linter: flake8
 
 flake8:  # Valid if scanner.linter is flake8
-    max-line-length: 89
-    ignore: [W503]
-    exclude: []
-    count: False
-    show-source: False
-    statistics: False
-    hang-closing: False
-    filename: []
-    select: []
+  max-line-length: 89
+  ignore: [W503]
+  exclude: []
+  count: false
+  show-source: false
+  statistics: false
+  hang-closing: false
+  filename: []
+  select: []
+...

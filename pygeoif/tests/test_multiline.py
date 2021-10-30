@@ -8,7 +8,7 @@ def test_geoms():
     )
 
     for line in lines.geoms:
-        assert type(line) == geometry.LineString
+        assert type(line) is geometry.LineString
 
 
 def test_len():
@@ -159,3 +159,9 @@ def test_from_linestrings_unique():
         (((0, 0, 0), (1, 1, 3), (2, 2, 6)), ((0, 0), (1, 1), (2, 2))),
         unique=True,
     )
+
+
+def test_is_empty():
+    lines = geometry.MultiLineString([])
+
+    assert lines.is_empty
