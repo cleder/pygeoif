@@ -338,6 +338,18 @@ and run the unit and static tests with::
     flake8 pygeoif
     mypy pygeoif
 
+pre-commit
+~~~~~~~~~~~
+
+Install the ``pre-commit`` hook with::
+
+    pip install pre-commit
+    pre-commit install
+
+and check the code with::
+
+    pre-commit run --all-files
+
 
 Acknowledgments
 ================
