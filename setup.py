@@ -1,3 +1,4 @@
+"""Setup script."""
 import os
 import sys
 from typing import Any
@@ -5,10 +6,12 @@ from typing import List
 
 from setuptools import find_packages
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
+from setuptools.command.test import test as TestCommand  # noqa: N812
 
 
 class PyTest(TestCommand):
+    """Run the tests with PyTest."""
+
     def finalize_options(self) -> None:
         TestCommand.finalize_options(self)
         self.test_args: List[Any] = []
@@ -24,8 +27,10 @@ class PyTest(TestCommand):
 
 version = "1.0.beta.8"
 
-README = open("README.rst").read()
-HISTORY = open(os.path.join("docs", "HISTORY.txt")).read()
+with open("README.rst", encoding="utf-8") as readme:
+    README = readme.read()
+with open(os.path.join("docs", "HISTORY.txt"), encoding="utf-8") as changelog:
+    HISTORY = changelog.read()
 
 setup(
     name="pygeoif",
@@ -46,7 +51,7 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Development Status :: 4 - Beta",
-        # "Development Status :: 5 - Production/Stable",
+        # Development Status :: 5 - Production/Stable
         "Operating System :: OS Independent",
     ],
     # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -66,3 +71,5 @@ setup(
       # -*- Entry points: -*-
       """,
 )
+
+__all__ = ["version"]
