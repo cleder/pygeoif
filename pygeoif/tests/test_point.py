@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 
-from pygeoif import exceptions
 from pygeoif import geometry
 
 
@@ -46,12 +45,7 @@ def test_bounds3d():
 def test_xy():
     point = geometry.Point(1.0, 0.0)
 
-    with pytest.raises(
-        exceptions.DimensionError,
-        match="^This point has no z coordinate$",
-    ):
-        assert point.z
-
+    assert point.z is None
     assert point.x == 1
     assert point.y == 0
 
