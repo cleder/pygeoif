@@ -41,6 +41,10 @@ It was written to provide clean and python only geometries for fastkml_
 .. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
     :target: https://www.openhub.net/p/pygeoif/
 
+.. image:: https://www.codefactor.io/repository/github/cleder/pygeoif/badge/main
+   :target: https://www.codefactor.io/repository/github/cleder/pygeoif/overview/main
+   :alt: CodeFactor
+
 Example
 ========
 
