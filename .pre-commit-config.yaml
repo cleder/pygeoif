@@ -46,6 +46,7 @@ repos:
           - flake8-encodings
           - flake8-expression-complexity
           - flake8-function-order
+          - flake8-implicit-str-concat
           - flake8-noqa
           - flake8-pep3101
           - flake8-print

@@ -309,7 +309,7 @@ def mapping(
     -------
     >>> pt = Point(0, 0)
     >>> mapping(pt)
-    {'type': 'Point', 'coordinates': (0.0, 0.0)}
+    {'type': 'Point', 'bbox': (0, 0, 0, 0), 'coordinates': (0, 0)}
     """
     return ob.__geo_interface__
 
