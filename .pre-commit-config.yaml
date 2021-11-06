@@ -28,6 +28,37 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
+        additional_dependencies:
+          - flake8
+          - flake8-absolute-import
+          - flake8-awesome
+          - flake8-blind-except
+          - flake8-bugbear
+          - flake8-class-attributes-order
+          - flake8-cognitive-complexity
+          - flake8-commas
+          - flake8-comments
+          - flake8-complex-f-strings
+          - flake8-continuation
+          - flake8-debugger
+          - flake8-docstrings
+          - flake8-dunder-all
+          - flake8-encodings
+          - flake8-expression-complexity
+          - flake8-function-order
+          - flake8-implicit-str-concat
+          - flake8-noqa
+          - flake8-pep3101
+          - flake8-print
+          - flake8-raise
+          - flake8-rst-docstrings
+          - flake8-simplify
+          - flake8-slots
+          - flake8-string-format
+          - flake8-super
+          - flake8-typing-imports
+          - flake8-use-fstring
+          - pep8-naming
   - repo: https://github.com/pycqa/isort
     rev: 5.9.3
     hooks:

@@ -209,3 +209,15 @@ def test_empty_1_pt():
     line = geometry.LineString([(0, 0)])
 
     assert line.is_empty
+
+
+def test_repr_empty():
+    line = geometry.LineString([])
+
+    assert repr(line) == "LineString(())"
+
+
+def test_empty_bounds():
+    line = geometry.LineString([])
+
+    assert line.bounds == ()

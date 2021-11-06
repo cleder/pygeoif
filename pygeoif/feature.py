@@ -25,6 +25,7 @@ from typing import Iterable
 from typing import Optional
 from typing import Sequence
 from typing import Union
+from typing import cast
 
 from pygeoif.geometry import Geometry
 from pygeoif.types import Bounds
@@ -125,7 +126,7 @@ class Feature:
         """Return the GeoInterface of the geometry with properties."""
         geo_interface: GeoFeatureInterface = {
             "type": self.__class__.__name__,
-            "bbox": self._geometry.bounds,
+            "bbox": cast(Bounds, self._geometry.bounds),
             "geometry": self._geometry.__geo_interface__,
             "properties": self._properties,
         }

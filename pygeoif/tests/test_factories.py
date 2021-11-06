@@ -94,8 +94,8 @@ class TestWKT:
               (30 20, 20 25, 20 15, 30 20)))""",
         """MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),
               ((15 5, 40 10, 10 20, 5 10, 15 5)))""",
-        "MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0))," "((5 5,7 5,7 7,5 7, 5 5)))",
-        "GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), " "LINESTRING(15 15, 20 20))",
+        "MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))",
+        "GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))",
     ]
 
     # these are valid WKTs but not supported
@@ -135,7 +135,7 @@ class TestWKT:
     def test_linearring(self):
         r = factories.from_wkt("LINEARRING (0 0,0 1,1 0,0 0)")
         assert isinstance(r, geometry.LinearRing)
-        assert r.wkt == "LINEARRING (0.0 0.0, 0.0 1.0, " "1.0 0.0, 0.0 0.0)"
+        assert r.wkt == "LINEARRING (0.0 0.0, 0.0 1.0, 1.0 0.0, 0.0 0.0)"
 
     def test_polygon(self):
         p = factories.from_wkt(
@@ -180,7 +180,7 @@ class TestWKT:
         assert list(p.geoms)[0].x == 3.5
         assert list(p.geoms)[1].y == 10.5
         assert p.wkt == "MULTIPOINT(3.5 5.6, 4.8 10.5)"
-        p = factories.from_wkt("MULTIPOINT ((10 40), (40 30), " "(20 20), (30 10))")
+        p = factories.from_wkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
         assert isinstance(p, geometry.MultiPoint)
         assert list(p.geoms)[0].x == 10.0
         assert list(p.geoms)[3].y == 10.0
@@ -191,7 +191,7 @@ class TestWKT:
 
     def test_multilinestring(self):
         p = factories.from_wkt(
-            "MULTILINESTRING((3 4,10 50,20 25)," "(-5 -8,-10 -8,-15 -4))",
+            "MULTILINESTRING((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))",
         )
         assert list(p.geoms)[0].coords == (((3, 4), (10, 50), (20, 25)))
         assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))

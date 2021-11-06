@@ -23,6 +23,8 @@ from typing import Tuple
 from typing import Union
 from typing import cast
 
+from typing_extensions import Final
+
 from pygeoif.exceptions import WKTParserError
 from pygeoif.functions import signed_area
 from pygeoif.geometry import Geometry
@@ -43,7 +45,7 @@ from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
-wkt_regex = re.compile(
+wkt_regex: Final = re.compile(
     r"^(SRID=(?P<srid>\d+);)?"
     r"(?P<wkt>"
     r"(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
@@ -52,10 +54,10 @@ wkt_regex = re.compile(
     r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$",
     re.I,
 )
-gcre = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
-outer = re.compile(r"\((.+)\)")
-inner = re.compile(r"\([^)]*\)")
-mpre = re.compile(r"\(\((.+?)\)\)")
+gcre: Final = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
+outer: Final = re.compile(r"\((.+)\)")
+inner: Final = re.compile(r"\([^)]*\)")
+mpre: Final = re.compile(r"\(\((.+?)\)\)")
 
 
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
@@ -307,7 +309,7 @@ def mapping(
     -------
     >>> pt = Point(0, 0)
     >>> mapping(pt)
-    {'type': 'Point', 'coordinates': (0.0, 0.0)}
+    {'type': 'Point', 'bbox': (0, 0, 0, 0), 'coordinates': (0, 0)}
     """
     return ob.__geo_interface__
 
