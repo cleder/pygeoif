@@ -149,7 +149,7 @@ def test_convex_hull_linear_ring():
     assert line.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
 
 
-def test_maybe_valid_cossing():
+def test_maybe_valid_crossing():
     line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, -1)])
 
     assert not line.maybe_valid
@@ -162,13 +162,13 @@ def test_maybe_valid_no_area():
 
 
 def test_maybe_valid_x_line():
-    line = geometry.LinearRing([(0, 0), (1, 0)])
+    line = geometry.LinearRing([(0, 2), (1, 2)])
 
     assert not line.maybe_valid
 
 
 def test_maybe_valid_y_line():
-    line = geometry.LinearRing([(0, 0), (0, 1)])
+    line = geometry.LinearRing([(3, 0), (3, 1)])
 
     assert not line.maybe_valid
 
@@ -224,9 +224,9 @@ def test_centroid_crossing():
 
 
 def test_centroid_valid():
-    line = geometry.LinearRing([(0, 0), (2, 0), (2, 2), (0, 2)])
+    line = geometry.LinearRing([(0, 0), (4, 0), (4, 2), (0, 2)])
 
-    assert line.centroid == geometry.Point(1, 1)
+    assert line.centroid == geometry.Point(2, 1)
 
 
 def test_centroid_invalid():
@@ -257,3 +257,9 @@ def test_empty():
     ring = geometry.LinearRing([])
 
     assert ring.is_empty
+
+
+def test_empty_bounds():
+    ring = geometry.LinearRing([])
+
+    assert ring.bounds == ()

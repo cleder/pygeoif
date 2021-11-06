@@ -152,3 +152,15 @@ def test_empty():
     multipoint = geometry.MultiPoint([(1, None)])
 
     assert multipoint.is_empty
+
+
+def test_repr_empty():
+    multipoint = geometry.MultiPoint([(None, None)])
+
+    assert repr(multipoint) == "MultiPoint(((),))"
+
+
+def test_empty_bounds():
+    multipoint = geometry.MultiPoint([(None, None)])
+
+    assert multipoint.bounds == ()

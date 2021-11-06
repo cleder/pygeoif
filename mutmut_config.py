@@ -10,5 +10,9 @@ files_to_mutate = [
 
 
 def pre_mutation(context: Any) -> None:
+    """Only include the files specified above."""
     if context.filename not in files_to_mutate:
         context.skip = True
+
+
+__all__ = ["pre_mutation"]
