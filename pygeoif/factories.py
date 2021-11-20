@@ -161,22 +161,39 @@ def shape(
     raise NotImplementedError(f"[{geometry['type']} is nor implemented")
 
 
+def num(number: str) -> float:
+    """
+    Return a float or integer from a string.
+
+    Parameters
+    ----------
+    number : str
+        a string representing a number
+
+    Returns
+    -------
+    float
+    """
+    f = float(number)
+    return int(f) if int(f) == f else f  # noqa: IF100
+
+
 def _point_from_wkt_coordinates(coordinates: str) -> Point:
-    coords = [float(c) for c in coordinates.split()]
+    coords = [num(c) for c in coordinates.split()]
     return Point(*coords)
 
 
 def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
     return LineString(
-        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
     )
 
 
 def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
     coords = coordinates.split(",")
     return LinearRing(
-        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
     )
 
 
@@ -185,7 +202,7 @@ def _shell_holes_from_wkt_coords(
 ) -> Tuple[LineType, Exteriors]:
     """Extract shell and holes from polygon wkt coordinates."""
     interior: LineType = [
-        cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords[0]
+        cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords[0]
     ]
     if len(coords) > 1:
         # we have a polygon with holes
@@ -193,7 +210,7 @@ def _shell_holes_from_wkt_coords(
             cast(
                 LineType,
                 [
-                    cast(PointType, tuple(float(c) for c in coord.split()))
+                    cast(PointType, tuple(num(c) for c in coord.split()))
                     for coord in ext
                 ],
             )
@@ -218,14 +235,14 @@ def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
 def _multipoint_from_wkt_coordinates(coordinates: str) -> MultiPoint:
     coords = [coord.strip().strip("()") for coord in coordinates.split(",")]
     return MultiPoint(
-        [cast(PointType, tuple(float(c) for c in coord.split())) for coord in coords],
+        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
     )
 
 
 def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
     coords = [
         [
-            cast(PointType, tuple(float(c) for c in coord.split()))
+            cast(PointType, tuple(num(c) for c in coord.split()))
             for coord in lines.strip("()").split(",")
         ]
         for lines in inner.findall(coordinates)
