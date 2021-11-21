@@ -71,4 +71,8 @@ repos:
     rev: v1.0.1
     hooks:
     - id: rst-linter
+  - repo: https://github.com/mgedmin/check-manifest
+    rev: "0.46"
+    hooks:
+    - id: check-manifest
 ...

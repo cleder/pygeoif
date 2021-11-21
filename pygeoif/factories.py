@@ -172,7 +172,7 @@ def num(number: str) -> float:
 
     Returns
     -------
-    float
+    float or an integer if the string can be converted to an integer
     """
     f = float(number)
     return int(f) if int(f) == f else f  # noqa: IF100

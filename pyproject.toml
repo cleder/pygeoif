@@ -30,3 +30,6 @@ show_error_codes = true
 [[tool.mypy.overrides]]
 module = "pygeoif.tests.*"
 disallow_untyped_defs = false
+
+[tool.check-manifest]
+ignore = [".*", "mutmut_config.py", "test-requirements.txt", "tox.ini"]
