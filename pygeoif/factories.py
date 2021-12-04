@@ -19,11 +19,10 @@
 import re
 from typing import List
 from typing import Optional
+from typing import Pattern
 from typing import Tuple
 from typing import Union
 from typing import cast
-
-from typing_extensions import Final
 
 from pygeoif.exceptions import WKTParserError
 from pygeoif.functions import signed_area
@@ -45,7 +44,7 @@ from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
-wkt_regex: Final[re.Pattern[str]] = re.compile(
+wkt_regex: Pattern[str] = re.compile(
     r"^(SRID=(?P<srid>\d+);)?"
     r"(?P<wkt>"
     r"(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
@@ -54,10 +53,10 @@ wkt_regex: Final[re.Pattern[str]] = re.compile(
     r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$",
     re.I,
 )
-gcre: Final[re.Pattern[str]] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
-outer: Final[re.Pattern[str]] = re.compile(r"\((.+)\)")
-inner: Final[re.Pattern[str]] = re.compile(r"\([^)]*\)")
-mpre: Final[re.Pattern[str]] = re.compile(r"\(\((.+?)\)\)")
+gcre: Pattern[str] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
+outer: Pattern[str] = re.compile(r"\((.+)\)")
+inner: Pattern[str] = re.compile(r"\([^)]*\)")
+mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
 
 
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
