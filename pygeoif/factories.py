@@ -45,7 +45,7 @@ from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
-wkt_regex: Final = re.compile(
+wkt_regex: Final[re.Pattern[str]] = re.compile(
     r"^(SRID=(?P<srid>\d+);)?"
     r"(?P<wkt>"
     r"(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
@@ -54,10 +54,10 @@ wkt_regex: Final = re.compile(
     r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$",
     re.I,
 )
-gcre: Final = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
-outer: Final = re.compile(r"\((.+)\)")
-inner: Final = re.compile(r"\([^)]*\)")
-mpre: Final = re.compile(r"\(\((.+?)\)\)")
+gcre: Final[re.Pattern[str]] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
+outer: Final[re.Pattern[str]] = re.compile(r"\((.+)\)")
+inner: Final[re.Pattern[str]] = re.compile(r"\([^)]*\)")
+mpre: Final[re.Pattern[str]] = re.compile(r"\(\((.+?)\)\)")
 
 
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
@@ -101,7 +101,7 @@ def shape(
     context: Union[
         GeoType,
         GeoCollectionType,
-        GeoCollectionInterface,
+        GeoInterface,
         GeoCollectionInterface,
     ],
 ) -> Union[Geometry, GeometryCollection]:
@@ -154,8 +154,7 @@ def shape(
         )
     if geometry["type"] == "GeometryCollection":
         geometries = [
-            shape(fi)  # type: ignore [arg-type]
-            for fi in geometry["geometries"]  # type: ignore [typeddict-item]
+            shape(fi) for fi in geometry["geometries"]  # type: ignore [typeddict-item]
         ]
         return GeometryCollection(geometries)  # type: ignore [arg-type]
     raise NotImplementedError(f"[{geometry['type']} is nor implemented")
