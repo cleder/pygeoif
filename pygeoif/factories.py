@@ -215,7 +215,7 @@ def _shell_holes_from_wkt_coords(
             for ext in coords[1:]
         ]
     else:
-        exteriors = None  # type: ignore [assignment]
+        exteriors = None
     return interior, exteriors
 
 
