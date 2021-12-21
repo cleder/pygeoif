@@ -6,6 +6,21 @@ from pygeoif import factories
 from pygeoif import geometry
 
 
+def test_num_int():
+    assert factories.num("1") == 1
+    assert type(factories.num("1")) is int
+
+
+def test_num_intf():
+    assert factories.num("1.0") == 1
+    assert type(factories.num("1.0")) is int
+
+
+def test_num_float():
+    assert factories.num("1.1") == 1.1
+    assert type(factories.num("1.1")) is float
+
+
 def test_orient_true():
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
@@ -111,8 +126,8 @@ class TestWKT:
         assert isinstance(p, geometry.Point)
         assert p.x == 0.0
         assert p.y == 1.0
-        assert p.wkt == "POINT (0.0 1.0)"
-        assert str(p) == "POINT (0.0 1.0)"
+        assert p.wkt == "POINT (0 1)"
+        assert str(p) == "POINT (0 1)"
         assert p.geom_type == "Point"
 
     def test_point_capitalized(self):
@@ -135,7 +150,7 @@ class TestWKT:
     def test_linearring(self):
         r = factories.from_wkt("LINEARRING (0 0,0 1,1 0,0 0)")
         assert isinstance(r, geometry.LinearRing)
-        assert r.wkt == "LINEARRING (0.0 0.0, 0.0 1.0, 1.0 0.0, 0.0 0.0)"
+        assert r.wkt == "LINEARRING (0 0, 0 1, 1 0, 0 0)"
 
     def test_polygon(self):
         p = factories.from_wkt(
@@ -162,9 +177,9 @@ class TestWKT:
             (2.0, 2.0),
         )
         assert (
-            p.wkt == "POLYGON ((1.0 1.0, 5.0 1.0, 5.0 5.0, "
-            "1.0 5.0, 1.0 1.0),(2.0 2.0, 3.0 2.0, "
-            "3.0 3.0, 2.0 3.0, 2.0 2.0))"
+            p.wkt == "POLYGON ((1 1, 5 1, 5 5, "
+            "1 5, 1 1),(2 2, 3 2, "
+            "3 3, 2 3, 2 2))"
         )
         p = factories.from_wkt("POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))")
         assert p.exterior.coords[0] == p.exterior.coords[-1]
@@ -196,13 +211,16 @@ class TestWKT:
         assert list(p.geoms)[0].coords == (((3, 4), (10, 50), (20, 25)))
         assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))
         assert (
-            p.wkt == "MULTILINESTRING((3.0 4.0, 10.0 50.0, "
-            "20.0 25.0),(-5.0 -8.0, "
-            "-10.0 -8.0, -15.0 -4.0))"
+            p.wkt == "MULTILINESTRING((3 4, 10 50, "
+            "20 25),(-5 -8, "
+            "-10 -8, -15 -4))"
         )
         p = factories.from_wkt(
             """MULTILINESTRING ((10 10, 20 20, 10 40),
             (40 40, 30 30, 40 20, 30 10))""",
+        )
+        assert p.wkt == (
+            "MULTILINESTRING((10 10, 20 20, 10 40),(40 40, 30 30, 40 20, 30 10))"
         )
 
     def test_multipolygon(self):
@@ -232,11 +250,11 @@ class TestWKT:
             (100.0, 100.0),
         )
         assert (
-            p.wkt == "MULTIPOLYGON(((0.0 0.0, 10.0 20.0, "
-            "30.0 40.0, 0.0 0.0),"
-            "(1.0 1.0, 2.0 2.0, 3.0 3.0, 1.0 1.0)),"
-            "((100.0 100.0, 110.0 110.0,"
-            " 120.0 120.0, 100.0 100.0)))"
+            p.wkt == "MULTIPOLYGON(((0 0, 10 20, "
+            "30 40, 0 0),"
+            "(1 1, 2 2, 3 3, 1 1)),"
+            "((100 100, 110 110,"
+            " 120 120, 100 100)))"
         )
         p = factories.from_wkt(
             "MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),"
@@ -271,10 +289,7 @@ class TestWKT:
         assert len(list(gc.geoms)) == 2
         assert isinstance(list(gc.geoms)[0], geometry.Point)
         assert isinstance(list(gc.geoms)[1], geometry.LineString)
-        assert (
-            gc.wkt
-            == "GEOMETRYCOLLECTION(POINT (4.0 6.0), LINESTRING (4.0 6.0, 7.0 10.0))"
-        )
+        assert gc.wkt == "GEOMETRYCOLLECTION(POINT (4 6), LINESTRING (4 6, 7 10))"
 
     def test_wkt_ok(self):
         for wkt in self.wkt_ok:
