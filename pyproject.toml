@@ -33,3 +33,14 @@ disallow_untyped_defs = false
 
 [tool.check-manifest]
 ignore = [".*", "mutmut_config.py", "test-requirements.txt", "tox.ini"]
+
+[tool.pyright]
+include = ["pygeoif"]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    ".pytype",
+    ".pyre",
+    "pygeoif/tests"
+]
+reportMissingImports = true
+reportMissingTypeStubs = true
