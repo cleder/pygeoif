@@ -44,7 +44,6 @@ __all__ = [
     "Point",
     "Polygon",
     "from_wkt",
-    "geometry",
     "mapping",
     "orient",
     "shape",

@@ -24,7 +24,8 @@ flake8-expression-complexity
 #flake8-force-keyword-arguments
 flake8-function-order
 flake8-implicit-str-concat
-#flake8-noqa
+flake8-length
+flake8-noqa
 flake8-pep3101
 flake8-print
 flake8-raise
@@ -33,7 +34,7 @@ flake8-simplify
 flake8-slots
 flake8-string-format
 flake8-super
-#flake8-type-checking
+flake8-type-checking
 flake8-typing-imports
 flake8-use-fstring
 lizard
