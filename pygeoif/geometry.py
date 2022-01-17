@@ -76,9 +76,7 @@ class _Geometry:
 
         An empty geometry returns an empty tuple.
         """
-        if self.is_empty:
-            return ()
-        return self._get_bounds()
+        return () if self.is_empty else self._get_bounds()
 
     @property
     def convex_hull(self) -> Optional[Union["Point", "LineString", "Polygon"]]:
@@ -241,9 +239,11 @@ class Point(_Geometry):
     @property
     def z(self) -> Optional[float]:
         """Return z coordinate."""
-        if len(self._coordinates) == 3:
-            return self._coordinates[2]  # type: ignore [misc]
-        return None
+        return (
+            self._coordinates[2]  # type: ignore[misc]
+            if len(self._coordinates) == 3
+            else None
+        )
 
     @property
     def coords(self) -> Tuple[PointType]:
@@ -262,9 +262,7 @@ class Point(_Geometry):
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        if len(self._coordinates) == 3:
-            return " Z "
-        return " "
+        return " Z " if len(self._coordinates) == 3 else " "
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -274,7 +272,7 @@ class Point(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "Point":
+    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "Point":
         """Construct a point from coordinates."""
         return cls(*coordinates[0])
 
@@ -346,9 +344,7 @@ class LineString(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
-        if not self.geoms:
-            return None
-        return self._geoms[0].has_z
+        return None if not self.geoms else self._geoms[0].has_z
 
     @property
     def maybe_valid(self) -> bool:
@@ -377,7 +373,7 @@ class LineString(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "LineString":
+    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "LineString":
         """Construct a linestring from coordinates."""
         return cls(coordinates)
 
@@ -660,9 +656,11 @@ class _MultiGeometry(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if any geometry of the collection have z values."""
-        if not self._geoms:  # type: ignore [attr-defined]
-            return None
-        return any(geom.has_z for geom in self.geoms)
+        return (
+            None
+            if not self._geoms  # type: ignore[attr-defined]
+            else any(geom.has_z for geom in self.geoms)
+        )
 
     @property
     def geoms(self) -> Iterator[_Geometry]:
