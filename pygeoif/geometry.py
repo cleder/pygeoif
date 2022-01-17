@@ -274,7 +274,7 @@ class Point(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "Point":
+    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "Point":
         """Construct a point from coordinates."""
         return cls(*coordinates[0])
 
@@ -377,7 +377,7 @@ class LineString(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Tuple[PointType]) -> "LineString":
+    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "LineString":
         """Construct a linestring from coordinates."""
         return cls(coordinates)
 

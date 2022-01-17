@@ -18,7 +18,6 @@
 """Types for geometries."""
 from typing import Any
 from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -36,7 +35,7 @@ PolygonType = Union[
     Tuple[LineType],
 ]
 
-Exteriors = Optional[List[LineType]]
+Exteriors = Optional[Sequence[LineType]]
 
 MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
 Bounds = Tuple[float, float, float, float]
