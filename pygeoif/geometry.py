@@ -239,7 +239,11 @@ class Point(_Geometry):
     @property
     def z(self) -> Optional[float]:
         """Return z coordinate."""
-        return self._coordinates[2] if len(self._coordinates) == 3 else None
+        return (
+            self._coordinates[2]  # type: ignore[misc]
+            if len(self._coordinates) == 3
+            else None
+        )
 
     @property
     def coords(self) -> Tuple[PointType]:
@@ -652,7 +656,11 @@ class _MultiGeometry(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if any geometry of the collection have z values."""
-        return None if not self._geoms else any(geom.has_z for geom in self.geoms)
+        return (
+            None
+            if not self._geoms  # type: ignore[attr-defined]
+            else any(geom.has_z for geom in self.geoms)
+        )
 
     @property
     def geoms(self) -> Iterator[_Geometry]:

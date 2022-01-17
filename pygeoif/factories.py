@@ -67,7 +67,7 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
     and the interiors will be in clockwise orientation, or
     the other way round when ccw is False.
     """
-    s = -1.0 if not ccw else 1.0  # noqa: IF100
+    s = -1.0 if not ccw else 1.0
     rings = []
     ring = polygon.exterior
     if signed_area(ring.coords) / s >= 0.0:
@@ -142,7 +142,7 @@ def shape(
         "MultiLineString": MultiLineString,
         "MultiPolygon": MultiPolygon,
     }
-    geometry = context if isinstance(context, dict) else mapping(context)  # noqa: IF100
+    geometry = context if isinstance(context, dict) else mapping(context)
     if not geometry:
         raise TypeError("Object does not implement __geo_interface__")
 
@@ -173,7 +173,7 @@ def num(number: str) -> float:
     float or an integer if the string can be converted to an integer
     """
     f = float(number)
-    return int(f) if int(f) == f else f  # noqa: IF100
+    return int(f) if int(f) == f else f
 
 
 def _point_from_wkt_coordinates(coordinates: str) -> Point:
