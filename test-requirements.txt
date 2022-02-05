@@ -46,7 +46,7 @@ pep8
 pep8-naming
 pip-check
 pre-commit
-pybetter
+# pybetter
 pytest
 pytest-cov
 pytest-randomly
