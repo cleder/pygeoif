@@ -1,11 +1,12 @@
 Changelog
 =========
 
-1.0.beta.1 (2021-09-20)
+1.0 (unreleased)
 ------------------------
 
 - Add type annotations
 - refactor
+- changes to keep functionality and interface close to ``shapely``
 - remove support for python 2
 - minimum python version is 3.6
 - rename as_shape to shape
@@ -13,6 +14,11 @@ Changelog
 - format with black
 - reconstruct objects from their representation
 - Parse WKT that is not in upper case.
+- Centroid for LinearRings
+- Convex Hull
+- implement equality ``__eq__`` operator (``==``)
+- ``is_empty`` and ``bool``
+- drop duplicate points when creating LineStrings
 
 0.7 (2017/05/04)
 -----------------
