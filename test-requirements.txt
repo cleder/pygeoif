@@ -35,7 +35,7 @@ flake8-simplify
 flake8-slots
 flake8-string-format
 flake8-super
-flake8-type-checking
+# flake8-type-checking
 flake8-typing-imports
 flake8-use-fstring
 lizard
