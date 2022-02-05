@@ -99,9 +99,9 @@ def test_signed_area_circle_ish():
         assert abs(center1[1] - y) < 0.000_001
         # we are computing an approximation of math.pi
         if steps > 12:
-            assert 3.0 * r**2 < area1 < 3.2 * r**2
+            assert 3.0 * r ** 2 < area1 < 3.2 * r ** 2
         if steps > 30:
-            assert 3.1 * r**2 < area1 < 3.2 * r**2
+            assert 3.1 * r ** 2 < area1 < 3.2 * r ** 2
 
 
 def test_signed_area_crescent_ish():
