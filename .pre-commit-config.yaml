@@ -64,7 +64,7 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev:  v0.931
+    rev:  v0.941
     hooks:
       - id: mypy
   - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
@@ -72,7 +72,7 @@ repos:
     hooks:
     - id: rst-linter
   - repo: https://github.com/mgedmin/check-manifest
-    rev: "0.47"
+    rev: "0.48"
     hooks:
     - id: check-manifest
 ...
