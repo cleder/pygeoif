@@ -168,6 +168,13 @@ def test_eq_interface():
     assert point == not_a_geometry
 
 
+def test_eq_floats():
+    point1 = geometry.Point(0.3, 0.6)
+    point2 = geometry.Point(0.2 + 0.1, 0.3 * 2)
+
+    assert point1 == point2
+
+
 def test_neq_missing_interface():
 
     point = geometry.Point(0, 1, 2)
