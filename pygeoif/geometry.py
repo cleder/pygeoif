@@ -18,6 +18,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+import math
 import warnings
 from itertools import chain
 from typing import Iterable
@@ -210,7 +211,11 @@ class Point(_Geometry):
         """
         self._coordinates = cast(
             PointType,
-            tuple(coordinate for coordinate in [x, y, z] if coordinate is not None),
+            tuple(
+                coordinate
+                for coordinate in [x, y, z]
+                if coordinate is not None and not math.isnan(coordinate)
+            ),
         )
 
     def __repr__(self) -> str:
@@ -447,9 +452,11 @@ class LinearRing(LineString):
             cent, area = centroid(self.coords)
         except ZeroDivisionError:
             return None
-        if abs(area - signed_area(self.coords)) > 0.000_001 * abs(area):
-            return None
-        return Point(cent[0], cent[1])
+        return (
+            Point(cent[0], cent[1])
+            if math.isclose(area, signed_area(self.coords))
+            else None
+        )
 
     @property
     def is_ccw(self) -> bool:
@@ -473,7 +480,7 @@ class LinearRing(LineString):
             _, area = centroid(self.coords)
         except ZeroDivisionError:
             return False
-        return abs(area - signed_area(self.coords)) <= 0.000_001 * abs(area)
+        return math.isclose(area, signed_area(self.coords))
 
 
 class Polygon(_Geometry):
