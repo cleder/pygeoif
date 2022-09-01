@@ -10,3 +10,4 @@ dist/
 venv/
 coverage.xml
 .mutmut-cache
+html/

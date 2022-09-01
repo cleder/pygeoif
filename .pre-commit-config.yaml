@@ -37,7 +37,7 @@ repos:
           - flake8-awesome
           - flake8-blind-except
           - flake8-bugbear
-          - flake8-class-attributes-order
+          # - flake8-class-attributes-order
           - flake8-cognitive-complexity
           - flake8-commas
           - flake8-comments
