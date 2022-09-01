@@ -41,7 +41,6 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -65,7 +64,7 @@ setup(
     zip_safe=False,
     tests_require=["pytest"],
     install_requires=["typing_extensions"],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     cmdclass={"test": PyTest},
     entry_points="""
       # -*- Entry points: -*-
