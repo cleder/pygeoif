@@ -56,7 +56,7 @@ repos:
           - flake8-raise
           - flake8-rst-docstrings
           - flake8-simplify
-          - flake8-slots
+          # - flake8-slots
           - flake8-string-format
           - flake8-super
           - flake8-typing-imports
