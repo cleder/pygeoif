@@ -22,7 +22,7 @@ flake8-docstrings
 flake8-dunder-all
 flake8-encodings
 flake8-expression-complexity
-#flake8-force-keyword-arguments
+# flake8-force-keyword-arguments
 flake8-function-order
 flake8-implicit-str-concat
 flake8-length
@@ -53,5 +53,6 @@ pytest-randomly
 radon
 removestar
 ssort
+yamlfixer-opt-nc
 yamllint
 yesqa
