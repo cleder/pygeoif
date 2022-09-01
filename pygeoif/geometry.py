@@ -18,6 +18,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+import math
 import warnings
 from itertools import chain
 from typing import Iterable
@@ -31,6 +32,7 @@ from typing import cast
 
 from pygeoif.exceptions import DimensionError
 from pygeoif.functions import centroid
+from pygeoif.functions import compare_coordinates
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
@@ -57,11 +59,18 @@ class _Geometry:
         Empty geometries are always considered as not equal.
         """
         try:
-            return bool(
-                self.__geo_interface__["type"]
-                == other.__geo_interface__.get("type")  # type: ignore [attr-defined]
-                and self.__geo_interface__["coordinates"]
-                == other.__geo_interface__.get("coordinates"),  # type: ignore
+            return all(
+                (
+                    not self.is_empty,
+                    self.__geo_interface__["type"]
+                    == other.__geo_interface__.get(  # type: ignore [attr-defined]
+                        "type",
+                    ),
+                    compare_coordinates(
+                        self.__geo_interface__["coordinates"],
+                        other.__geo_interface__.get("coordinates"),  # type: ignore
+                    ),
+                ),
             )
         except AttributeError:
             return False
@@ -91,17 +100,16 @@ class _Geometry:
         """
         if self.has_z:
             warnings.warn(
-                "The convex Hull will only return the projection "
-                "to 2 dimensions xy coordinates",
+                "The convex Hull will only return the projection to"
+                " 2 dimensions xy coordinates",
             )
+
         hull = convex_hull(self._prepare_hull())
         if len(hull) == 0:
             return None
         if len(hull) == 1:
             return Point(*hull[0])
-        if len(hull) == 2:
-            return LineString(hull)
-        return Polygon(hull)
+        return LineString(hull) if len(hull) == 2 else Polygon(hull)
 
     @property
     def geom_type(self) -> str:
@@ -210,7 +218,11 @@ class Point(_Geometry):
         """
         self._coordinates = cast(
             PointType,
-            tuple(coordinate for coordinate in [x, y, z] if coordinate is not None),
+            tuple(
+                coordinate
+                for coordinate in [x, y, z]
+                if coordinate is not None and not math.isnan(coordinate)
+            ),
         )
 
     def __repr__(self) -> str:
@@ -344,7 +356,7 @@ class LineString(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
-        return None if not self.geoms else self._geoms[0].has_z
+        return self._geoms[0].has_z if self.geoms else None
 
     @property
     def maybe_valid(self) -> bool:
@@ -447,9 +459,11 @@ class LinearRing(LineString):
             cent, area = centroid(self.coords)
         except ZeroDivisionError:
             return None
-        if abs(area - signed_area(self.coords)) > 0.000_001 * abs(area):
-            return None
-        return Point(cent[0], cent[1])
+        return (
+            Point(cent[0], cent[1])
+            if math.isclose(area, signed_area(self.coords))
+            else None
+        )
 
     @property
     def is_ccw(self) -> bool:
@@ -473,7 +487,7 @@ class LinearRing(LineString):
             _, area = centroid(self.coords)
         except ZeroDivisionError:
             return False
-        return abs(area - signed_area(self.coords)) <= 0.000_001 * abs(area)
+        return math.isclose(area, signed_area(self.coords))
 
 
 class Polygon(_Geometry):
@@ -571,9 +585,11 @@ class Polygon(_Geometry):
         """
         if not self._check_interior_bounds():
             return False
-        if not self._exterior.maybe_valid:
-            return False
-        return all(interior.maybe_valid for interior in self.interiors)
+        return (
+            all(interior.maybe_valid for interior in self.interiors)
+            if self._exterior.maybe_valid
+            else False
+        )
 
     @property
     def _wkt_coords(self) -> str:
@@ -657,9 +673,9 @@ class _MultiGeometry(_Geometry):
     def has_z(self) -> Optional[bool]:
         """Return True if any geometry of the collection have z values."""
         return (
-            None
-            if not self._geoms  # type: ignore[attr-defined]
-            else any(geom.has_z for geom in self.geoms)
+            any(geom.has_z for geom in self.geoms)
+            if self._geoms  # type: ignore [attr-defined]
+            else None
         )
 
     @property
@@ -1022,7 +1038,8 @@ class GeometryCollection(_MultiGeometry):
             return False
         return all(
             (
-                s["type"] == o.get("type") and s["coordinates"] == o.get("coordinates")
+                s["type"] == o.get("type")
+                and compare_coordinates(s["coordinates"], o.get("coordinates"))
                 for s, o in zip(
                     (geom.__geo_interface__ for geom in self.geoms),
                     other.__geo_interface__.get(  # type:  ignore [attr-defined]

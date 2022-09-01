@@ -5,6 +5,7 @@ import random
 import pytest
 
 from pygeoif.functions import centroid
+from pygeoif.functions import compare_coordinates
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
@@ -99,9 +100,9 @@ def test_signed_area_circle_ish():
         assert abs(center1[1] - y) < 0.000_001
         # we are computing an approximation of math.pi
         if steps > 12:
-            assert 3.0 * r ** 2 < area1 < 3.2 * r ** 2
+            assert 3.0 * r**2 < area1 < 3.2 * r**2
         if steps > 30:
-            assert 3.1 * r ** 2 < area1 < 3.2 * r ** 2
+            assert 3.1 * r**2 < area1 < 3.2 * r**2
 
 
 def test_signed_area_crescent_ish():
@@ -278,3 +279,20 @@ def test_dedupe_line():
 
 def test_dedupe_line2():
     assert dedupe(((1, 2, 3),) * 2 + ((4, 5, 6),) * 3) == ((1, 2, 3), (4, 5, 6))
+
+
+def test_compare_numbers():
+    assert not compare_coordinates(1, 2)
+    assert not compare_coordinates(2, 1)
+    assert compare_coordinates(2, 2)
+
+
+def test_compare_points():
+    assert compare_coordinates((1, 2), [1, 2])
+    assert not compare_coordinates((1, 2), (1, 3))
+    assert not compare_coordinates((1, 2, 0), (1, 2))
+    assert not compare_coordinates((1, 2), (1, 2, 0))
+    assert compare_coordinates((1, 2, 0), [1, 2, 0])
+    assert not compare_coordinates((1, 2, 0), (1, 2, 1))
+    assert compare_coordinates((0.3, 0.3), (0.1 + 0.2, 0.1 + 0.2))
+    assert not compare_coordinates((0.3, 0.3), ("0.3", "0.3"))

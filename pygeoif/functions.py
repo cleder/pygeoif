@@ -17,13 +17,18 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """Functions for geometries."""
+import math
 from itertools import groupby
+from itertools import zip_longest
 from typing import Iterable
 from typing import List
 from typing import Tuple
+from typing import Union
 from typing import cast
 
+from pygeoif.types import CoordinatesType
 from pygeoif.types import LineType
+from pygeoif.types import MultiCoordinatesType
 from pygeoif.types import Point2D
 
 
@@ -131,6 +136,30 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 def dedupe(coords: LineType) -> LineType:
     """Remove duplicate Points from a LineString."""
     return tuple(coord for coord, _count in groupby(coords))
+
+
+def compare_coordinates(
+    coords: Union[float, CoordinatesType, MultiCoordinatesType],
+    other: Union[float, CoordinatesType, MultiCoordinatesType],
+) -> bool:
+    """Compare two coordinate sequences."""
+    try:
+        return all(
+            compare_coordinates(c, o)
+            for c, o in zip_longest(
+                coords,  # type: ignore [arg-type]
+                other,  # type: ignore [arg-type]
+                fillvalue=math.nan,
+            )
+        )
+    except TypeError:
+        try:
+            # assert only used to make mypy happy
+            assert isinstance(coords, float)  # noqa: S101
+            assert isinstance(other, float)  # noqa: S101
+            return math.isclose(coords, other)
+        except (TypeError, AssertionError):
+            return coords == other
 
 
 __all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]
