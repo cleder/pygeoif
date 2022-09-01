@@ -161,9 +161,7 @@ def test_line3():
 def test_square():
     pts = []
     for x in range(100):
-        for y in range(100):
-            pts.append((x, y))
-
+        pts.extend((x, y) for y in range(100))
     hull = convex_hull(pts)
 
     assert hull == [(0, 0), (99, 0), (99, 99), (0, 99), (0, 0)]
@@ -172,9 +170,7 @@ def test_square():
 def test_triangle():
     pts = []
     for x in range(100):
-        for y in range(x + 1):
-            pts.append((x, y))
-
+        pts.extend((x, y) for y in range(x + 1))
     hull = convex_hull(pts)
 
     assert hull == [(0, 0), (99, 0), (99, 99), (0, 0)]
@@ -183,9 +179,7 @@ def test_triangle():
 def test_trapezoid():
     pts = []
     for x in range(100):
-        for y in range(-x - 1, x + 1):
-            pts.append((x, y))
-
+        pts.extend((x, y) for y in range(-x - 1, x + 1))
     hull = convex_hull(pts)
 
     assert hull == [(0, -1), (99, -100), (99, 99), (0, 0), (0, -1)]
