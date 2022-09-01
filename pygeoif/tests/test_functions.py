@@ -1,4 +1,5 @@
 """Test geometric functions."""
+import itertools
 import math
 import random
 
@@ -93,11 +94,11 @@ def test_signed_area_circle_ish():
         center2, area2 = centroid(list(reversed(pts)))
 
         # both area computations should be approximately equal
-        assert abs((area1 - signed_area(pts)) / r) < 0.000_01
-        assert abs((area2 - signed_area(list(reversed(pts)))) / r) < 0.000_01
+        assert math.isclose(area1, signed_area(pts))
+        assert math.isclose(area2, signed_area(list(reversed(pts))))
         assert center1, area1 == (center2, area2)
-        assert abs(center1[0] - x) < 0.000_001
-        assert abs(center1[1] - y) < 0.000_001
+        assert math.isclose(center1[0], x, abs_tol=0.000_000_1)
+        assert math.isclose(center1[1], y, abs_tol=0.000_000_1)
         # we are computing an approximation of math.pi
         if steps > 12:
             assert 3.0 * r**2 < area1 < 3.2 * r**2
@@ -117,8 +118,8 @@ def test_signed_area_crescent_ish():
         center1, area1 = centroid(pts)
         center2, area2 = centroid(list(reversed(pts)))
 
-        assert abs((area1 - signed_area(pts)) / r) < 0.000_01
-        assert abs((area2 - signed_area(list(reversed(pts)))) / r) < 0.000_01
+        assert math.isclose(area1, signed_area(pts))
+        assert math.isclose(area2, signed_area(list(reversed(pts))))
         assert center1, area1 == (center2, area2)
 
 
@@ -159,35 +160,24 @@ def test_line3():
 
 
 def test_square():
-    pts = []
-    for x in range(100):
-        for y in range(100):
-            pts.append((x, y))
-
+    pts = list(itertools.product(range(100), range(100)))
     hull = convex_hull(pts)
-
     assert hull == [(0, 0), (99, 0), (99, 99), (0, 99), (0, 0)]
 
 
 def test_triangle():
     pts = []
     for x in range(100):
-        for y in range(x + 1):
-            pts.append((x, y))
-
+        pts.extend((x, y) for y in range(x + 1))
     hull = convex_hull(pts)
-
     assert hull == [(0, 0), (99, 0), (99, 99), (0, 0)]
 
 
 def test_trapezoid():
     pts = []
     for x in range(100):
-        for y in range(-x - 1, x + 1):
-            pts.append((x, y))
-
+        pts.extend((x, y) for y in range(-x - 1, x + 1))
     hull = convex_hull(pts)
-
     assert hull == [(0, -1), (99, -100), (99, 99), (0, 0), (0, -1)]
 
 
@@ -219,7 +209,7 @@ def test_spiral():
         assert len(hull) == len(pts)
 
 
-def test_cresent():
+def test_crescent():
     for _ in range(10):
         x = random.randrange(20)
         y = random.randrange(20)
@@ -257,7 +247,7 @@ def test_random():
         assert convex_hull(hull) == hull
         if len(hull) > 3:
             _, area = centroid(tuple(hull))
-            assert abs(area - signed_area(hull)) < 0.001
+            assert math.isclose(area, signed_area(hull))
 
 
 def test_dedupe_point():
@@ -296,3 +286,21 @@ def test_compare_points():
     assert not compare_coordinates((1, 2, 0), (1, 2, 1))
     assert compare_coordinates((0.3, 0.3), (0.1 + 0.2, 0.1 + 0.2))
     assert not compare_coordinates((0.3, 0.3), ("0.3", "0.3"))
+
+
+def test_compare_lines():
+    assert compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 4)))
+    assert compare_coordinates(((1, 2), (3, 4)), [[1, 2], [3, 4]])
+    assert not compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 5)))
+    assert not compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 4), (3, 4)))
+
+
+def test_compare_polygons():
+    assert compare_coordinates(
+        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+    )
+    assert not compare_coordinates(
+        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+        (((1, 2), (3, 4)), ((5, 6), (7, 8)), ((5, 6), (7, 8))),
+    )
