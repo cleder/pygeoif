@@ -6,22 +6,22 @@ from pygeoif import factories
 from pygeoif import geometry
 
 
-def test_num_int():
+def test_num_int() -> None:
     assert factories.num("1") == 1
     assert type(factories.num("1")) is int
 
 
-def test_num_intf():
+def test_num_intf() -> None:
     assert factories.num("1.0") == 1
     assert type(factories.num("1.0")) is int
 
 
-def test_num_float():
+def test_num_float() -> None:
     assert factories.num("1.1") == 1.1
     assert type(factories.num("1.1")) is float
 
 
-def test_orient_true():
+def test_orient_true() -> None:
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
     int_2 = [(0.5, 1.25), (1, 1.25), (1, 1.75), (0.5, 1.75), (0.5, 1.25)]
@@ -33,7 +33,7 @@ def test_orient_true():
     assert list(interiors[1].coords) == int_2[::-1]
 
 
-def test_orient_unchanged():
+def test_orient_unchanged() -> None:
     exterior = ((0, 0), (2, 0), (2, 2), (0, 2), (0, 0))
     interiors = [
         ((0.5, 0.25), (0.5, 1.25), (1.5, 1.25), (1.5, 0.25), (0.5, 0.25)),
@@ -49,7 +49,7 @@ def test_orient_unchanged():
     assert new_interiors[1].coords == interiors[1]
 
 
-def test_orient_false():
+def test_orient_false() -> None:
     exterior = ((0, 0), (2, 0), (2, 2), (0, 2), (0, 0))
     interiors = [
         ((0.5, 0.25), (0.5, 1.25), (1.5, 1.25), (1.5, 0.25), (0.5, 0.25)),
@@ -64,7 +64,7 @@ def test_orient_false():
     assert new_interiors[1].coords == interiors[1][::-1]
 
 
-def test_box():
+def test_box() -> None:
     poly = factories.box(1, 2, 3, 4)
 
     assert poly.__geo_interface__ == {
@@ -74,7 +74,7 @@ def test_box():
     }
 
 
-def test_box_cw():
+def test_box_cw() -> None:
     poly = factories.box(1, 2, 3, 4, ccw=False)
 
     assert poly.__geo_interface__ == {
@@ -84,7 +84,7 @@ def test_box_cw():
     }
 
 
-def test_shell_holes_from_wkt_coords():
+def test_shell_holes_from_wkt_coords() -> None:
     shell, holes = factories._shell_holes_from_wkt_coords(
         [
             ["0 0", "10 20", "30 40", "0 0"],
@@ -121,7 +121,7 @@ class TestWKT:
         "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))",
     ]
 
-    def test_point(self):
+    def test_point(self) -> None:
         p = factories.from_wkt("POINT (0.0 1.0)")
         assert isinstance(p, geometry.Point)
         assert p.x == 0.0
@@ -130,12 +130,12 @@ class TestWKT:
         assert str(p) == "POINT (0 1)"
         assert p.geom_type == "Point"
 
-    def test_point_capitalized(self):
+    def test_point_capitalized(self) -> None:
         pts = ["POINT (1 0)", "point (1 0)", "Point(1 0)", "pOinT(1 0)"]
         for pt in pts:
             assert factories.from_wkt(pt) == geometry.Point(1, 0)
 
-    def test_linestring(self):
+    def test_linestring(self) -> None:
         line = factories.from_wkt(
             "LINESTRING(-72.991 46.177,-73.079 46.16,"
             "-73.146 46.124,-73.177 46.071,-73.164 46.044)",
@@ -147,12 +147,12 @@ class TestWKT:
         )
         assert isinstance(line, geometry.LineString)
 
-    def test_linearring(self):
+    def test_linearring(self) -> None:
         r = factories.from_wkt("LINEARRING (0 0,0 1,1 0,0 0)")
         assert isinstance(r, geometry.LinearRing)
         assert r.wkt == "LINEARRING (0 0, 0 1, 1 0, 0 0)"
 
-    def test_polygon(self):
+    def test_polygon(self) -> None:
         p = factories.from_wkt(
             "POLYGON((-91.611 76.227,-91.543 76.217,"
             "-91.503 76.222,-91.483 76.221,-91.474 76.211,"
@@ -189,7 +189,7 @@ class TestWKT:
         )
         assert p.exterior.coords[0] == p.exterior.coords[-1]
 
-    def test_multipoint(self):
+    def test_multipoint(self) -> None:
         p = factories.from_wkt("MULTIPOINT(3.5 5.6,4.8 10.5)")
         assert isinstance(p, geometry.MultiPoint)
         assert list(p.geoms)[0].x == 3.5
@@ -204,7 +204,7 @@ class TestWKT:
         assert list(p.geoms)[0].x == 10.0
         assert list(p.geoms)[3].y == 10.0
 
-    def test_multilinestring(self):
+    def test_multilinestring(self) -> None:
         p = factories.from_wkt(
             "MULTILINESTRING((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))",
         )
@@ -223,7 +223,7 @@ class TestWKT:
             "MULTILINESTRING((10 10, 20 20, 10 40),(40 40, 30 30, 40 20, 30 10))"
         )
 
-    def test_multipolygon(self):
+    def test_multipolygon(self) -> None:
         p = factories.from_wkt(
             "MULTIPOLYGON(((0 0,10 20,30 40,0 0),"
             "(1 1,2 2,3 3,1 1)),"
@@ -282,7 +282,7 @@ class TestWKT:
             ),
         }
 
-    def test_geometrycollection(self):
+    def test_geometrycollection(self) -> None:
         gc = factories.from_wkt(
             "GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))",
         )
@@ -291,36 +291,36 @@ class TestWKT:
         assert isinstance(list(gc.geoms)[1], geometry.LineString)
         assert gc.wkt == "GEOMETRYCOLLECTION(POINT (4 6), LINESTRING (4 6, 7 10))"
 
-    def test_wkt_ok(self):
+    def test_wkt_ok(self) -> None:
         for wkt in self.wkt_ok:
             factories.from_wkt(wkt)
 
-    def test_wkt_fail(self):
+    def test_wkt_fail(self) -> None:
         for wkt in self.wkt_fail:
             pytest.raises(factories.WKTParserError, factories.from_wkt, wkt)
 
-    def test_wkt_tin(self):
+    def test_wkt_tin(self) -> None:
         tin = "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))"
         pytest.raises(factories.WKTParserError, factories.from_wkt, tin)
 
 
 class TestAsShape:
-    def test_point(self):
+    def test_point(self) -> None:
         f = geometry.Point(0, 1)
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_linestring(self):
+    def test_linestring(self) -> None:
         f = geometry.LineString([(0, 0), (1, 1)])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_linearring(self):
+    def test_linearring(self) -> None:
         f = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_polygon(self):
+    def test_polygon(self) -> None:
         f = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
@@ -336,18 +336,18 @@ class TestAsShape:
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_multipoint(self):
+    def test_multipoint(self) -> None:
         f = geometry.MultiPoint([[0.0, 0.0], [1.0, 2.0]])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_multilinestring(self):
+    def test_multilinestring(self) -> None:
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
         assert (0, 0, 1, 2) == f.bounds
 
-    def test_multipolygon(self):
+    def test_multipolygon(self) -> None:
         f = geometry.MultiPolygon(
             [
                 (
@@ -359,7 +359,7 @@ class TestAsShape:
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
-    def test_geometrycollection(self):
+    def test_geometrycollection(self) -> None:
         p = geometry.Point(0, 1)
         line = geometry.LineString([(0, 0), (1, 1)])
         f = geometry.GeometryCollection([p, line])
@@ -368,17 +368,17 @@ class TestAsShape:
         assert f.__geo_interface__["geometries"][0] == p.__geo_interface__
         assert f.__geo_interface__["geometries"][1] == line.__geo_interface__
 
-    def test_nongeo(self):
+    def test_nongeo(self) -> None:
         pytest.raises(AttributeError, factories.shape, "a")
 
-    def test_empty_dict(self):
+    def test_empty_dict(self) -> None:
         pytest.raises(TypeError, factories.shape, {})
 
-    def test_notimplemented_interface(self):
+    def test_notimplemented_interface(self) -> None:
         f = {"type": "Tin", "geometries": (1, 2, 3)}
         pytest.raises(NotImplementedError, factories.shape, f)
 
-    def test_dict_as_shape(self):
+    def test_dict_as_shape(self) -> None:
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
         s = factories.shape(f.__geo_interface__)
         assert f.__geo_interface__ == s.__geo_interface__
