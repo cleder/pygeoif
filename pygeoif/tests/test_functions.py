@@ -2,6 +2,7 @@
 import itertools
 import math
 import random
+from typing import Tuple
 
 import pytest
 
@@ -271,36 +272,71 @@ def test_dedupe_line2() -> None:
     assert dedupe(((1, 2, 3),) * 2 + ((4, 5, 6),) * 3) == ((1, 2, 3), (4, 5, 6))
 
 
-def test_compare_numbers() -> None:
-    assert not compare_coordinates(1, 2)
-    assert not compare_coordinates(2, 1)
-    assert compare_coordinates(2, 2)
+@pytest.mark.parametrize(
+    ("numbers", "expected"),
+    [
+        ((0, 0), True),
+        ((0, 1), False),
+        ((1, 0), False),
+        ((1, 1), True),
+        ((0.3, 0.2 + 0.1), True),
+    ],
+)
+def test_compare_numbers(numbers: Tuple[float, float], expected: bool) -> None:
+    assert compare_coordinates(*numbers) is expected
 
 
-def test_compare_points() -> None:
-    assert compare_coordinates((1, 2), [1, 2])
-    assert not compare_coordinates((1, 2), (1, 3))
-    assert not compare_coordinates((1, 2, 0), (1, 2))
-    assert not compare_coordinates((1, 2), (1, 2, 0))
-    assert compare_coordinates((1, 2, 0), [1, 2, 0])
-    assert not compare_coordinates((1, 2, 0), (1, 2, 1))
-    assert compare_coordinates((0.3, 0.3), (0.1 + 0.2, 0.1 + 0.2))
-    assert not compare_coordinates((0.3, 0.3), ("0.3", "0.3"))
+@pytest.mark.parametrize(
+    ("points", "expected"),
+    [
+        (((1, 2), [1, 2]), True),
+        (((1, 2), [1, 3]), False),
+        (((1, 2), [2, 2]), False),
+        (((1, 2, 0), (1, 2)), False),
+        (((1, 2), (1, 2, 0)), False),
+        (((1, 2, 0), [1, 2, 0]), True),
+        (((1, 2, 0), [1, 2, 1]), False),
+        (((1, 2, 0), [1, 3, 0]), False),
+        (((1, 2, 0), [2, 2, 0]), False),
+        (((0.3, 0.3), (0.1 + 0.2, 0.1 + 0.2)), True),
+        (((0.3, 0.3), ("0.3", "0.3")), False),
+    ],
+)
+def test_compare_points(points, expected: bool) -> None:
+    assert compare_coordinates(*points) is expected
 
 
-def test_compare_lines() -> None:
-    assert compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 4)))
-    assert compare_coordinates(((1, 2), (3, 4)), [[1, 2], [3, 4]])
-    assert not compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 5)))
-    assert not compare_coordinates(((1, 2), (3, 4)), ((1, 2), (3, 4), (3, 4)))
+@pytest.mark.parametrize(
+    ("lines", "expected"),
+    [
+        ((((1, 2), (3, 4)), ((1, 2), (3, 4))), True),
+        ((((1, 2), (3, 4)), [[1, 2], [3, 4]]), True),
+        ((((1, 2), (3, 4)), ((1, 2), (3, 5))), False),
+        ((((1, 2), (3, 4)), ((1, 2), (3, 4), (3, 4))), False),
+    ],
+)
+def test_compare_lines(lines, expected: bool) -> None:
+    assert compare_coordinates(*lines) is expected
 
 
-def test_compare_polygons() -> None:
-    assert compare_coordinates(
-        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
-        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
-    )
-    assert not compare_coordinates(
-        (((1, 2), (3, 4)), ((5, 6), (7, 8))),
-        (((1, 2), (3, 4)), ((5, 6), (7, 8)), ((5, 6), (7, 8))),
-    )
+@pytest.mark.parametrize(
+    ("polygons", "expected"),
+    [
+        (
+            (
+                (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+                (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+            ),
+            True,
+        ),
+        (
+            (
+                (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+                (((1, 2), (3, 4)), ((5, 6), (7, 8)), ((5, 6), (7, 8))),
+            ),
+            False,
+        ),
+    ],
+)
+def test_compare_polygons(polygons, expected: bool) -> None:
+    assert compare_coordinates(*polygons) is expected
