@@ -159,4 +159,4 @@ def compare_coordinates(
             return False
 
 
-__all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]
+__all__ = ["centroid", "compare_coordinates", "convex_hull", "dedupe", "signed_area"]

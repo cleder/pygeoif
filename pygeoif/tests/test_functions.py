@@ -280,6 +280,16 @@ def test_dedupe_line2() -> None:
         ((1, 0), False),
         ((1, 1), True),
         ((0.3, 0.2 + 0.1), True),
+        ((1, "1"), False),
+        ((None, 1), False),
+        ((1, None), False),
+        ((None, None), False),
+        ((1, 1.0), True),
+        ((1.0, 1), True),
+        ((math.inf, math.inf), True),
+        ((-math.inf, -math.inf), True),
+        ((math.inf, -math.inf), False),
+        ((math.nan, math.nan), False),
     ],
 )
 def test_compare_numbers(numbers: Tuple[float, float], expected: bool) -> None:
