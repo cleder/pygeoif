@@ -154,12 +154,9 @@ def compare_coordinates(
         )
     except TypeError:
         try:
-            # assert only used to make mypy happy
-            assert isinstance(coords, float)  # noqa: S101
-            assert isinstance(other, float)  # noqa: S101
-            return math.isclose(coords, other)
-        except (TypeError, AssertionError):
-            return coords == other
+            return math.isclose(cast(float, coords), cast(float, other))
+        except TypeError:
+            return False
 
 
 __all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]
