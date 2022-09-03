@@ -281,6 +281,7 @@ def test_dedupe_line2() -> None:
         ((1, 1), True),
         ((0.3, 0.2 + 0.1), True),
         ((1, "1"), False),
+        (("10", 10), False),
         ((None, 1), False),
         ((1, None), False),
         ((None, None), False),
@@ -293,6 +294,7 @@ def test_dedupe_line2() -> None:
     ],
 )
 def test_compare_numbers(numbers: Tuple[float, float], expected: bool) -> None:
+    """Compare numbers for equality."""
     assert compare_coordinates(*numbers) is expected
 
 
@@ -313,6 +315,7 @@ def test_compare_numbers(numbers: Tuple[float, float], expected: bool) -> None:
     ],
 )
 def test_compare_points(points, expected: bool) -> None:
+    """Compare a single set of coordinates."""
     assert compare_coordinates(*points) is expected
 
 
@@ -322,10 +325,12 @@ def test_compare_points(points, expected: bool) -> None:
         ((((1, 2), (3, 4)), ((1, 2), (3, 4))), True),
         ((((1, 2), (3, 4)), [[1, 2], [3, 4]]), True),
         ((((1, 2), (3, 4)), ((1, 2), (3, 5))), False),
+        ((((1, 2), (3, (3, 5))), ((1, 2), (3, (3, 5)))), True),
         ((((1, 2), (3, 4)), ((1, 2), (3, 4), (3, 4))), False),
     ],
 )
 def test_compare_lines(lines, expected: bool) -> None:
+    """Compare a sequence of coordinates."""
     assert compare_coordinates(*lines) is expected
 
 
@@ -346,7 +351,22 @@ def test_compare_lines(lines, expected: bool) -> None:
             ),
             False,
         ),
+        (
+            (
+                (((1, 2), (3, 4)), ((5, 6), (7, 8))),
+                (((1, 2), (3, 4)), (((5, 6), (7, 8)), ((5, 6), (7, 8)))),
+            ),
+            False,
+        ),
+        (
+            (
+                [[[1, 2], [3, 4]], ([[5, 6], (7, 8)], ([5, 6], [7, 8]))],
+                (((1, 2), (3, 4)), (((5, 6), (7, 8)), ((5, 6), (7, 8)))),
+            ),
+            True,
+        ),
     ],
 )
 def test_compare_polygons(polygons, expected: bool) -> None:
+    """Compare nested sequences of coordinates."""
     assert compare_coordinates(*polygons) is expected
