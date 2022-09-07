@@ -8,6 +8,9 @@ dist/
 .vscode/
 *.pyc
 venv/
+.venv/
 coverage.xml
 .mutmut-cache
 html/
+.dccache
+*.stderr*
