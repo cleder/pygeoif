@@ -24,7 +24,7 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/ikamensh/flynt/
-    rev: ''
+    rev: '0.76'
     hooks:
       - id: flynt
   - repo: https://github.com/pycqa/isort
