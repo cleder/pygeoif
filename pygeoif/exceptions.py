@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012 -2021  Christian Ledermann
+#   Copyright (C) 2012 -2022  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -32,5 +32,6 @@ class InvalidGeometryError(ValueError):
 
 __all__ = [
     "DimensionError",
+    "InvalidGeometryError",
     "WKTParserError",
 ]

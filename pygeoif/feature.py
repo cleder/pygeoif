@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012 -2021  Christian Ledermann
+#   Copyright (C) 2012 -2022  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@ from typing import Sequence
 from typing import Union
 from typing import cast
 
+from pygeoif.functions import compare_coordinates
 from pygeoif.geometry import Geometry
 from pygeoif.types import Bounds
 from pygeoif.types import GeoFeatureCollectionInterface
@@ -44,8 +45,10 @@ def feature_geo_interface_equals(
             my_interface["type"] == other_interface.get("type"),
             my_interface["properties"] == other_interface.get("properties"),
             my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
-            my_interface["geometry"]["coordinates"]
-            == other_interface["geometry"].get("coordinates"),
+            compare_coordinates(
+                my_interface["geometry"]["coordinates"],
+                other_interface["geometry"].get("coordinates"),  # type: ignore[arg-type]
+            ),
         ],
     )
 

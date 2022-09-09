@@ -2,7 +2,7 @@
 from pygeoif import geometry
 
 
-def test_geo_interface():
+def test_geo_interface() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -57,7 +57,7 @@ def test_geo_interface():
     }
 
 
-def test_geo_wkt():
+def test_geo_wkt() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -78,7 +78,7 @@ def test_geo_wkt():
     )
 
 
-def test_len():
+def test_len() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -92,7 +92,7 @@ def test_len():
     assert len(gc) == 6
 
 
-def test_geoms():
+def test_geoms() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -107,7 +107,7 @@ def test_geoms():
         assert k == v
 
 
-def test_repr():
+def test_repr() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -130,7 +130,7 @@ def test_repr():
     )
 
 
-def test_repr_eval():
+def test_repr_eval() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -157,7 +157,7 @@ def test_repr_eval():
     )
 
 
-def test_eq():
+def test_eq() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -172,7 +172,7 @@ def test_eq():
     assert gc1 == gc2
 
 
-def test_neq_len():
+def test_neq_len() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -187,7 +187,7 @@ def test_neq_len():
     assert gc1 != gc2
 
 
-def test_neq_sort():
+def test_neq_sort() -> None:
     poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
     e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -202,14 +202,14 @@ def test_neq_sort():
     assert gc1 != gc2
 
 
-def test_neq_type():
+def test_neq_type() -> None:
     line = geometry.LineString([(0, 0), (1, 1)])
     gc1 = geometry.GeometryCollection([line])
 
     assert gc1 != line
 
 
-def test_neq_coords():
+def test_neq_coords() -> None:
     p0 = geometry.Point(0, 0)
     p1 = geometry.Point(-1, -1)
     p2 = geometry.Point(-1, -2)
@@ -219,14 +219,14 @@ def test_neq_coords():
     assert gc1 != gc2
 
 
-def test_neq_interface():
+def test_neq_interface() -> None:
     line = geometry.LineString([(0, 0), (1, 1)])
     gc1 = geometry.GeometryCollection([line])
 
     assert gc1 != object()
 
 
-def test_convex_hull():
+def test_convex_hull() -> None:
     p0 = geometry.Point(0, 0)
     p1 = geometry.Point(-1, -1)
     p2 = geometry.Point(-1, -2)
@@ -242,25 +242,25 @@ def test_convex_hull():
     )
 
 
-def test_is_empty():
+def test_is_empty() -> None:
     gc = geometry.GeometryCollection([])
 
     assert gc.is_empty
 
 
-def test_empty_wkt():
+def test_empty_wkt() -> None:
     gc = geometry.GeometryCollection([])
 
     assert gc.wkt == "GEOMETRYCOLLECTION EMPTY"
 
 
-def test_repr_empty():
+def test_repr_empty() -> None:
     gc = geometry.GeometryCollection([])
 
     assert repr(gc) == "GeometryCollection(())"
 
 
-def test_empty_bounds():
+def test_empty_bounds() -> None:
     gc = geometry.GeometryCollection([])
 
     assert gc.bounds == ()

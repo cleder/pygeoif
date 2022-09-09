@@ -2,7 +2,7 @@
 from pygeoif import geometry
 
 
-def test_geoms():
+def test_geoms() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -16,7 +16,7 @@ def test_geoms():
         assert type(poly) is geometry.Polygon
 
 
-def test_len():
+def test_len() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -30,7 +30,7 @@ def test_len():
     assert len(polys) == 2
 
 
-def test_geo_interface():
+def test_geo_interface() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -51,7 +51,7 @@ def test_geo_interface():
     }
 
 
-def test_from_dict():
+def test_from_dict() -> None:
     polys = geometry.MultiPolygon._from_dict(
         {
             "type": "MultiPolygon",
@@ -77,7 +77,7 @@ def test_from_dict():
     }
 
 
-def test_wkt():
+def test_wkt() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -95,7 +95,7 @@ def test_wkt():
     )
 
 
-def test_repr():
+def test_repr() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -113,7 +113,7 @@ def test_repr():
     )
 
 
-def test_repr_eval():
+def test_repr_eval() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -134,7 +134,7 @@ def test_repr_eval():
     )
 
 
-def test_convex_hull():
+def test_convex_hull() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -148,7 +148,7 @@ def test_convex_hull():
     assert polys.convex_hull == geometry.LineString([(0.0, 0.0), (0.0, 2.0)])
 
 
-def test_convex_hull_3d():
+def test_convex_hull_3d() -> None:
     polys = geometry.MultiPolygon(
         [
             (((0, 0, 1), (1, 1, 2), (0, 0, 1)),),
@@ -159,7 +159,7 @@ def test_convex_hull_3d():
     assert polys.convex_hull == geometry.LineString([(0, 0), (2, 2)])
 
 
-def test_convex_hull_3d_collapsed_to_point():
+def test_convex_hull_3d_collapsed_to_point() -> None:
     polys = geometry.MultiPolygon(
         [
             (((0, 0, 1), (0, 0, 2), (0, 0, 3)),),
@@ -170,7 +170,7 @@ def test_convex_hull_3d_collapsed_to_point():
     assert polys.convex_hull == geometry.Point(0, 0)
 
 
-def test_convex_hull_linear_ring():
+def test_convex_hull_linear_ring() -> None:
     polys = geometry.MultiPolygon(
         [
             (((0, 0), (1, 0), (2, 2)),),
@@ -183,7 +183,7 @@ def test_convex_hull_linear_ring():
     )
 
 
-def test_unique():
+def test_unique() -> None:
     polys = geometry.MultiPolygon(
         [
             (
@@ -203,7 +203,7 @@ def test_unique():
     assert len(polys) == 2
 
 
-def test_from_polygons():
+def test_from_polygons() -> None:
     e1 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i1 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
     i2 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -233,7 +233,7 @@ def test_from_polygons():
     )
 
 
-def test_from_polygons_unique():
+def test_from_polygons_unique() -> None:
     e1 = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     i1 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
     i2 = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
@@ -262,26 +262,26 @@ def test_from_polygons_unique():
     assert polys == polys2
 
 
-def test_is_empty():
+def test_is_empty() -> None:
     polys = geometry.MultiPolygon([])
 
     assert polys.is_empty
 
 
-def test_empty_wkt():
+def test_empty_wkt() -> None:
     polys = geometry.MultiPolygon([])
 
     assert polys.wkt == "MULTIPOLYGON EMPTY"
 
 
-def test_repr_empty():
+def test_repr_empty() -> None:
 
     polys = geometry.MultiPolygon([])
 
     assert repr(polys) == "MultiPolygon(())"
 
 
-def test_empty_bounds():
+def test_empty_bounds() -> None:
     polys = geometry.MultiPolygon([])
 
     assert polys.bounds == ()

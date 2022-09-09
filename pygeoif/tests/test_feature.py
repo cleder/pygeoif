@@ -8,7 +8,7 @@ from pygeoif import geometry
 
 
 class TestFeature:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.a = geometry.Polygon(
             ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),
         )
@@ -20,23 +20,23 @@ class TestFeature:
         self.f3 = feature.Feature(self.a, {}, feature_id="1")
         self.fc = feature.FeatureCollection([self.f1, self.f2])
 
-    def test_feature_eq(self):
+    def test_feature_eq(self) -> None:
         assert self.f1 == feature.Feature(self.a)
         assert self.f3 == feature.Feature(self.a, {}, feature_id="1")
 
-    def test_feature_neq_no_geo_interface(self):
+    def test_feature_neq_no_geo_interface(self) -> None:
         assert self.f1 != object()
 
-    def test_feature_neq_no_geo_interface_geometry(self):
+    def test_feature_neq_no_geo_interface_geometry(self) -> None:
         assert self.f1 != unittest.mock.Mock(__geo_interface__={})
 
-    def test_feature_neq_no_geo_interface_type(self):
+    def test_feature_neq_no_geo_interface_type(self) -> None:
         assert self.f1 != unittest.mock.Mock(__geo_interface__={"type": "foo"})
 
-    def test_feature_neq_no_geo_interface_features(self):
+    def test_feature_neq_no_geo_interface_features(self) -> None:
         assert self.f1 != unittest.mock.Mock(__geo_interface__={"type": "Feature"})
 
-    def test_feature(self):
+    def test_feature(self) -> None:
         pytest.raises(TypeError, feature.Feature)
         assert self.f1.__geo_interface__ == {
             "type": "Feature",
@@ -66,7 +66,7 @@ class TestFeature:
         assert self.f1.geometry.bounds == (0.0, 0.0, 1.0, 1.0)
         del self.f1.properties["coords"]
 
-    def test_feature_with_id(self):
+    def test_feature_with_id(self) -> None:
         assert self.f3.id == "1"
         assert self.f3.__geo_interface__ == {
             "type": "Feature",
@@ -82,14 +82,14 @@ class TestFeature:
             "properties": {},
         }
 
-    def test_feature_repr(self):
+    def test_feature_repr(self) -> None:
         assert (
             repr(self.f3) == "Feature("
             "Polygon(((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)),),"
             " {}, '1')"
         )
 
-    def test_feature_repr_eval(self):
+    def test_feature_repr_eval(self) -> None:
         assert (
             eval(
                 repr(self.f2),
@@ -99,7 +99,7 @@ class TestFeature:
             == self.f2.__geo_interface__
         )
 
-    def test_featurecollection(self):
+    def test_featurecollection(self) -> None:
         pytest.raises(TypeError, feature.FeatureCollection)
         pytest.raises(TypeError, feature.FeatureCollection, None)
         assert len(list(self.fc.features)) == 2
@@ -149,24 +149,24 @@ class TestFeature:
             "type": "FeatureCollection",
         }
 
-    def test_featurecollection_eq(self):
+    def test_featurecollection_eq(self) -> None:
         assert self.fc == feature.FeatureCollection([self.f1, self.f2])
 
-    def test_featurecollection_neq_no_geo_interface(self):
+    def test_featurecollection_neq_no_geo_interface(self) -> None:
         assert self.fc != object()
 
-    def test_featurecollection_neq_no_geo_interface_geometry(self):
+    def test_featurecollection_neq_no_geo_interface_geometry(self) -> None:
         assert self.fc != unittest.mock.Mock(__geo_interface__={})
 
-    def test_featurecollection_neq_no_geo_interface_features(self):
+    def test_featurecollection_neq_no_geo_interface_features(self) -> None:
         assert self.fc != unittest.mock.Mock(
             __geo_interface__={"type": "FeatureCollection"},
         )
 
-    def test_featurecollection_neq_no_geo_interface_len_features(self):
+    def test_featurecollection_neq_no_geo_interface_len_features(self) -> None:
         assert self.fc != feature.FeatureCollection([self.f1])
 
-    def test_featurecollection_repr(self):
+    def test_featurecollection_repr(self) -> None:
         assert (
             repr(self.fc) == "FeatureCollection("
             "(Feature("
@@ -177,7 +177,7 @@ class TestFeature:
             "{}, None)))"
         )
 
-    def test_featurecollection_repr_eval(self):
+    def test_featurecollection_repr_eval(self) -> None:
         assert (
             eval(
                 repr(self.fc),
@@ -191,7 +191,7 @@ class TestFeature:
             == self.fc.__geo_interface__
         )
 
-    def test_featurecollection_bounds(self):
+    def test_featurecollection_bounds(self) -> None:
         ls1 = geometry.LineString(((0, 1), (1, 1)))
         ls2 = geometry.LineString(((2, 3), (3, 4)))
         fc = feature.FeatureCollection([feature.Feature(ls1), feature.Feature(ls2)])

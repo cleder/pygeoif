@@ -25,7 +25,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = "1.0.beta.12"
+version = "1.0.beta.13"
 
 with open("README.rst", encoding="utf-8") as readme:
     README = readme.read()
@@ -45,6 +45,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Intended Audience :: Developers",

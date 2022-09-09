@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012 -2021  Christian Ledermann
+#   Copyright (C) 2012 -2022  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -154,12 +154,9 @@ def compare_coordinates(
         )
     except TypeError:
         try:
-            # assert only used to make mypy happy
-            assert isinstance(coords, float)  # noqa: S101
-            assert isinstance(other, float)  # noqa: S101
-            return math.isclose(coords, other)
-        except (TypeError, AssertionError):
-            return coords == other
+            return math.isclose(cast(float, coords), cast(float, other))
+        except TypeError:
+            return False
 
 
-__all__ = ["centroid", "convex_hull", "dedupe", "signed_area"]
+__all__ = ["centroid", "compare_coordinates", "convex_hull", "dedupe", "signed_area"]
