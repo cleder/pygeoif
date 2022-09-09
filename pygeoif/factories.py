@@ -146,8 +146,7 @@ def shape(
     if not geometry:
         raise TypeError("Object does not implement __geo_interface__")
 
-    constructor = type_map.get(geometry["type"])
-    if constructor:
+    if constructor := type_map.get(geometry["type"]):
         return constructor._from_dict(  # type: ignore [attr-defined, no-any-return]
             geometry,
         )
