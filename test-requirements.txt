@@ -31,6 +31,7 @@ flake8-literal
 # flake8-logging-format
 flake8-noqa
 flake8-pep3101
+flake8-pie
 flake8-print
 # flake8-pytest
 flake8-raise
