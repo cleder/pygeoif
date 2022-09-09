@@ -144,6 +144,14 @@ def test_line() -> None:
     assert hull == [(0, 0), (1, 1)]
 
 
+def test_line_minimal() -> None:
+    pts = [(0, 0), (1, 1), (1, 0)]
+
+    hull = convex_hull(pts)
+
+    assert hull == [(0, 0), (1, 0), (1, 1), (0, 0)]
+
+
 def test_line2() -> None:
     pts = ((x, x) for x in range(5))
 

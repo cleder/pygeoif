@@ -161,6 +161,29 @@ def test_from_linestrings_unique() -> None:
     )
 
 
+def test_from_linestrings_non_unique() -> None:
+    line1 = geometry.LineString([(0, 0, 0), (1, 1, 3), (2, 2, 6)])
+    line2 = geometry.LineString([(0, 0), (1, 1), (2, 2)])
+    lines = geometry.MultiLineString.from_linestrings(
+        line1,
+        line2,
+        line1,
+        line2,
+        line1,
+    )
+
+    assert lines == geometry.MultiLineString(
+        (
+            ((0, 0, 0), (1, 1, 3), (2, 2, 6)),
+            ((0, 0), (1, 1), (2, 2)),
+            ((0, 0, 0), (1, 1, 3), (2, 2, 6)),
+            ((0, 0), (1, 1), (2, 2)),
+            ((0, 0, 0), (1, 1, 3), (2, 2, 6)),
+        ),
+        unique=False,
+    )
+
+
 def test_is_empty() -> None:
     lines = geometry.MultiLineString([])
 
