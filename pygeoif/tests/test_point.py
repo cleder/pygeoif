@@ -1,4 +1,5 @@
 """Test Point."""
+import math
 from unittest import mock
 
 import pytest
@@ -8,6 +9,12 @@ from pygeoif import geometry
 
 def test_empty() -> None:
     point = geometry.Point(1, None)
+
+    assert point.is_empty
+
+
+def test_empty_nan() -> None:
+    point = geometry.Point(1, math.nan, math.nan)
 
     assert point.is_empty
 

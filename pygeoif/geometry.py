@@ -363,7 +363,7 @@ class LineString(_Geometry):
         """
         Check validity of the coordinates.
 
-        Returns False if the coordinates colapse to a single Point.
+        Returns False if the coordinates collapse to a single Point.
         This only highlights obvious problems with this geometry.
         Even if this test passes the geometry may still be invalid.
         """
@@ -562,7 +562,7 @@ class Polygon(_Geometry):
         """
         Return Coordinates of the Polygon.
 
-        Note that this is not implemented in Shaply.
+        Note that this is not implemented in Shapely.
         """
         if self._interiors:
             return self.exterior.coords, tuple(
