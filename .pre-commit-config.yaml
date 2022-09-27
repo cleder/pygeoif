@@ -27,6 +27,15 @@ repos:
     rev: '0.76'
     hooks:
       - id: flynt
+  - repo: https://github.com/MarcoGorelli/absolufy-imports
+    rev: v0.3.1
+    hooks:
+      - id: absolufy-imports
+  - repo: https://github.com/hakancelikdev/unimport
+    rev: stable
+    hooks:
+      - id: unimport
+        args: [--remove, --include-star-import, --ignore-init, --gitignore]
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
@@ -35,6 +44,10 @@ repos:
     rev: 22.8.0
     hooks:
       - id: black
+  # - repo: https://github.com/charliermarsh/ruff
+  #   rev: v0.0.39
+  #   hooks:
+  #     - id: lint
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
