@@ -634,7 +634,8 @@ class Polygon(_Geometry):
             return False
         for interior in self.interiors:
             i_box = interior.bounds
-            assert i_box  # noqa: S101 # nosec
+            if not i_box:
+                continue
             if (
                 bounds[0] > i_box[0]
                 or bounds[1] > i_box[1]
@@ -907,9 +908,7 @@ class MultiPolygon(_MultiGeometry):
         self._geoms = tuple(
             Polygon(
                 polygon[0],
-                polygon[1]  # type: ignore [misc] # noqa: IF100
-                if len(polygon) == 2
-                else None,
+                polygon[1] if len(polygon) == 2 else None,  # type: ignore [misc]
             )
             for polygon in polygons
         )
