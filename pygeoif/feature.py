@@ -110,7 +110,7 @@ class Feature:
         )
 
     @property
-    def id(self) -> Optional[Union[str, int]]:  # noqa: A003
+    def id(self) -> Optional[Union[str, int]]:
         """Return the id of the feature."""
         return self._feature_id
 
