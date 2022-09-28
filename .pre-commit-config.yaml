@@ -48,6 +48,10 @@ repos:
   #   rev: v0.0.39
   #   hooks:
   #     - id: lint
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.4.0
+    hooks:
+      - id: yesqa
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
