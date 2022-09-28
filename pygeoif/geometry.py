@@ -633,9 +633,7 @@ class Polygon(_Geometry):
         if not bounds:
             return False
         for interior in self.interiors:
-            i_box = interior.bounds
-            if not i_box:
-                continue
+            i_box = cast(Bounds, interior.bounds)
             if (
                 bounds[0] > i_box[0]
                 or bounds[1] > i_box[1]
