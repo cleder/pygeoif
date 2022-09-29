@@ -6,7 +6,7 @@ from typing import List
 
 from setuptools import find_packages
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
+from setuptools.command.test import test as TestCommand  # noqa: N812
 
 
 class PyTest(TestCommand):
