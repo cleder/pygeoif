@@ -220,7 +220,7 @@ class Point(_Geometry):
             PointType,
             tuple(
                 coordinate
-                for coordinate in [x, y, z]
+                for coordinate in (x, y, z)
                 if coordinate is not None and not math.isnan(coordinate)
             ),
         )
