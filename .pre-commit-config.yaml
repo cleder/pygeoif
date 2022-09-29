@@ -27,6 +27,15 @@ repos:
     rev: '0.76'
     hooks:
       - id: flynt
+  - repo: https://github.com/MarcoGorelli/absolufy-imports
+    rev: v0.3.1
+    hooks:
+      - id: absolufy-imports
+  - repo: https://github.com/hakancelikdev/unimport
+    rev: 0.12.1
+    hooks:
+      - id: unimport
+        args: [--remove, --include-star-import, --ignore-init, --gitignore]
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
@@ -73,7 +82,7 @@ repos:
           - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.971
+    rev: v0.981
     hooks:
       - id: mypy
   - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
@@ -84,4 +93,14 @@ repos:
     rev: "0.48"
     hooks:
       - id: check-manifest
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.18.3
+    hooks:
+      - id: check-github-workflows
+      - id: check-github-actions
+      - id: check-readthedocs
+  - repo: https://github.com/regebro/pyroma
+    rev: "3.2"
+    hooks:
+      - id: pyroma
 ...

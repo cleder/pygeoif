@@ -1,9 +1,12 @@
-[tool.isort]
-line_length = 88
-force_single_line = true
+[tool.check-manifest]
+ignore = [".*", "mutmut_config.py", "test-requirements.txt", "tox.ini"]
 
 [tool.flake8]
 max_line_length = 88
+
+[tool.isort]
+line_length = 88
+force_single_line = true
 
 [tool.mypy]
 disallow_any_generics = true
@@ -12,7 +15,7 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_decorators = true
 ignore_errors = false
-ignore_missing_imports = true
+ignore_missing_imports = false
 implicit_reexport = false
 strict_optional = true
 strict_equality = true
@@ -25,15 +28,10 @@ warn_no_return = true
 warn_return_any = true
 show_error_codes = true
 
-# mypy per-module options:
-
 [[tool.mypy.overrides]]
 module = "pygeoif.tests.*"
 disallow_untyped_defs = false
 ignore_errors = true
-
-[tool.check-manifest]
-ignore = [".*", "mutmut_config.py", "test-requirements.txt", "tox.ini"]
 
 [tool.pyright]
 include = ["pygeoif"]
@@ -45,3 +43,6 @@ exclude = ["**/node_modules",
 ]
 reportMissingImports = true
 reportMissingTypeStubs = true
+
+[tool.ruff]
+line-length = 89

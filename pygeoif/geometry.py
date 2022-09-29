@@ -220,7 +220,7 @@ class Point(_Geometry):
             PointType,
             tuple(
                 coordinate
-                for coordinate in [x, y, z]
+                for coordinate in (x, y, z)
                 if coordinate is not None and not math.isnan(coordinate)
             ),
         )
@@ -363,7 +363,7 @@ class LineString(_Geometry):
         """
         Check validity of the coordinates.
 
-        Returns False if the coordinates colapse to a single Point.
+        Returns False if the coordinates collapse to a single Point.
         This only highlights obvious problems with this geometry.
         Even if this test passes the geometry may still be invalid.
         """
@@ -562,7 +562,7 @@ class Polygon(_Geometry):
         """
         Return Coordinates of the Polygon.
 
-        Note that this is not implemented in Shaply.
+        Note that this is not implemented in Shapely.
         """
         if self._interiors:
             return self.exterior.coords, tuple(
@@ -633,8 +633,7 @@ class Polygon(_Geometry):
         if not bounds:
             return False
         for interior in self.interiors:
-            i_box = interior.bounds
-            assert i_box  # noqa: S101 # nosec
+            i_box = cast(Bounds, interior.bounds)
             if (
                 bounds[0] > i_box[0]
                 or bounds[1] > i_box[1]
@@ -907,9 +906,7 @@ class MultiPolygon(_MultiGeometry):
         self._geoms = tuple(
             Polygon(
                 polygon[0],
-                polygon[1]  # type: ignore [misc] # noqa: IF100
-                if len(polygon) == 2
-                else None,
+                polygon[1] if len(polygon) == 2 else None,  # type: ignore [misc]
             )
             for polygon in polygons
         )
