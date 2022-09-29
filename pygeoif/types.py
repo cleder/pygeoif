@@ -56,7 +56,7 @@ class GeoInterfaceBase(TypedDict):
 
 
 class GeoInterface(GeoInterfaceBase, total=False):
-    """Geointerfaces provides an optional bbox."""
+    """GeoInterface provides an optional bbox."""
 
     bbox: Bounds
 
