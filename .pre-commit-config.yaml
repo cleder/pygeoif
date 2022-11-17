@@ -40,6 +40,11 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
+  - repo: https://github.com/dhruvmanila/remove-print-statements
+    rev: ''
+    hooks:
+    - id: remove-print-statements
+      args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
