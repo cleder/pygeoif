@@ -58,6 +58,7 @@ pytest-randomly
 radon
 removestar
 ssort
+typeforce
 yamlfixer-opt-nc
 yamllint
 yesqa
