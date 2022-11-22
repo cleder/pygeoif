@@ -45,10 +45,6 @@ It was written to provide clean and python only geometries for fastkml_
    :target: https://www.codefactor.io/repository/github/cleder/pygeoif/overview/main
    :alt: CodeFactor
 
-.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
-   :target: https://github.com/pre-commit/pre-commit
-   :alt: pre-commit
-
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
