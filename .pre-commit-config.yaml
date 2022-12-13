@@ -46,7 +46,7 @@ repos:
     - id: remove-print-statements
       args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 22.12.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
