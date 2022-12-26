@@ -37,7 +37,7 @@ repos:
       - id: unimport
         args: [--remove, --include-star-import, --ignore-init, --gitignore]
   - repo: https://github.com/pycqa/isort
-    rev: v5.11.3
+    rev: 5.11.4
     hooks:
       - id: isort
   - repo: https://github.com/dhruvmanila/remove-print-statements
