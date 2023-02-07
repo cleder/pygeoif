@@ -32,12 +32,12 @@ repos:
     hooks:
       - id: absolufy-imports
   - repo: https://github.com/hakancelikdev/unimport
-    rev: 33ead41ee30f1d323a9c2fcfd0114297efbbc4d5
+    rev: 0.14.1
     hooks:
       - id: unimport
         args: [--remove, --include-star-import, --ignore-init, --gitignore]
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/dhruvmanila/remove-print-statements
@@ -46,7 +46,7 @@ repos:
     - id: remove-print-statements
       args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/flake8
@@ -99,7 +99,7 @@ repos:
     hooks:
       - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.20.0
+    rev: 0.21.0
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
