@@ -101,6 +101,7 @@ class _Geometry:
             warnings.warn(
                 "The convex Hull will only return the projection to"
                 " 2 dimensions xy coordinates",
+                stacklevel=2,
             )
 
         hull = convex_hull(self._prepare_hull())
