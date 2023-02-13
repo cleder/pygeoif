@@ -95,7 +95,6 @@ def test_shell_holes_from_wkt_coords() -> None:
 
 
 class TestWKT:
-
     # valid and supported WKTs
     wkt_ok = [
         "POINT(6 10)",

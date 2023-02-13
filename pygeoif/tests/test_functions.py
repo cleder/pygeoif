@@ -260,12 +260,10 @@ def test_random() -> None:
 
 
 def test_dedupe_point() -> None:
-
     assert dedupe(((1, 2, 3),) * 10) == ((1, 2, 3),)
 
 
 def test_dedupe_line() -> None:
-
     assert dedupe(((1, 2, 3), (4, 5, 6)) * 3) == (
         (1, 2, 3),
         (4, 5, 6),

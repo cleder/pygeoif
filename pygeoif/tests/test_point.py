@@ -183,7 +183,6 @@ def test_eq_floats() -> None:
 
 
 def test_neq_missing_interface() -> None:
-
     point = geometry.Point(0, 1, 2)
 
     assert point != object()

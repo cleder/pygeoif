@@ -58,7 +58,6 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
 
     # For all vertices
     for i, coord in enumerate(coords):
-
         next_coord = coords[(i + 1) % n]
         # Calculate area using shoelace formula
         area = (coord[0] * next_coord[1]) - (next_coord[0] * coord[1])

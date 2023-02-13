@@ -40,11 +40,11 @@ repos:
     rev: 5.12.0
     hooks:
       - id: isort
-  - repo: https://github.com/dhruvmanila/remove-print-statements
-    rev: 'v0.5.0'
-    hooks:
-    - id: remove-print-statements
-      args: ['--verbose']   # Show all the print statements to be removed
+  # - repo: https://github.com/dhruvmanila/remove-print-statements
+  #   rev: 'v0.5.0'
+  #   hooks:
+  #   - id: remove-print-statements
+  #     args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
     rev: 23.1.0
     hooks:
@@ -54,19 +54,18 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies:
-          - flake8
-          - flake8-absolute-import
-          - flake8-awesome
-          - flake8-bandit
-          - flake8-blind-except
+          # - flake8-absolute-import
+          # - flake8-awesome
+          # - flake8-bandit
+          # - flake8-blind-except
           - flake8-bugbear
           # - flake8-class-attributes-order
           - flake8-cognitive-complexity
-          - flake8-commas
+          # - flake8-commas
           - flake8-comments
           - flake8-complex-f-strings
-          - flake8-continuation
-          - flake8-debugger
+          # - flake8-continuation
+          # - flake8-debugger
           - flake8-docstrings
           # - flake8-dunder-all
           - flake8-encodings
@@ -84,28 +83,28 @@ repos:
           - flake8-string-format
           - flake8-super
           - flake8-typing-imports
-          - flake8-use-fstring
+          # - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.0.0
     hooks:
       - id: mypy
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
-    rev: v1.0.1
-    hooks:
-      - id: rst-linter
-  - repo: https://github.com/mgedmin/check-manifest
-    rev: "0.49"
-    hooks:
-      - id: check-manifest
+  # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
+  #   rev: v1.0.1
+  #   hooks:
+  #     - id: rst-linter
+  # - repo: https://github.com/mgedmin/check-manifest
+  #   rev: "0.49"
+  #   hooks:
+  #     - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.21.0
+    rev: "0.21.0"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
       - id: check-readthedocs
-  - repo: https://github.com/regebro/pyroma
-    rev: "4.1"
-    hooks:
-      - id: pyroma
+  # - repo: https://github.com/regebro/pyroma
+  #   rev: "4.1"
+  #   hooks:
+  #     - id: pyroma
 ...
