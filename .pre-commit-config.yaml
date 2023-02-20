@@ -86,7 +86,7 @@ repos:
           # - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: mypy
   # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
