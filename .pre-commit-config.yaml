@@ -86,7 +86,7 @@ repos:
           # - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.1
+    rev: v1.1.1
     hooks:
       - id: mypy
   # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
@@ -98,7 +98,7 @@ repos:
   #   hooks:
   #     - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.21.0"
+    rev: "0.22.0"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
