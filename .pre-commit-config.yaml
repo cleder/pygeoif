@@ -97,10 +97,10 @@ repos:
   #   rev: v1.0.1
   #   hooks:
   #     - id: rst-linter
-  # - repo: https://github.com/mgedmin/check-manifest
-  #   rev: "0.49"
-  #   hooks:
-  #     - id: check-manifest
+  - repo: https://github.com/mgedmin/check-manifest
+    rev: "0.49"
+    hooks:
+      - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: "0.22.0"
     hooks:

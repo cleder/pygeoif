@@ -23,9 +23,9 @@ jobs:
           pip install pytest pytest-cov typing_extensions
       - name: Test with pytest
         run: |
-          pytest pygeoif --cov=pygeoif --cov-fail-under=100 --cov-report=xml
+          pytest tests --cov=tests --cov=pygeoif --cov-fail-under=100 --cov-report=xml
       - name: "Upload coverage to Codecov"
-        if: ${{ matrix.python-version==3.9 }}
+        if: ${{ matrix.python-version==3.11 }}
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
@@ -53,7 +53,7 @@ jobs:
       - name: Linting
         run: |
           flake8 pygeoif
-          black --check pygeoif
+          black --check pygeoif tests
           yamllint .github/workflows/
       - name: Check complexity
         run: |
@@ -78,7 +78,7 @@ jobs:
           pip install pytest typing_extensions
       - name: Test with pytest
         run: |
-          pytest pygeoif
+          pytest tests
 
   publish:
     if: "github.event_name == 'push' && github.repository == 'cleder/pygeoif'"
