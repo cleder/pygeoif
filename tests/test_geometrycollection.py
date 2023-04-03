@@ -264,3 +264,95 @@ def test_empty_bounds() -> None:
     gc = geometry.GeometryCollection([])
 
     assert gc.bounds == ()
+
+
+def test_multipoint_wkt() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc = geometry.GeometryCollection([multipoint])
+
+    assert gc.wkt == "GEOMETRYCOLLECTION(MULTIPOINT(0 0, 1 1, 1 2, 2 2))"
+
+
+def test_multipoint_repr() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc = geometry.GeometryCollection([multipoint])
+
+    assert (
+        repr(gc)
+        == "GeometryCollection((MultiPoint(((0, 0), (1, 1), (1, 2), (2, 2))),))"
+    )
+
+
+def test_multipoint_geo_interface() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc = geometry.GeometryCollection([multipoint])
+
+    assert gc.__geo_interface__ == {
+        "type": "GeometryCollection",
+        "geometries": (
+            {
+                "type": "MultiPoint",
+                "coordinates": ((0, 0), (1, 1), (1, 2), (2, 2)),
+                "bbox": (0, 0, 2, 2),
+            },
+        ),
+    }
+
+
+def test_nested_geometry_collection() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
+    line = geometry.LineString([(0, 0), (3, 1)])
+    gc2 = geometry.GeometryCollection([gc1, line])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    gc3 = geometry.GeometryCollection([gc2, poly1])
+
+    assert gc3.wkt == (
+        "GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(GEOMETRYCOLLECTION("
+        "POINT (0 0), MULTIPOINT(0 0, 1 1, 1 2, 2 2)), LINESTRING (0 0, 3 1)), "
+        "POLYGON ((0 0, 1 1, 1 0, 0 0)))"
+    )
+
+
+def test_nested_geometry_collection_geo_interface() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
+    line = geometry.LineString([(0, 0), (3, 1)])
+    gc2 = geometry.GeometryCollection([gc1, line])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    gc3 = geometry.GeometryCollection([gc2, poly1])
+    assert gc3.__geo_interface__ == {
+        "geometries": (
+            {
+                "geometries": (
+                    {
+                        "geometries": (
+                            {
+                                "bbox": (0, 0, 0, 0),
+                                "coordinates": (0, 0),
+                                "type": "Point",
+                            },
+                            {
+                                "bbox": (0, 0, 2, 2),
+                                "coordinates": ((0, 0), (1, 1), (1, 2), (2, 2)),
+                                "type": "MultiPoint",
+                            },
+                        ),
+                        "type": "GeometryCollection",
+                    },
+                    {
+                        "bbox": (0, 0, 3, 1),
+                        "coordinates": ((0, 0), (3, 1)),
+                        "type": "LineString",
+                    },
+                ),
+                "type": "GeometryCollection",
+            },
+            {
+                "bbox": (0, 0, 1, 1),
+                "coordinates": (((0, 0), (1, 1), (1, 0), (0, 0)),),
+                "type": "Polygon",
+            },
+        ),
+        "type": "GeometryCollection",
+    }
