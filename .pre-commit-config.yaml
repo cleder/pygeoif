@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.0.263'
+    rev: 'v0.0.265'
     hooks:
       - id: ruff
   - repo: https://github.com/PyCQA/flake8
@@ -102,7 +102,7 @@ repos:
     hooks:
       - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.22.0"
+    rev: "0.23.0"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
