@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.0.272'
+    rev: 'v0.0.275'
     hooks:
       - id: ruff
   - repo: https://github.com/PyCQA/flake8
@@ -90,7 +90,7 @@ repos:
           # - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.3.0
+    rev: v1.4.1
     hooks:
       - id: mypy
   # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
