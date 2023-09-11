@@ -46,7 +46,7 @@ repos:
   #   - id: remove-print-statements
   #     args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.9.1
     hooks:
       - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
