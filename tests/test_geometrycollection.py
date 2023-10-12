@@ -1,5 +1,4 @@
 """Test Baseclass."""
-import pytest
 
 from pygeoif import geometry
 
@@ -360,7 +359,6 @@ def test_nested_geometry_collection_geo_interface() -> None:
     }
 
 
-@pytest.mark.xfail(reason="Not implemented yet")
 def test_nested_geometry_collection_eq() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
     gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])

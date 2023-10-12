@@ -155,7 +155,7 @@ def shape(
             shape(fi) for fi in geometry["geometries"]  # type: ignore [typeddict-item]
         ]
         return GeometryCollection(geometries)  # type: ignore [arg-type]
-    raise NotImplementedError(f"[{geometry['type']} is nor implemented")
+    raise NotImplementedError(f"[{geometry['type']} is not implemented")
 
 
 def num(number: str) -> float:

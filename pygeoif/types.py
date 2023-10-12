@@ -22,6 +22,7 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+from typing_extensions import Literal
 from typing_extensions import Protocol
 from typing_extensions import TypedDict
 
@@ -63,8 +64,8 @@ class GeoInterface(GeoInterfaceBase, total=False):
 class GeoCollectionInterface(TypedDict):
     """Geometry Collection Interface."""
 
-    type: str
-    geometries: Sequence[GeoInterface]
+    type: Literal["GeometryCollection"]
+    geometries: Sequence[Union[GeoInterface, "GeoCollectionInterface"]]
 
 
 class GeoFeatureInterfaceBase(TypedDict):

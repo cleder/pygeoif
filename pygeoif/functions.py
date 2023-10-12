@@ -26,6 +26,8 @@ from typing import Union
 from typing import cast
 
 from pygeoif.types import CoordinatesType
+from pygeoif.types import GeoCollectionInterface
+from pygeoif.types import GeoInterface
 from pygeoif.types import LineType
 from pygeoif.types import MultiCoordinatesType
 from pygeoif.types import Point2D
@@ -74,7 +76,8 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
 
 
 def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
-    """2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
+    """
+    2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
 
     Returns a positive value, if OAB makes a counter-clockwise turn,
     negative for clockwise turn, and zero if the points are collinear.
@@ -155,6 +158,28 @@ def compare_coordinates(
             return math.isclose(cast(float, coords), cast(float, other))
         except TypeError:
             return False
+
+
+def compare_geo_interface(
+    if1: Union[GeoInterface, GeoCollectionInterface],
+    if2: Union[GeoInterface, GeoCollectionInterface],
+) -> bool:
+    """Compare two geo interfaces."""
+    if if1["type"] != if2["type"]:
+        return False
+    if if1["type"] == "GeometryCollection":
+        return all(
+            compare_geo_interface(g1, g2)  # type: ignore [arg-type]
+            for g1, g2 in zip_longest(
+                if1["geometries"],  # type: ignore [typeddict-item]
+                if2["geometries"],  # type: ignore [typeddict-item]
+                fillvalue={"type": None, "coordinates": ()},
+            )
+        )
+    return compare_coordinates(
+        if1["coordinates"],  # type: ignore [typeddict-item]
+        if2["coordinates"],  # type: ignore [typeddict-item]
+    )
 
 
 __all__ = [

@@ -32,6 +32,7 @@ from typing import cast
 from pygeoif.exceptions import DimensionError
 from pygeoif.functions import centroid
 from pygeoif.functions import compare_coordinates
+from pygeoif.functions import compare_geo_interface
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
@@ -1015,6 +1016,8 @@ class GeometryCollection(_MultiGeometry):
         Types and coordinates from all contained geometries must be equal.
         """
         try:
+            if self.is_empty:
+                return False
             if (
                 other.__geo_interface__.get("type")  # type: ignore [attr-defined]
                 != self.geom_type
@@ -1031,18 +1034,9 @@ class GeometryCollection(_MultiGeometry):
                 return False
         except AttributeError:
             return False
-        return all(
-            (
-                s["type"] == o.get("type")
-                and compare_coordinates(s["coordinates"], o.get("coordinates"))
-                for s, o in zip(
-                    (geom.__geo_interface__ for geom in self.geoms),
-                    other.__geo_interface__.get(  # type:  ignore [attr-defined]
-                        "geometries",
-                        [],
-                    ),
-                )
-            )
+        return compare_geo_interface(
+            self.__geo_interface__,
+            other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __len__(self) -> int:
@@ -1066,7 +1060,7 @@ class GeometryCollection(_MultiGeometry):
     def __geo_interface__(self) -> GeoCollectionInterface:  # type: ignore [override]
         """Return the geo interface of the collection."""
         return {
-            "type": self.geom_type,
+            "type": "GeometryCollection",
             "geometries": tuple(geom.__geo_interface__ for geom in self.geoms),
         }
 
