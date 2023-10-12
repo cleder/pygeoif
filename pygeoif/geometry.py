@@ -251,11 +251,9 @@ class Point(_Geometry):
     @property
     def z(self) -> Optional[float]:
         """Return z coordinate."""
-        return (
-            self._coordinates[2]  # type: ignore[misc]
-            if len(self._coordinates) == 3
-            else None
-        )
+        if self.has_z:
+            return self._coordinates[2]  # type: ignore [misc]
+        raise DimensionError(f"The {self!r} geometry does not have z values")
 
     @property
     def coords(self) -> Tuple[PointType]:

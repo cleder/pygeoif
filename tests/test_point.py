@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from pygeoif import geometry
+from pygeoif.exceptions import DimensionError
 
 
 def test_empty() -> None:
@@ -52,9 +53,17 @@ def test_bounds3d() -> None:
 def test_xy() -> None:
     point = geometry.Point(1.0, 0.0)
 
-    assert point.z is None
     assert point.x == 1
     assert point.y == 0
+
+
+def test_xy_raises_error_accessing_z() -> None:
+    point = geometry.Point(1, 0)
+
+    with pytest.raises(
+        DimensionError, match=r"^The Point\(1, 0\) geometry does not have z values$"
+    ):
+        point.z
 
 
 def test_xyz() -> None:
