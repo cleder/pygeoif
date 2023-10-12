@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
       - id: check-docstring-first
@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.0.287'
+    rev: 'v0.0.292'
     hooks:
       - id: ruff
   - repo: https://github.com/PyCQA/flake8
@@ -102,7 +102,7 @@ repos:
     hooks:
       - id: check-manifest
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.26.3"
+    rev: "0.27.0"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
