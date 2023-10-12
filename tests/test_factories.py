@@ -8,17 +8,17 @@ from pygeoif import geometry
 
 def test_num_int() -> None:
     assert factories.num("1") == 1
-    assert type(factories.num("1")) is int
+    assert isinstance(factories.num("1"), int)
 
 
 def test_num_intf() -> None:
     assert factories.num("1.0") == 1
-    assert type(factories.num("1.0")) is int
+    assert isinstance(factories.num("1.0"), int)
 
 
 def test_num_float() -> None:
     assert factories.num("1.1") == 1.1
-    assert type(factories.num("1.1")) is float
+    assert isinstance(factories.num("1.1"), float)
 
 
 def test_orient_true() -> None:
