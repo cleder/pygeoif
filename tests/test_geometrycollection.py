@@ -369,3 +369,11 @@ def test_nested_geometry_collection_eq() -> None:
     gc4 = geometry.GeometryCollection([gc2, poly1])
 
     assert gc3 == gc4
+
+
+def test_geometry_collection_neq_when_empty() -> None:
+    gc1 = geometry.GeometryCollection([])
+    gc2 = geometry.GeometryCollection([geometry.Point(0, 0)])
+
+    assert gc1 != gc2
+    assert gc2 != gc1
