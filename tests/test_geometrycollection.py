@@ -1,4 +1,6 @@
 """Test Baseclass."""
+import pytest
+
 from pygeoif import geometry
 
 
@@ -356,3 +358,16 @@ def test_nested_geometry_collection_geo_interface() -> None:
         ),
         "type": "GeometryCollection",
     }
+
+
+@pytest.mark.xfail(reason="Not implemented yet")
+def test_nested_geometry_collection_eq() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
+    line = geometry.LineString([(0, 0), (3, 1)])
+    gc2 = geometry.GeometryCollection([gc1, line])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    gc3 = geometry.GeometryCollection([gc2, poly1])
+    gc4 = geometry.GeometryCollection([gc2, poly1])
+
+    assert gc3 == gc4

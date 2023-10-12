@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2022  Christian Ledermann
+#   Copyright (C) 2012 -2023  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -1042,7 +1042,7 @@ class GeometryCollection(_MultiGeometry):
                         [],
                     ),
                 )
-            ),
+            )
         )
 
     def __len__(self) -> int:
