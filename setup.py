@@ -25,7 +25,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = "1.0.1"
+version = "1.1.0"
 
 with open("README.rst", encoding="utf-8") as readme:
     README = readme.read()
