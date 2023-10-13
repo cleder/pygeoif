@@ -86,6 +86,7 @@ def test_from_compatible() -> None:
 
     ring = geometry.LinearRing._from_interface(not_a_geometry)
 
+    assert isinstance(ring, geometry.LinearRing)
     assert ring.coords == ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0), (0, 4, 3), (0, 0, 1))
 
 

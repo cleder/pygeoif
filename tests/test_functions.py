@@ -8,6 +8,7 @@ import pytest
 
 from pygeoif.functions import centroid
 from pygeoif.functions import compare_coordinates
+from pygeoif.functions import compare_geo_interface
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
@@ -260,12 +261,10 @@ def test_random() -> None:
 
 
 def test_dedupe_point() -> None:
-
     assert dedupe(((1, 2, 3),) * 10) == ((1, 2, 3),)
 
 
 def test_dedupe_line() -> None:
-
     assert dedupe(((1, 2, 3), (4, 5, 6)) * 3) == (
         (1, 2, 3),
         (4, 5, 6),
@@ -378,3 +377,78 @@ def test_compare_lines(lines, expected: bool) -> None:
 def test_compare_polygons(polygons, expected: bool) -> None:
     """Compare nested sequences of coordinates."""
     assert compare_coordinates(*polygons) is expected
+
+
+def test_compare_eq_geo_interface() -> None:
+    geo_if = {
+        "geometries": (
+            {
+                "geometries": (
+                    {
+                        "geometries": (
+                            {
+                                "bbox": (0, 0, 0, 0),
+                                "coordinates": (0, 0),
+                                "type": "Point",
+                            },
+                            {
+                                "bbox": (0, 0, 2, 2),
+                                "coordinates": ((0, 0), (1, 1), (1, 2), (2, 2)),
+                                "type": "MultiPoint",
+                            },
+                        ),
+                        "type": "GeometryCollection",
+                    },
+                    {
+                        "bbox": (0, 0, 3, 1),
+                        "coordinates": ((0, 0), (3, 1)),
+                        "type": "LineString",
+                    },
+                ),
+                "type": "GeometryCollection",
+            },
+            {"coordinates": (((0, 0), (1, 1), (1, 0), (0, 0)),), "type": "Polygon"},
+            {
+                "bbox": (0, 0, 2, 2),
+                "coordinates": (
+                    ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)),
+                    ((1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)),
+                ),
+                "type": "Polygon",
+            },
+            {"coordinates": (0, 0), "type": "Point"},
+            {"bbox": (-1, -1, -1, -1), "coordinates": (-1, -1), "type": "Point"},
+            {"coordinates": ((0, 0), (1, 1), (1, 0), (0, 0)), "type": "LinearRing"},
+            {
+                "bbox": (0, 0, 1, 1),
+                "coordinates": ((0, 0), (1, 1)),
+                "type": "LineString",
+            },
+        ),
+        "type": "GeometryCollection",
+    }
+
+    assert compare_geo_interface(geo_if, geo_if) is True
+
+
+def test_compare_neq_geo_interface() -> None:
+    geo_if1 = {
+        "type": "Point",
+        "bbox": (0, 1, 0, 1),
+        "coordinates": (0.0, 1.0, 2.0),
+    }
+    geo_if2 = {
+        "coordinates": (0.0, 1.0, 3.0),
+    }
+
+    assert compare_geo_interface(geo_if1, geo_if2) is False
+
+
+def test_compare_neq_empty_geo_interface() -> None:
+    geo_if = {
+        "type": "Point",
+        "bbox": (0, 1, 0, 1),
+        "coordinates": (0.0, 1.0, 2.0),
+    }
+
+    assert compare_geo_interface(geo_if, {}) is False

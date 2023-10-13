@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #
-#   Copyright (C) 2012 -2022  Christian Ledermann
+#   Copyright (C) 2012 -2023  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -27,6 +26,8 @@ from typing import Union
 from typing import cast
 
 from pygeoif.types import CoordinatesType
+from pygeoif.types import GeoCollectionInterface
+from pygeoif.types import GeoInterface
 from pygeoif.types import LineType
 from pygeoif.types import MultiCoordinatesType
 from pygeoif.types import Point2D
@@ -59,7 +60,6 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
 
     # For all vertices
     for i, coord in enumerate(coords):
-
         next_coord = coords[(i + 1) % n]
         # Calculate area using shoelace formula
         area = (coord[0] * next_coord[1]) - (next_coord[0] * coord[1])
@@ -76,7 +76,8 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
 
 
 def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
-    """2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
+    """
+    2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
 
     Returns a positive value, if OAB makes a counter-clockwise turn,
     negative for clockwise turn, and zero if the points are collinear.
@@ -159,4 +160,36 @@ def compare_coordinates(
             return False
 
 
-__all__ = ["centroid", "compare_coordinates", "convex_hull", "dedupe", "signed_area"]
+def compare_geo_interface(
+    first: Union[GeoInterface, GeoCollectionInterface],
+    second: Union[GeoInterface, GeoCollectionInterface],
+) -> bool:
+    """Compare two geo interfaces."""
+    try:
+        if first["type"] != second["type"]:
+            return False
+        if first["type"] == "GeometryCollection":
+            return all(
+                compare_geo_interface(g1, g2)  # type: ignore [arg-type]
+                for g1, g2 in zip_longest(
+                    first["geometries"],  # type: ignore [typeddict-item]
+                    second["geometries"],  # type: ignore [typeddict-item]
+                    fillvalue={"type": None, "coordinates": ()},
+                )
+            )
+        return compare_coordinates(
+            first["coordinates"],  # type: ignore [typeddict-item]
+            second["coordinates"],  # type: ignore [typeddict-item]
+        )
+    except KeyError:
+        return False
+
+
+__all__ = [
+    "centroid",
+    "compare_coordinates",
+    "compare_geo_interface",
+    "convex_hull",
+    "dedupe",
+    "signed_area",
+]

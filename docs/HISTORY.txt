@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1 (2023/10/13)
+-----------------
+
+- Fix nested MultiGeometries
+- Improve type annotations
+- Add Python 3.12 to supported versions
+- Last version to support Python 3.7
+
 1.0 (2022/09/29)
 ------------------------
 

@@ -82,7 +82,10 @@ def test_from_compatible() -> None:
             "coordinates": ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0)),
         },
     )
+
     line = geometry.LineString._from_interface(not_a_geometry)
+
+    assert isinstance(line, geometry.LineString)
     assert line.coords == ((0.0, 0.0, 1.0), (1.0, 1.0, 2.0))
 
 

@@ -6,15 +6,15 @@ bandit
 black
 #cohesion
 flake8
-flake8-absolute-import
-flake8-awesome
-flake8-bandit
+#flake8-absolute-import
+#flake8-awesome
+#flake8-bandit
 flake8-blind-except
-flake8-broken-line
+# flake8-broken-line
 flake8-bugbear
 # flake8-class-attributes-order
 flake8-cognitive-complexity
-flake8-commas
+#flake8-commas
 flake8-comments
 flake8-complex-f-strings
 flake8-continuation
@@ -58,6 +58,7 @@ pytest-randomly
 radon
 removestar
 ssort
+typeforce
 yamlfixer-opt-nc
 yamllint
 yesqa

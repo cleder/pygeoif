@@ -275,7 +275,6 @@ def test_empty_wkt() -> None:
 
 
 def test_repr_empty() -> None:
-
     polys = geometry.MultiPolygon([])
 
     assert repr(polys) == "MultiPolygon(())"

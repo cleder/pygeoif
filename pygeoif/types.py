@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2012 -2022  Christian Ledermann
 #
@@ -23,6 +22,7 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+from typing_extensions import Literal
 from typing_extensions import Protocol
 from typing_extensions import TypedDict
 
@@ -56,7 +56,7 @@ class GeoInterfaceBase(TypedDict):
 
 
 class GeoInterface(GeoInterfaceBase, total=False):
-    """Geointerfaces provides an optional bbox."""
+    """GeoInterface provides an optional bbox."""
 
     bbox: Bounds
 
@@ -64,8 +64,8 @@ class GeoInterface(GeoInterfaceBase, total=False):
 class GeoCollectionInterface(TypedDict):
     """Geometry Collection Interface."""
 
-    type: str
-    geometries: Sequence[GeoInterface]
+    type: Literal["GeometryCollection"]
+    geometries: Sequence[Union[GeoInterface, "GeoCollectionInterface"]]
 
 
 class GeoFeatureInterfaceBase(TypedDict):

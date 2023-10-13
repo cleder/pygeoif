@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #   Copyright (C) 2012 -2022  Christian Ledermann
 #
@@ -155,8 +154,8 @@ def shape(
         geometries = [
             shape(fi) for fi in geometry["geometries"]  # type: ignore [typeddict-item]
         ]
-        return GeometryCollection(geometries)  # type: ignore [arg-type]
-    raise NotImplementedError(f"[{geometry['type']} is nor implemented")
+        return GeometryCollection(geometries)
+    raise NotImplementedError(f"[{geometry['type']} is not implemented")
 
 
 def num(number: str) -> float:
@@ -269,9 +268,8 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
 def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
     gc_types = gcre.findall(coordinates)
     gc_coords = gcre.split(coordinates)[1:]
-    assert len(gc_types) == len(gc_coords)  # noqa: S101
     geometries: List[Geometry] = []
-    for (gc_type, gc_coord) in zip(gc_types, gc_coords):
+    for gc_type, gc_coord in zip(gc_types, gc_coords):
         gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
         geometries.append(cast(Geometry, from_wkt(gc_wkt)))
     return GeometryCollection(geometries)
