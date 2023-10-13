@@ -87,7 +87,7 @@ def test_box_cw() -> None:
 def test_shell_holes_from_wkt_coords() -> None:
     shell, holes = factories._shell_holes_from_wkt_coords(
         [
-            ["0 0", "10 20", "30 40", "0 0"],
+            ["0 0", "10 20", "30 40", "0 0"],  # type: ignore
         ],
     )
     assert holes is None
@@ -139,15 +139,17 @@ class TestWKT:
             "LINESTRING(-72.991 46.177,-73.079 46.16,"
             "-73.146 46.124,-73.177 46.071,-73.164 46.044)",
         )
+
+        assert isinstance(line, geometry.LineString)
         assert (
             line.wkt == "LINESTRING (-72.991 46.177, "
             "-73.079 46.16, -73.146 46.124, "
             "-73.177 46.071, -73.164 46.044)"
         )
-        assert isinstance(line, geometry.LineString)
 
     def test_linearring(self) -> None:
         r = factories.from_wkt("LINEARRING (0 0,0 1,1 0,0 0)")
+
         assert isinstance(r, geometry.LinearRing)
         assert r.wkt == "LINEARRING (0 0, 0 1, 1 0, 0 0)"
 
@@ -159,12 +161,18 @@ class TestWKT:
             "-91.638 76.202,-91.647 76.211,-91.648 76.218,"
             "-91.643 76.221,-91.636 76.222,-91.611 76.227))",
         )
+
+        assert isinstance(p, geometry.Polygon)
         assert p.exterior.coords[0][0] == -91.611
         assert p.exterior.coords[0] == p.exterior.coords[-1]
         assert len(p.exterior.coords) == 14
+
+    def test_polygon_1(self) -> None:
         p = factories.from_wkt(
             "POLYGON((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2))",
         )
+
+        assert isinstance(p, geometry.Polygon)
         assert p.exterior.coords[0] == p.exterior.coords[-1]
         assert p.exterior.coords[0] == (1.0, 1.0)
         assert len(list(p.interiors)) == 1
@@ -180,12 +188,20 @@ class TestWKT:
             "1 5, 1 1),(2 2, 3 2, "
             "3 3, 2 3, 2 2))"
         )
+
+    def test_polygon_2(self) -> None:
         p = factories.from_wkt("POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))")
+
+        assert isinstance(p, geometry.Polygon)
         assert p.exterior.coords[0] == p.exterior.coords[-1]
+
+    def test_polygon_3(self) -> None:
         p = factories.from_wkt(
             """POLYGON ((35 10, 10 20, 15 40, 45 45, 35 10),
             (20 30, 35 35, 30 20, 20 30))""",
         )
+
+        assert isinstance(p, geometry.Polygon)
         assert p.exterior.coords[0] == p.exterior.coords[-1]
 
     def test_multipoint(self) -> None:
@@ -207,6 +223,8 @@ class TestWKT:
         p = factories.from_wkt(
             "MULTILINESTRING((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))",
         )
+
+        assert isinstance(p, geometry.MultiLineString)
         assert list(p.geoms)[0].coords == (((3, 4), (10, 50), (20, 25)))
         assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))
         assert (
@@ -214,10 +232,14 @@ class TestWKT:
             "20 25),(-5 -8, "
             "-10 -8, -15 -4))"
         )
+
+    def test_multilinestring_1(self) -> None:
         p = factories.from_wkt(
             """MULTILINESTRING ((10 10, 20 20, 10 40),
             (40 40, 30 30, 40 20, 30 10))""",
         )
+
+        assert isinstance(p, geometry.MultiLineString)
         assert p.wkt == (
             "MULTILINESTRING((10 10, 20 20, 10 40),(40 40, 30 30, 40 20, 30 10))"
         )
@@ -228,6 +250,8 @@ class TestWKT:
             "(1 1,2 2,3 3,1 1)),"
             "((100 100,110 110,120 120,100 100)))",
         )
+
+        assert isinstance(p, geometry.MultiPolygon)
         # two polygons: the first one has an interior ring
         assert len(list(p.geoms)) == 2
         assert list(p.geoms)[0].exterior.coords == (
@@ -255,15 +279,23 @@ class TestWKT:
             "((100 100, 110 110,"
             " 120 120, 100 100)))"
         )
+
+    def test_multipolygon_1(self) -> None:
         p = factories.from_wkt(
             "MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),"
             "(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))",
         )
+
+        assert isinstance(p, geometry.MultiPolygon)
         assert len(list(p.geoms)) == 2
+
+    def test_multipolygon_2(self) -> None:
         p = factories.from_wkt(
             "MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),"
             "((15 5, 40 10, 10 20, 5 10, 15 5)))",
         )
+
+        assert isinstance(p, geometry.MultiPolygon)
         assert p.__geo_interface__ == {
             "type": "MultiPolygon",
             "bbox": (5.0, 5.0, 45.0, 40.0),
@@ -285,6 +317,8 @@ class TestWKT:
         gc = factories.from_wkt(
             "GEOMETRYCOLLECTION(POINT(4 6), LINESTRING(4 6,7 10))",
         )
+
+        assert isinstance(gc, geometry.GeometryCollection)
         assert len(list(gc.geoms)) == 2
         assert isinstance(list(gc.geoms)[0], geometry.Point)
         assert isinstance(list(gc.geoms)[1], geometry.LineString)

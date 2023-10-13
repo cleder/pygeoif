@@ -1000,7 +1000,9 @@ class GeometryCollection(_MultiGeometry):
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     """
 
-    def __init__(self, geometries: Iterable[Geometry]) -> None:
+    def __init__(
+        self, geometries: Iterable[Union[Geometry, "GeometryCollection"]]
+    ) -> None:
         """
         Initialize the MultiGeometry with Geometries.
 

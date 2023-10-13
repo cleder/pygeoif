@@ -170,6 +170,7 @@ def test_from_compatible() -> None:
 
     point = geometry.Point._from_interface(not_a_geometry)
 
+    assert isinstance(point, geometry.Point)
     assert point.coords == ((0, 1, 2),)
 
 
