@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2022  Christian Ledermann
+#   Copyright (C) 2012 -2023  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -161,30 +161,34 @@ def compare_coordinates(
 
 
 def compare_geo_interface(
-    if1: Union[GeoInterface, GeoCollectionInterface],
-    if2: Union[GeoInterface, GeoCollectionInterface],
+    first: Union[GeoInterface, GeoCollectionInterface],
+    second: Union[GeoInterface, GeoCollectionInterface],
 ) -> bool:
     """Compare two geo interfaces."""
-    if if1["type"] != if2["type"]:
-        return False
-    if if1["type"] == "GeometryCollection":
-        return all(
-            compare_geo_interface(g1, g2)  # type: ignore [arg-type]
-            for g1, g2 in zip_longest(
-                if1["geometries"],  # type: ignore [typeddict-item]
-                if2["geometries"],  # type: ignore [typeddict-item]
-                fillvalue={"type": None, "coordinates": ()},
+    try:
+        if first["type"] != second["type"]:
+            return False
+        if first["type"] == "GeometryCollection":
+            return all(
+                compare_geo_interface(g1, g2)  # type: ignore [arg-type]
+                for g1, g2 in zip_longest(
+                    first["geometries"],  # type: ignore [typeddict-item]
+                    second["geometries"],  # type: ignore [typeddict-item]
+                    fillvalue={"type": None, "coordinates": ()},
+                )
             )
+        return compare_coordinates(
+            first["coordinates"],  # type: ignore [typeddict-item]
+            second["coordinates"],  # type: ignore [typeddict-item]
         )
-    return compare_coordinates(
-        if1["coordinates"],  # type: ignore [typeddict-item]
-        if2["coordinates"],  # type: ignore [typeddict-item]
-    )
+    except KeyError:
+        return False
 
 
 __all__ = [
     "centroid",
     "compare_coordinates",
+    "compare_geo_interface",
     "convex_hull",
     "dedupe",
     "signed_area",
