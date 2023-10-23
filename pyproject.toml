@@ -115,11 +115,13 @@ reportMissingTypeStubs = true
     "D103",
 ]
 
-[tool.setuptools]
-include-package-data = true
-packages = [
-    "pygeoif",
-]
-
 [tool.setuptools.dynamic.version]
 attr = "pygeoif.about.__version__"
+
+[tool.setuptools.packages.find]
+exclude = [
+    "docs*",
+]
+include = [
+    "pygeoif*",
+]
