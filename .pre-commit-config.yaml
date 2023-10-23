@@ -46,11 +46,11 @@ repos:
   #   - id: remove-print-statements
   #     args: ['--verbose']   # Show all the print statements to be removed
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 23.10.0
     hooks:
       - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.0.292'
+    rev: 'v0.1.1'
     hooks:
       - id: ruff
   - repo: https://github.com/PyCQA/flake8
@@ -90,7 +90,7 @@ repos:
           # - flake8-use-fstring
           - pep8-naming
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.0
+    rev: v1.6.1
     hooks:
       - id: mypy
   # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
