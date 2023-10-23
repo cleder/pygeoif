@@ -29,6 +29,9 @@ dependencies = [
     "typing_extensions",
 ]
 description = "A basic implementation of the __geo_interface__"
+dynamic = [
+    "version",
+]
 keywords = [
     "GIS",
     "Spatial",
@@ -36,7 +39,6 @@ keywords = [
 ]
 name = "pygeoif"
 requires-python = ">=3.7"
-version = "1.1.1"
 
 [project.license]
 text = "LGPL"
@@ -115,11 +117,9 @@ reportMissingTypeStubs = true
 
 [tool.setuptools]
 include-package-data = true
-zip-safe = true
-
-[tool.setuptools.packages.find]
-exclude = [
-    "docs",
-    "ez_setup",
+packages = [
+    "pygeoif",
 ]
-namespaces = false
+
+[tool.setuptools.dynamic.version]
+attr = "pygeoif.about.__version__"

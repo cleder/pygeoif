@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 - 2022 Christian Ledermann
+#   Copyright (C) 2012 - 2023 Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """PyGeoIf provides a GeoJSON-like protocol for geo-spatial (GIS) vector data."""
+from pygeoif.about import __version__  # noqa: F401
 from pygeoif.factories import from_wkt
 from pygeoif.factories import mapping
 from pygeoif.factories import orient

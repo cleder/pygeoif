@@ -18,8 +18,7 @@ your functionality on top of it. It has no requirements outside the
 Python standard library and is therefore easy to integrate into your
 project. It is tested on `CPython <https://python.org>`_ and
 `PyPy <https://www.pypy.org/>`_, but it should work on alternative
-Python implementations like `Jython <https://www.jython.org/>`_ or
-`IronPython <https://ironpython.net/>`_ as well.
+Python implementations (that implement the language specification *>=3.8*) as well.
 
 You may think of pygeoif as a 'shapely ultralight' which lets you
 construct geometries and perform **very** basic operations like
