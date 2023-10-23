@@ -12,17 +12,22 @@ implement this protocol:
 * `Shapely <https://github.com/Toblerity/Shapely>`_
 * `pyshp <https://pypi.python.org/pypi/pyshp>`_
 
-So when you want to write your own geospatial library with support
+When you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
-your functionality on top of it
+your functionality on top of it. It has no requirements outside the
+Python standard library and is therefore easy to integrate into your
+project. It is tested on `CPython <https://python.org>`_ and
+`PyPy <https://www.pypy.org/>`_, but it should work on alternative
+Python implementations like `Jython <https://www.jython.org/>`_ or
+`IronPython <https://ironpython.net/>`_ as well.
 
 You may think of pygeoif as a 'shapely ultralight' which lets you
 construct geometries and perform **very** basic operations like
 reading and writing geometries from/to WKT, constructing line strings
 out of points, polygons from linear rings, multi polygons from
 polygons, etc. It was inspired by shapely and implements the
-geometries in a way that when you are familiar with shapely
-you feel right at home with pygeoif.
+geometries in a way that when you are familiar with pygeoif,
+you will feel right at home with shapely or the other way round.
 
 It was written to provide clean and python only geometries for fastkml_
 
@@ -35,7 +40,7 @@ It was written to provide clean and python only geometries for fastkml_
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. image:: https://img.shields.io/badge/type%20checker-mypy-blue
+.. image:: https://img.shields.io/badge/type-checker-mypy-blue
     :target: http://mypy-lang.org/
 
 .. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif

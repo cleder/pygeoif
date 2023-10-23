@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1.1 (unreleased)
+------------------
+
+ - Use pyproject.toml instead of setup.py
+
 1.1 (2023/10/13)
 -----------------
 
