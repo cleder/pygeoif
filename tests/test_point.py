@@ -61,7 +61,8 @@ def test_xy_raises_error_accessing_z() -> None:
     point = geometry.Point(1, 0)
 
     with pytest.raises(
-        DimensionError, match=r"^The Point\(1, 0\) geometry does not have z values$",
+        DimensionError,
+        match=r"^The Point\(1, 0\) geometry does not have z values$",
     ):
         point.z
 
