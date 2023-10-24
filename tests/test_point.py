@@ -64,7 +64,7 @@ def test_xy_raises_error_accessing_z() -> None:
         DimensionError,
         match=r"^The Point\(1, 0\) geometry does not have z values$",
     ):
-        point.z
+        assert point.z
 
 
 def test_xyz() -> None:

@@ -176,7 +176,7 @@ class TestWKT:
         assert p.exterior.coords[0] == p.exterior.coords[-1]
         assert p.exterior.coords[0] == (1.0, 1.0)
         assert len(list(p.interiors)) == 1
-        assert list(p.interiors)[0].coords == (
+        assert next(iter(p.interiors)).coords == (
             (2.0, 2.0),
             (3.0, 2.0),
             (3.0, 3.0),
@@ -207,16 +207,16 @@ class TestWKT:
     def test_multipoint(self) -> None:
         p = factories.from_wkt("MULTIPOINT(3.5 5.6,4.8 10.5)")
         assert isinstance(p, geometry.MultiPoint)
-        assert list(p.geoms)[0].x == 3.5
+        assert next(iter(p.geoms)).x == 3.5
         assert list(p.geoms)[1].y == 10.5
         assert p.wkt == "MULTIPOINT(3.5 5.6, 4.8 10.5)"
         p = factories.from_wkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
         assert isinstance(p, geometry.MultiPoint)
-        assert list(p.geoms)[0].x == 10.0
+        assert next(iter(p.geoms)).x == 10.0
         assert list(p.geoms)[3].y == 10.0
         p = factories.from_wkt("MULTIPOINT (10 40, 40 30, 20 20, 30 10)")
         assert isinstance(p, geometry.MultiPoint)
-        assert list(p.geoms)[0].x == 10.0
+        assert next(iter(p.geoms)).x == 10.0
         assert list(p.geoms)[3].y == 10.0
 
     def test_multilinestring(self) -> None:
@@ -225,7 +225,7 @@ class TestWKT:
         )
 
         assert isinstance(p, geometry.MultiLineString)
-        assert list(p.geoms)[0].coords == (((3, 4), (10, 50), (20, 25)))
+        assert next(iter(p.geoms)).coords == (((3, 4), (10, 50), (20, 25)))
         assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))
         assert (
             p.wkt == "MULTILINESTRING((3 4, 10 50, "
@@ -254,13 +254,13 @@ class TestWKT:
         assert isinstance(p, geometry.MultiPolygon)
         # two polygons: the first one has an interior ring
         assert len(list(p.geoms)) == 2
-        assert list(p.geoms)[0].exterior.coords == (
+        assert next(iter(p.geoms)).exterior.coords == (
             (0.0, 0.0),
             (10.0, 20.0),
             (30.0, 40.0),
             (0.0, 0.0),
         )
-        assert list(list(p.geoms)[0].interiors)[0].coords == (
+        assert next(iter(next(iter(p.geoms)).interiors)).coords == (
             (1.0, 1.0),
             (2.0, 2.0),
             (3.0, 3.0),
@@ -320,7 +320,7 @@ class TestWKT:
 
         assert isinstance(gc, geometry.GeometryCollection)
         assert len(list(gc.geoms)) == 2
-        assert isinstance(list(gc.geoms)[0], geometry.Point)
+        assert isinstance(next(iter(gc.geoms)), geometry.Point)
         assert isinstance(list(gc.geoms)[1], geometry.LineString)
         assert gc.wkt == "GEOMETRYCOLLECTION(POINT (4 6), LINESTRING (4 6, 7 10))"
 

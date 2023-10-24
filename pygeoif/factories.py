@@ -58,7 +58,7 @@ inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
 
 
-def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
+def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT002
     """
     Return a polygon with exteriors and interiors in the right orientation.
 
@@ -69,12 +69,12 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:
     s = 1.0 if ccw else -1.0
     rings = []
     ring = polygon.exterior
-    if signed_area(ring.coords) / s >= 0.0:
+    if signed_area(ring.coords) / s >= 0:
         rings.append(ring.coords)
     else:
         rings.append(list(ring.coords)[::-1])
     for ring in polygon.interiors:
-        if signed_area(ring.coords) / s <= 0.0:
+        if signed_area(ring.coords) / s <= 0:
             rings.append(ring.coords)
         else:
             rings.append(list(ring.coords)[::-1])
@@ -86,7 +86,7 @@ def box(
     miny: float,
     maxx: float,
     maxy: float,
-    ccw: bool = True,
+    ccw: bool = True,  # noqa: FBT001, FBT002
 ) -> Polygon:
     """Return a rectangular polygon with configurable normal vector."""
     coords = [(maxx, miny), (maxx, maxy), (minx, maxy), (minx, miny)]
@@ -143,7 +143,10 @@ def shape(
     }
     geometry = context if isinstance(context, dict) else mapping(context)
     if not geometry:
-        raise TypeError("Object does not implement __geo_interface__")
+        msg = (  # type: ignore [unreachable]
+            "Object does not implement __geo_interface__"
+        )
+        raise TypeError(msg)
 
     constructor = type_map.get(geometry["type"])
     if constructor:
@@ -155,7 +158,8 @@ def shape(
             shape(fi) for fi in geometry["geometries"]  # type: ignore [typeddict-item]
         ]
         return GeometryCollection(geometries)
-    raise NotImplementedError(f"[{geometry['type']} is not implemented")
+    msg = f"[{geometry['type']} is not implemented"
+    raise NotImplementedError(msg)
 
 
 def num(number: str) -> float:
@@ -296,12 +300,14 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
         outerstr = outer.search(wkt)
         coordinates = outerstr.group(1)  # type: ignore [union-attr]
     except AttributeError as exc:
-        raise WKTParserError(f"Cannot parse {wkt}") from exc
+        msg = f"Cannot parse {wkt}"
+        raise WKTParserError(msg) from exc
     constructor = type_map[geometry_type]
     try:
         return constructor(coordinates)  # type: ignore [return-value]
     except TypeError as exc:
-        raise WKTParserError(f"Cannot parse {wkt}") from exc
+        msg = f"Cannot parse {wkt}"
+        raise WKTParserError(msg) from exc
 
 
 def mapping(

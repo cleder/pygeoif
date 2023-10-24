@@ -118,7 +118,7 @@ def test_interiors() -> None:
     i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
     polygon = geometry.Polygon(e, [i])
 
-    assert list(polygon.interiors)[0].coords == (
+    assert next(iter(polygon.interiors)).coords == (
         (1, 0),
         (0.5, 0.5),
         (1, 1),
