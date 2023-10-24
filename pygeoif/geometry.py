@@ -191,14 +191,13 @@ class Point(_Geometry):
 
     A point has zero length and zero area.
 
-    Attributes
+    Attributes:
     ----------
     x, y, z : float
         Coordinate values
 
-    Example
+    Example:
     -------
-
       >>> p = Point(1.0, -1.0)
       >>> print p
       POINT (1.0 -1.0)
@@ -442,6 +441,7 @@ class LinearRing(LineString):
         Initialize a LinearRing.
 
         Args:
+        ----
             coordinates (Sequence):
                 A sequence of (x, y [,z]) numeric coordinate pairs or triples
         """
@@ -974,7 +974,7 @@ class GeometryCollection(_MultiGeometry):
     """
     A heterogenous collection of geometries.
 
-    Attributes
+    Attributes:
     ----------
     geoms : sequence
         A sequence of geometry instances
@@ -984,9 +984,8 @@ class GeometryCollection(_MultiGeometry):
     class isn't generally supported by ordinary GIS sw (viewers and so on). So
     it's very rarely used in the real GIS professional world.
 
-    Example
+    Example:
     -------
-
     Initialize Geometries and construct a GeometryCollection
 
     >>> from pygeoif import geometry
@@ -1001,12 +1000,13 @@ class GeometryCollection(_MultiGeometry):
     """
 
     def __init__(
-        self, geometries: Iterable[Union[Geometry, "GeometryCollection"]]
+        self, geometries: Iterable[Union[Geometry, "GeometryCollection"]],
     ) -> None:
         """
         Initialize the MultiGeometry with Geometries.
 
         Args:
+        ----
             geometries (Iterable[Geometry]
         """
         self._geoms = tuple(geom for geom in geometries if geom)
@@ -1045,7 +1045,8 @@ class GeometryCollection(_MultiGeometry):
         """
         Length of the collection.
 
-        Returns:
+        Returns
+        -------
             int: Number of geometries in the collection.
         """
         return len(self._geoms)

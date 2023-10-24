@@ -34,7 +34,8 @@ from pygeoif.types import Point2D
 
 
 def signed_area(coords: LineType) -> float:
-    """Return the signed area enclosed by a ring.
+    """
+    Return the signed area enclosed by a ring.
 
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.

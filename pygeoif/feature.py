@@ -56,7 +56,8 @@ class Feature:
     """
     Aggregates a geometry instance with associated user-defined properties.
 
-    Attributes
+    Attributes:
+    ----------
     ~~~~~~~~~~~
     geometry : object
         A geometry instance
@@ -64,7 +65,8 @@ class Feature:
         A dictionary linking field keys with values
         associated with geometry instance
 
-    Example
+    Example:
+    -------
     ~~~~~~~~
 
      >>> p = Point(1.0, -1.0)
@@ -139,17 +141,17 @@ class Feature:
 
 
 class FeatureCollection:
-    """A heterogenous collection of Features.
+    """
+    A heterogenous collection of Features.
 
-    Attributes
+    Attributes:
     ----------
     features : sequence
         A sequence of feature instances
 
 
-    Example
+    Example:
     -------
-
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1.0, -1.0)
     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}

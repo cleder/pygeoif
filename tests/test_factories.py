@@ -378,7 +378,7 @@ class TestAsShape:
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
-        assert (0, 0, 1, 2) == f.bounds
+        assert f.bounds == (0, 0, 1, 2)
 
     def test_multipolygon(self) -> None:
         f = geometry.MultiPolygon(

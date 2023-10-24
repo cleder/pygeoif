@@ -375,7 +375,7 @@ def test_nested_geometry_collection_neq() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
     gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
     gc1_1 = geometry.GeometryCollection(
-        [geometry.Point(0, 0), multipoint, geometry.Point(0, 0)]
+        [geometry.Point(0, 0), multipoint, geometry.Point(0, 0)],
     )
     line = geometry.LineString([(0, 0), (3, 1)])
     gc2 = geometry.GeometryCollection([gc1, line])
