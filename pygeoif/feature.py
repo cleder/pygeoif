@@ -20,7 +20,7 @@
 from typing import Any
 from typing import Dict
 from typing import Generator
-from typing import Iterable
+from typing import Iterator
 from typing import Optional
 from typing import Sequence
 from typing import Union
@@ -56,17 +56,16 @@ class Feature:
     """
     Aggregates a geometry instance with associated user-defined properties.
 
-    Attributes
-    ~~~~~~~~~~~
+    Attributes:
+    ----------
     geometry : object
         A geometry instance
     properties : dict
         A dictionary linking field keys with values
         associated with geometry instance
 
-    Example
-    ~~~~~~~~
-
+    Example:
+    -------
      >>> p = Point(1.0, -1.0)
      >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
      >>> a = Feature(p, props)
@@ -109,7 +108,7 @@ class Feature:
         )
 
     @property
-    def id(self) -> Optional[Union[str, int]]:
+    def id(self) -> Optional[Union[str, int]]:  # noqa: A003
         """Return the id of the feature."""
         return self._feature_id
 
@@ -139,17 +138,17 @@ class Feature:
 
 
 class FeatureCollection:
-    """A heterogenous collection of Features.
+    """
+    A heterogenous collection of Features.
 
-    Attributes
+    Attributes:
     ----------
     features : sequence
         A sequence of feature instances
 
 
-    Example
+    Example:
     -------
-
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1.0, -1.0)
     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
@@ -189,12 +188,12 @@ class FeatureCollection:
         """Return the umber of features in this collection."""
         return len(self._features)
 
-    def __iter__(self) -> Iterable[Feature]:
+    def __iter__(self) -> Iterator[Feature]:
         """Iterate over the features of the collection."""
         return iter(self._features)
 
     def __repr__(self) -> str:
-        """Retrun the representation."""
+        """Return the representation."""
         return f"{self.__class__.__name__}({self._features!r})"
 
     @property

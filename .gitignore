@@ -11,6 +11,15 @@ venv/
 .venv/
 coverage.xml
 .mutmut-cache
+.watchmanconfig
 html/
 .dccache
+.pytest_cache
+.pyre/
+.mypy_cache/
+.pytype/
+.ruff_cache/
+.venv/
+venv/
+__pycache__/
 *.stderr*

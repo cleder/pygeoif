@@ -34,7 +34,8 @@ from pygeoif.types import Point2D
 
 
 def signed_area(coords: LineType) -> float:
-    """Return the signed area enclosed by a ring.
+    """
+    Return the signed area enclosed by a ring.
 
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.
@@ -88,7 +89,7 @@ def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
 def _build_hull(points: Iterable[Point2D]) -> List[Point2D]:
     hull: List[Point2D] = []
     for p in points:
-        while len(hull) >= 2 and _cross(hull[-2], hull[-1], p) <= 0:
+        while len(hull) >= 2 and _cross(hull[-2], hull[-1], p) <= 0:  # noqa: PLR2004
             hull.pop()
         hull.append(p)
     return hull
@@ -119,13 +120,13 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 
     # Boring case: no points, a single point or a line between two points,
     # possibly repeated multiple times.
-    if len(points) <= 2:
+    if len(points) <= 2:  # noqa: PLR2004
         return points
 
     lower = _build_hull(points)
     upper = _build_hull(reversed(points))
 
-    if len(lower) == len(upper) == 2 and set(lower) == set(upper):
+    if len(lower) == len(upper) == 2 and set(lower) == set(upper):  # noqa: PLR2004
         # all points are in a straight line
         return lower
     # Concatenation of the lower and upper hulls gives the convex hull.
