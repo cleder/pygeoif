@@ -67,8 +67,8 @@ class _Geometry:
                         "type",
                     ),
                     compare_coordinates(
-                        self.__geo_interface__["coordinates"],
-                        other.__geo_interface__.get(  # type: ignore [attr-defined]
+                        coords=self.__geo_interface__["coordinates"],
+                        other=other.__geo_interface__.get(  # type: ignore [attr-defined]
                             "coordinates",
                         ),
                     ),
@@ -474,8 +474,8 @@ class LinearRing(LineString):
         except ZeroDivisionError:
             return None
         return (
-            Point(cent[0], cent[1])
-            if math.isclose(area, signed_area(self.coords))
+            Point(x=cent[0], y=cent[1])
+            if math.isclose(a=area, b=signed_area(self.coords))
             else None
         )
 
@@ -502,7 +502,7 @@ class LinearRing(LineString):
             _, area = centroid(self.coords)
         except ZeroDivisionError:
             return False
-        return math.isclose(area, signed_area(self.coords))
+        return math.isclose(a=area, b=signed_area(self.coords))
 
 
 class Polygon(_Geometry):
@@ -634,14 +634,17 @@ class Polygon(_Geometry):
     @classmethod
     def from_linear_rings(cls, shell: LinearRing, *args: LinearRing) -> "Polygon":
         """Construct a Polygon from linear rings."""
-        return cls(shell.coords, tuple(lr.coords for lr in args))
+        return cls(
+            shell=shell.coords,
+            holes=tuple(lr.coords for lr in args),
+        )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":
         cls._check_dict(geo_interface)
         return cls(
-            cast(LineType, geo_interface["coordinates"][0]),
-            cast(Tuple[LineType], geo_interface["coordinates"][1:]),
+            shell=cast(LineType, geo_interface["coordinates"][0]),
+            holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
 
     def _check_interior_bounds(self) -> bool:
@@ -925,8 +928,8 @@ class MultiPolygon(_MultiGeometry):
 
         self._geoms = tuple(
             Polygon(
-                polygon[0],
-                polygon[1]  # type: ignore [misc]
+                shell=polygon[0],
+                holes=polygon[1]  # type: ignore [misc]
                 if len(polygon) == 2  # noqa: PLR2004
                 else None,
             )
@@ -1061,8 +1064,8 @@ class GeometryCollection(_MultiGeometry):
         except AttributeError:
             return False
         return compare_geo_interface(
-            self.__geo_interface__,
-            other.__geo_interface__,  # type: ignore [attr-defined]
+            first=self.__geo_interface__,
+            second=other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __len__(self) -> int:
