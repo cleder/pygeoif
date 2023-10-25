@@ -89,7 +89,9 @@ def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
 def _build_hull(points: Iterable[Point2D]) -> List[Point2D]:
     hull: List[Point2D] = []
     for p in points:
-        while len(hull) >= 2 and _cross(hull[-2], hull[-1], p) <= 0:  # noqa: PLR2004
+        while (
+            len(hull) >= 2 and _cross(o=hull[-2], a=hull[-1], b=p) <= 0  # noqa: PLR2004
+        ):
             hull.pop()
         hull.append(p)
     return hull
@@ -147,7 +149,7 @@ def compare_coordinates(
     """Compare two coordinate sequences."""
     try:
         return all(
-            compare_coordinates(c, o)
+            compare_coordinates(coords=c, other=o)
             for c, o in zip_longest(
                 coords,  # type: ignore [arg-type]
                 other,  # type: ignore [arg-type]
@@ -156,7 +158,7 @@ def compare_coordinates(
         )
     except TypeError:
         try:
-            return math.isclose(cast(float, coords), cast(float, other))
+            return math.isclose(a=cast(float, coords), b=cast(float, other))
         except TypeError:
             return False
 
@@ -171,7 +173,7 @@ def compare_geo_interface(
             return False
         if first["type"] == "GeometryCollection":
             return all(
-                compare_geo_interface(g1, g2)  # type: ignore [arg-type]
+                compare_geo_interface(first=g1, second=g2)  # type: ignore [arg-type]
                 for g1, g2 in zip_longest(
                     first["geometries"],  # type: ignore [typeddict-item]
                     second["geometries"],  # type: ignore [typeddict-item]
@@ -179,8 +181,8 @@ def compare_geo_interface(
                 )
             )
         return compare_coordinates(
-            first["coordinates"],  # type: ignore [typeddict-item]
-            second["coordinates"],  # type: ignore [typeddict-item]
+            coords=first["coordinates"],  # type: ignore [typeddict-item]
+            other=second["coordinates"],  # type: ignore [typeddict-item]
         )
     except KeyError:
         return False

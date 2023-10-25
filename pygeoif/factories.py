@@ -44,13 +44,15 @@ from pygeoif.types import PointType
 from pygeoif.types import PolygonType
 
 wkt_regex: Pattern[str] = re.compile(
-    r"^(SRID=(?P<srid>\d+);)?"
-    r"(?P<wkt>"
-    r"(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
-    r"MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|"
-    r"GEOMETRYCOLLECTION)"
-    r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$",
-    re.I,
+    pattern=(
+        r"^(SRID=(?P<srid>\d+);)?"
+        "(?P<wkt>"
+        "(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
+        "MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|"
+        "GEOMETRYCOLLECTION)"
+        r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$"
+    ),
+    flags=re.I,
 )
 gcre: Pattern[str] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
 outer: Pattern[str] = re.compile(r"\((.+)\)")
@@ -78,7 +80,7 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT0
             rings.append(ring.coords)
         else:
             rings.append(list(ring.coords)[::-1])
-    return Polygon(rings[0], rings[1:])
+    return Polygon(shell=rings[0], holes=rings[1:])
 
 
 def box(
@@ -228,8 +230,8 @@ def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
     ]
     interior, exteriors = _shell_holes_from_wkt_coords(coords)
     return Polygon(
-        interior,
-        exteriors,
+        shell=interior,
+        holes=exteriors,
     )
 
 

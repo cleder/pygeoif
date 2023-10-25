@@ -45,8 +45,10 @@ def feature_geo_interface_equals(
             my_interface["properties"] == other_interface.get("properties"),
             my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
             compare_coordinates(
-                my_interface["geometry"]["coordinates"],
-                other_interface["geometry"].get("coordinates"),  # type: ignore[arg-type]
+                coords=my_interface["geometry"]["coordinates"],
+                other=other_interface["geometry"].get(
+                    "coordinates",
+                ),  # type: ignore[arg-type]
             ),
         ],
     )
@@ -96,8 +98,8 @@ class Feature:
         except AttributeError:
             return False
         return feature_geo_interface_equals(
-            self.__geo_interface__,
-            other.__geo_interface__,  # type: ignore [attr-defined]
+            my_interface=self.__geo_interface__,
+            other_interface=other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __repr__(self) -> str:
@@ -176,7 +178,7 @@ class FeatureCollection:
         """Check if the geointerfaces are equal."""
         return self._check_interface(other) and all(
             (
-                feature_geo_interface_equals(mine, other)
+                feature_geo_interface_equals(my_interface=mine, other_interface=other)
                 for mine, other in zip(
                     self.__geo_interface__["features"],
                     other.__geo_interface__["features"],  # type: ignore [attr-defined]
