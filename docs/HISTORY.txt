@@ -1,7 +1,12 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
+1.2.0 (unreleased)
+------------------
+
+ - remove Python 3.7 support
+
+1.1.1 (2023/10/27)
 ------------------
 
  - Use pyproject.toml instead of setup.py
