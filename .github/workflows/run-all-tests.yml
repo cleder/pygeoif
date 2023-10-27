@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ".[testing]"
+          python -m pip install ".[testing]"
       - name: Test with pytest
         run: |
           pytest tests --cov=tests --cov=pygeoif --cov-report=xml
@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[typing, complexity, linting]"
+          python -m pip install -e ".[typing, complexity, linting]"
       - name: Typecheck
         run: |
           mypy pygeoif
@@ -55,7 +55,7 @@ jobs:
         run: |
           flake8 pygeoif
           black --check pygeoif tests
-          ruff --no-fix
+          ruff --no-fix pygeoif tests
           yamllint .github/workflows/
       - name: Check complexity
         run: |
@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[testing]"
+          python -m pip install -e ".[testing]"
       - name: Test with pytest
         run: |
           pytest tests
