@@ -1,51 +1,253 @@
-[tool.check-manifest]
-ignore = [".*", "mutmut_config.py", "test-requirements.txt", "tox.ini"]
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=61.2",
+]
+
+[project]
+authors = [
+    { email = "christian.ledermann@gmail.com", name = "Christian Ledermann" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = [
+    "typing_extensions",
+]
+description = "A basic implementation of the __geo_interface__"
+dynamic = [
+    "version",
+]
+keywords = [
+    "GIS",
+    "Spatial",
+    "WKT",
+]
+name = "pygeoif"
+requires-python = ">=3.7"
+
+[project.license]
+text = "LGPL"
+
+[project.optional-dependencies]
+complexity = [
+    "lizard",
+    "radon",
+]
+dev = [
+    "pre-commit",
+    "pygeoif[complexity]",
+    "pygeoif[linting]",
+    "pygeoif[tests]",
+]
+linting = [
+    "black",
+    "flake8",
+    "flake8-cognitive-complexity",
+    "flake8-comments",
+    "flake8-complex-f-strings",
+    "flake8-continuation",
+    "flake8-docstrings",
+    "flake8-dunder-all",
+    "flake8-encodings",
+    "flake8-expression-complexity",
+    "flake8-function-order",
+    "flake8-length",
+    "flake8-literal",
+    "flake8-pep3101",
+    "flake8-rst-docstrings",
+    "flake8-string-format",
+    "flake8-super",
+    "flake8-typing-imports",
+    "flake8-use-fstring",
+    "ruff",
+    "yamllint",
+]
+tests = [
+    "pytest",
+    "pytest-cov",
+]
+typing = [
+    "mypy",
+]
+
+[project.readme]
+content-type = "text/x-rst"
+file = "README.rst"
+
+[project.urls]
+Homepage = "https://github.com/cleder/pygeoif/"
 
 [tool.flake8]
 max_line_length = 88
 
 [tool.isort]
-line_length = 88
 force_single_line = true
+line_length = 88
 
 [tool.mypy]
 disallow_any_generics = true
-disallow_untyped_calls = true
-disallow_untyped_defs = true
 disallow_incomplete_defs = true
+disallow_untyped_calls = true
 disallow_untyped_decorators = true
+disallow_untyped_defs = true
+enable_error_code = [
+    "ignore-without-code",
+]
 ignore_errors = false
 ignore_missing_imports = false
 implicit_reexport = false
-strict_optional = true
-strict_equality = true
 no_implicit_optional = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_unused_configs = true
-warn_unreachable = true
-warn_no_return = true
-warn_return_any = true
+overrides = [
+    { disallow_untyped_defs = false, ignore_errors = true, module = "tests.*" },
+]
 show_error_codes = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
-ignore_errors = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
 
 [tool.pyright]
-include = ["pygeoif"]
-exclude = ["**/node_modules",
+exclude = [
     "**/__pycache__",
-    ".pytype",
+    "**/node_modules",
     ".pyre",
-    "pygeoif/tests"
+    ".pytype",
+    "pygeoif/tests",
+]
+include = [
+    "pygeoif",
 ]
 reportMissingImports = true
 reportMissingTypeStubs = true
 
 [tool.ruff]
+fix = true
+ignore = [
+    "ANN101",
+    "ANN102",
+    "D203",
+    "D212",
+    "FA100",
+]
+select = [
+    "A",
+    "AIR",
+    "ANN",
+    "ARG",
+    "ASYNC",
+    "B",
+    "BLE",
+    "C4",
+    "C90",
+    "COM",
+    "CPY",
+    "D",
+    "DJ",
+    "DTZ",
+    "E",
+    "EM",
+    "ERA",
+    "EXE",
+    "F",
+    "FA",
+    "FBT",
+    "FIX",
+    "FLY",
+    "FURB",
+    "G",
+    "I",
+    "ICN",
+    "INP",
+    "INT",
+    "ISC",
+    "LOG",
+    "N",
+    "NPY",
+    "PD",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "PYI",
+    "Q",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SIM",
+    "SLF",
+    "SLOT",
+    "T10",
+    "T20",
+    "TCH",
+    "TD",
+    "TID",
+    "TRY",
+    "UP",
+    "W",
+    "YTT",
+]
+target-version = "py37"
+
+[tool.ruff.isort]
+force-single-line = true
 
 [tool.ruff.per-file-ignores]
-"tests/*.py" = ["D103"]
-"setup.py" = ["E501"]
+"pygeoif/factories.py" = [
+    "SLF001",
+]
+"pygeoif/geometry.py" = [
+    "D417",
+    "FBT001",
+    "FBT002",
+]
+"tests/*.py" = [
+    "ANN001",
+    "ANN201",
+    "D101",
+    "D102",
+    "D103",
+    "FBT001",
+    "FBT003",
+    "PGH001",
+    "PGH003",
+    "PLR2004",
+    "RUF012",
+    "S101",
+    "S307",
+    "S311",
+    "SLF001",
+]
+
+[tool.setuptools.dynamic.version]
+attr = "pygeoif.about.__version__"
+
+[tool.setuptools.packages.find]
+exclude = [
+    "docs*",
+]
+include = [
+    "pygeoif*",
+]

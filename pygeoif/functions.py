@@ -34,7 +34,8 @@ from pygeoif.types import Point2D
 
 
 def signed_area(coords: LineType) -> float:
-    """Return the signed area enclosed by a ring.
+    """
+    Return the signed area enclosed by a ring.
 
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.
@@ -88,7 +89,9 @@ def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
 def _build_hull(points: Iterable[Point2D]) -> List[Point2D]:
     hull: List[Point2D] = []
     for p in points:
-        while len(hull) >= 2 and _cross(hull[-2], hull[-1], p) <= 0:
+        while (
+            len(hull) >= 2 and _cross(o=hull[-2], a=hull[-1], b=p) <= 0  # noqa: PLR2004
+        ):
             hull.pop()
         hull.append(p)
     return hull
@@ -119,13 +122,13 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 
     # Boring case: no points, a single point or a line between two points,
     # possibly repeated multiple times.
-    if len(points) <= 2:
+    if len(points) <= 2:  # noqa: PLR2004
         return points
 
     lower = _build_hull(points)
     upper = _build_hull(reversed(points))
 
-    if len(lower) == len(upper) == 2 and set(lower) == set(upper):
+    if len(lower) == len(upper) == 2 and set(lower) == set(upper):  # noqa: PLR2004
         # all points are in a straight line
         return lower
     # Concatenation of the lower and upper hulls gives the convex hull.
@@ -146,7 +149,7 @@ def compare_coordinates(
     """Compare two coordinate sequences."""
     try:
         return all(
-            compare_coordinates(c, o)
+            compare_coordinates(coords=c, other=o)
             for c, o in zip_longest(
                 coords,  # type: ignore [arg-type]
                 other,  # type: ignore [arg-type]
@@ -155,7 +158,7 @@ def compare_coordinates(
         )
     except TypeError:
         try:
-            return math.isclose(cast(float, coords), cast(float, other))
+            return math.isclose(a=cast(float, coords), b=cast(float, other))
         except TypeError:
             return False
 
@@ -170,7 +173,7 @@ def compare_geo_interface(
             return False
         if first["type"] == "GeometryCollection":
             return all(
-                compare_geo_interface(g1, g2)  # type: ignore [arg-type]
+                compare_geo_interface(first=g1, second=g2)  # type: ignore [arg-type]
                 for g1, g2 in zip_longest(
                     first["geometries"],  # type: ignore [typeddict-item]
                     second["geometries"],  # type: ignore [typeddict-item]
@@ -178,8 +181,8 @@ def compare_geo_interface(
                 )
             )
         return compare_coordinates(
-            first["coordinates"],  # type: ignore [typeddict-item]
-            second["coordinates"],  # type: ignore [typeddict-item]
+            coords=first["coordinates"],  # type: ignore [typeddict-item]
+            other=second["coordinates"],  # type: ignore [typeddict-item]
         )
     except KeyError:
         return False

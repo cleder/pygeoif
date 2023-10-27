@@ -80,7 +80,7 @@ class GeoFeatureInterface(GeoFeatureInterfaceBase, total=False):
 
     bbox: Bounds
     properties: Dict[str, Any]
-    id: Union[str, int]
+    id: Union[str, int]  # noqa: A003
 
 
 class GeoFeatureCollectionInterfaceBase(TypedDict):
@@ -94,7 +94,7 @@ class GeoFeatureCollectionInterface(GeoFeatureCollectionInterfaceBase, total=Fal
     """Bbox and id are optional keys for the GeoFeatureCollectionInterface."""
 
     bbox: Bounds
-    id: Union[str, int]
+    id: Union[str, int]  # noqa: A003
 
 
 class GeoType(Protocol):

@@ -26,7 +26,7 @@ class WKTParserError(AttributeError):
 
 
 class InvalidGeometryError(ValueError):
-    """This geometry is not valid."""
+    """Geometry is not valid."""
 
 
 __all__ = [

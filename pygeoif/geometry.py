@@ -67,8 +67,10 @@ class _Geometry:
                         "type",
                     ),
                     compare_coordinates(
-                        self.__geo_interface__["coordinates"],
-                        other.__geo_interface__.get("coordinates"),  # type: ignore
+                        coords=self.__geo_interface__["coordinates"],
+                        other=other.__geo_interface__.get(  # type: ignore [attr-defined]
+                            "coordinates",
+                        ),
                     ),
                 ),
             )
@@ -110,7 +112,7 @@ class _Geometry:
             return None
         if len(hull) == 1:
             return Point(*hull[0])
-        return LineString(hull) if len(hull) == 2 else Polygon(hull)
+        return LineString(hull) if len(hull) == 2 else Polygon(hull)  # noqa: PLR2004
 
     @property
     def geom_type(self) -> str:
@@ -124,12 +126,14 @@ class _Geometry:
 
         Return None if the geometry is empty.
         """
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
     @property
     def is_empty(self) -> bool:
         """Return if this geometry is empty."""
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
     @property
     def wkt(self) -> str:
@@ -141,7 +145,8 @@ class _Geometry:
     @property
     def __geo_interface__(self) -> GeoInterface:
         if self.is_empty:
-            raise AttributeError("Empty Geometry")
+            msg = "Empty Geometry"
+            raise AttributeError(msg)
         return {
             "type": self.geom_type,
             "bbox": cast(Bounds, self.bounds),
@@ -150,7 +155,8 @@ class _Geometry:
 
     @property
     def _wkt_coords(self) -> str:
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
     @property
     def _wkt_inset(self) -> str:
@@ -165,24 +171,28 @@ class _Geometry:
     @classmethod
     def _check_dict(cls, geo_interface: GeoInterface) -> None:
         if geo_interface["type"] != cls.__name__:
+            msg = f"You cannot assign {geo_interface['type']} to {cls.__name__}"
             raise ValueError(
-                f"You cannot assign {geo_interface['type']} to {cls.__name__}",
+                msg,
             )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "_Geometry":
         cls._check_dict(geo_interface)
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
     @classmethod
     def _from_interface(cls, obj: GeoType) -> "_Geometry":
         return cls._from_dict(obj.__geo_interface__)
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
     def _get_bounds(self) -> Bounds:
-        raise NotImplementedError("Must be implemented by subclass")
+        msg = "Must be implemented by subclass"
+        raise NotImplementedError(msg)
 
 
 class Point(_Geometry):
@@ -191,14 +201,13 @@ class Point(_Geometry):
 
     A point has zero length and zero area.
 
-    Attributes
+    Attributes:
     ----------
     x, y, z : float
         Coordinate values
 
-    Example
+    Example:
     -------
-
       >>> p = Point(1.0, -1.0)
       >>> print p
       POINT (1.0 -1.0)
@@ -237,7 +246,7 @@ class Point(_Geometry):
 
         A Point is considered empty when it has less than 2 coordinates.
         """
-        return len(self._coordinates) < 2
+        return len(self._coordinates) < 2  # noqa: PLR2004
 
     @property
     def x(self) -> float:
@@ -254,7 +263,8 @@ class Point(_Geometry):
         """Return z coordinate."""
         if self.has_z:
             return self._coordinates[2]  # type: ignore [misc]
-        raise DimensionError(f"The {self!r} geometry does not have z values")
+        msg = f"The {self!r} geometry does not have z values"
+        raise DimensionError(msg)
 
     @property
     def coords(self) -> Tuple[PointType]:
@@ -264,7 +274,7 @@ class Point(_Geometry):
     @property
     def has_z(self) -> bool:
         """Return True if the geometry's coordinate sequence(s) have z values."""
-        return len(self._coordinates) == 3
+        return len(self._coordinates) == 3  # noqa: PLR2004
 
     @property
     def _wkt_coords(self) -> str:
@@ -273,7 +283,7 @@ class Point(_Geometry):
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        return " Z " if len(self._coordinates) == 3 else " "
+        return " Z " if len(self._coordinates) == 3 else " "  # noqa: PLR2004
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -350,7 +360,7 @@ class LineString(_Geometry):
 
         A Linestring is considered empty when it has less than 2 points.
         """
-        return len(self._geoms) < 2
+        return len(self._geoms) < 2  # noqa: PLR2004
 
     @property
     def has_z(self) -> Optional[bool]:
@@ -370,11 +380,11 @@ class LineString(_Geometry):
 
     @property
     def _wkt_inset(self) -> str:
-        return self.geoms[0]._wkt_inset
+        return self.geoms[0]._wkt_inset  # noqa: SLF001
 
     @property
     def _wkt_coords(self) -> str:
-        return ", ".join(point._wkt_coords for point in self.geoms)
+        return ", ".join(point._wkt_coords for point in self.geoms)  # noqa: SLF001
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -404,8 +414,11 @@ class LineString(_Geometry):
         last_len = None
         for coord in dedupe(coordinates):
             if len(coord) != last_len and last_len is not None:
+                msg = (  # type: ignore [unreachable]
+                    "All coordinates must have the same dimension"
+                )
                 raise DimensionError(
-                    "All coordinates must have the same dimension",
+                    msg,
                 )
             last_len = len(coord)
             point = Point(*coord)
@@ -442,25 +455,27 @@ class LinearRing(LineString):
         Initialize a LinearRing.
 
         Args:
+        ----
             coordinates (Sequence):
                 A sequence of (x, y [,z]) numeric coordinate pairs or triples
         """
         super().__init__(coordinates)
         if not self.is_empty and self._geoms[0].coords != self._geoms[-1].coords:
-            self._geoms = self._geoms + (self._geoms[0],)
+            self._geoms = (*self._geoms, self._geoms[0])
 
     @property
     def centroid(self) -> Optional[Point]:
         """Return the centroid of the ring."""
         if self.has_z:
-            raise DimensionError("Centeroid is only implemented for 2D coordinates")
+            msg = "Centeroid is only implemented for 2D coordinates"
+            raise DimensionError(msg)
         try:
             cent, area = centroid(self.coords)
         except ZeroDivisionError:
             return None
         return (
-            Point(cent[0], cent[1])
-            if math.isclose(area, signed_area(self.coords))
+            Point(x=cent[0], y=cent[1])
+            if math.isclose(a=area, b=signed_area(self.coords))
             else None
         )
 
@@ -478,7 +493,8 @@ class LinearRing(LineString):
         Even if this test passes the geometry may still be invalid.
         """
         if self.has_z:
-            raise DimensionError("Validation is only implemented for 2D coordinates")
+            msg = "Validation is only implemented for 2D coordinates"
+            raise DimensionError(msg)
         min_x, min_y, max_x, max_y = self.bounds  # type: ignore [misc]
         if min_x == max_x or min_y == max_y:
             return False
@@ -486,7 +502,7 @@ class LinearRing(LineString):
             _, area = centroid(self.coords)
         except ZeroDivisionError:
             return False
-        return math.isclose(area, signed_area(self.coords))
+        return math.isclose(a=area, b=signed_area(self.coords))
 
 
 class Polygon(_Geometry):
@@ -592,19 +608,21 @@ class Polygon(_Geometry):
 
     @property
     def _wkt_coords(self) -> str:
-        ec = self.exterior._wkt_coords
-        ic = "".join(f",({interior._wkt_coords})" for interior in self.interiors)
+        ec = self.exterior._wkt_coords  # noqa: SLF001
+        ic = "".join(
+            f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
+        )
         return f"({ec}){ic}"
 
     @property
     def _wkt_inset(self) -> str:
-        return self.exterior._wkt_inset
+        return self.exterior._wkt_inset  # noqa: SLF001
 
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        coords = (self.exterior.coords,) + tuple(hole.coords for hole in self.interiors)
+        coords = (self.exterior.coords, *tuple(hole.coords for hole in self.interiors))
         geo_interface["coordinates"] = coords
         return geo_interface
 
@@ -616,14 +634,17 @@ class Polygon(_Geometry):
     @classmethod
     def from_linear_rings(cls, shell: LinearRing, *args: LinearRing) -> "Polygon":
         """Construct a Polygon from linear rings."""
-        return cls(shell.coords, tuple(lr.coords for lr in args))
+        return cls(
+            shell=shell.coords,
+            holes=tuple(lr.coords for lr in args),
+        )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":
         cls._check_dict(geo_interface)
         return cls(
-            cast(LineType, geo_interface["coordinates"][0]),
-            cast(Tuple[LineType], geo_interface["coordinates"][1:]),
+            shell=cast(LineType, geo_interface["coordinates"][0]),
+            holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
 
     def _check_interior_bounds(self) -> bool:
@@ -643,10 +664,10 @@ class Polygon(_Geometry):
         return True
 
     def _get_bounds(self) -> Bounds:
-        return self.exterior._get_bounds()
+        return self.exterior._get_bounds()  # noqa: SLF001
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return self.exterior._prepare_hull()
+        return self.exterior._prepare_hull()  # noqa: SLF001
 
 
 class _MultiGeometry(_Geometry):
@@ -663,8 +684,9 @@ class _MultiGeometry(_Geometry):
 
         Multi-part geometries do not provide a coordinate sequence.
         """
+        msg = "Multi-part geometries do not provide a coordinate sequence"
         raise NotImplementedError(
-            "Multi-part geometries do not provide a coordinate sequence",
+            msg,
         )
 
     @property
@@ -754,7 +776,7 @@ class MultiPoint(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ", ".join(point._wkt_coords for point in self.geoms)
+        return ", ".join(point._wkt_coords for point in self.geoms)  # noqa: SLF001
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -826,7 +848,9 @@ class MultiLineString(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ",".join(f"({linestring._wkt_coords})" for linestring in self.geoms)
+        return ",".join(
+            f"({linestring._wkt_coords})" for linestring in self.geoms  # noqa: SLF001
+        )
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -904,8 +928,10 @@ class MultiPolygon(_MultiGeometry):
 
         self._geoms = tuple(
             Polygon(
-                polygon[0],
-                polygon[1] if len(polygon) == 2 else None,  # type: ignore [misc]
+                shell=polygon[0],
+                holes=polygon[1]  # type: ignore [misc]
+                if len(polygon) == 2  # noqa: PLR2004
+                else None,
             )
             for polygon in polygons
         )
@@ -925,14 +951,14 @@ class MultiPolygon(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ",".join(f"({poly._wkt_coords})" for poly in self.geoms)
+        return ",".join(f"({poly._wkt_coords})" for poly in self.geoms)  # noqa: SLF001
 
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
         coords = tuple(
-            (geom.exterior.coords,) + tuple(hole.coords for hole in geom.interiors)
+            (geom.exterior.coords, *tuple(hole.coords for hole in geom.interiors))
             for geom in self.geoms
         )
         geo_interface["coordinates"] = coords
@@ -974,7 +1000,7 @@ class GeometryCollection(_MultiGeometry):
     """
     A heterogenous collection of geometries.
 
-    Attributes
+    Attributes:
     ----------
     geoms : sequence
         A sequence of geometry instances
@@ -984,9 +1010,8 @@ class GeometryCollection(_MultiGeometry):
     class isn't generally supported by ordinary GIS sw (viewers and so on). So
     it's very rarely used in the real GIS professional world.
 
-    Example
+    Example:
     -------
-
     Initialize Geometries and construct a GeometryCollection
 
     >>> from pygeoif import geometry
@@ -1001,12 +1026,14 @@ class GeometryCollection(_MultiGeometry):
     """
 
     def __init__(
-        self, geometries: Iterable[Union[Geometry, "GeometryCollection"]]
+        self,
+        geometries: Iterable[Union[Geometry, "GeometryCollection"]],
     ) -> None:
         """
         Initialize the MultiGeometry with Geometries.
 
         Args:
+        ----
             geometries (Iterable[Geometry]
         """
         self._geoms = tuple(geom for geom in geometries if geom)
@@ -1037,15 +1064,16 @@ class GeometryCollection(_MultiGeometry):
         except AttributeError:
             return False
         return compare_geo_interface(
-            self.__geo_interface__,
-            other.__geo_interface__,  # type: ignore [attr-defined]
+            first=self.__geo_interface__,
+            second=other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __len__(self) -> int:
         """
         Length of the collection.
 
-        Returns:
+        Returns
+        -------
             int: Number of geometries in the collection.
         """
         return len(self._geoms)
@@ -1067,7 +1095,9 @@ class GeometryCollection(_MultiGeometry):
         }
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return chain.from_iterable(geom._prepare_hull() for geom in self.geoms)
+        return chain.from_iterable(
+            geom._prepare_hull() for geom in self.geoms  # noqa: SLF001
+        )
 
 
 __all__ = [

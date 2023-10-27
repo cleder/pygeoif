@@ -20,7 +20,7 @@
 from typing import Any
 from typing import Dict
 from typing import Generator
-from typing import Iterable
+from typing import Iterator
 from typing import Optional
 from typing import Sequence
 from typing import Union
@@ -45,8 +45,10 @@ def feature_geo_interface_equals(
             my_interface["properties"] == other_interface.get("properties"),
             my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
             compare_coordinates(
-                my_interface["geometry"]["coordinates"],
-                other_interface["geometry"].get("coordinates"),  # type: ignore[arg-type]
+                coords=my_interface["geometry"]["coordinates"],
+                other=other_interface["geometry"].get(
+                    "coordinates",
+                ),  # type: ignore[arg-type]
             ),
         ],
     )
@@ -56,17 +58,16 @@ class Feature:
     """
     Aggregates a geometry instance with associated user-defined properties.
 
-    Attributes
-    ~~~~~~~~~~~
+    Attributes:
+    ----------
     geometry : object
         A geometry instance
     properties : dict
         A dictionary linking field keys with values
         associated with geometry instance
 
-    Example
-    ~~~~~~~~
-
+    Example:
+    -------
      >>> p = Point(1.0, -1.0)
      >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
      >>> a = Feature(p, props)
@@ -97,8 +98,8 @@ class Feature:
         except AttributeError:
             return False
         return feature_geo_interface_equals(
-            self.__geo_interface__,
-            other.__geo_interface__,  # type: ignore [attr-defined]
+            my_interface=self.__geo_interface__,
+            other_interface=other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
     def __repr__(self) -> str:
@@ -109,7 +110,7 @@ class Feature:
         )
 
     @property
-    def id(self) -> Optional[Union[str, int]]:
+    def id(self) -> Optional[Union[str, int]]:  # noqa: A003
         """Return the id of the feature."""
         return self._feature_id
 
@@ -139,17 +140,17 @@ class Feature:
 
 
 class FeatureCollection:
-    """A heterogenous collection of Features.
+    """
+    A heterogenous collection of Features.
 
-    Attributes
+    Attributes:
     ----------
     features : sequence
         A sequence of feature instances
 
 
-    Example
+    Example:
     -------
-
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1.0, -1.0)
     >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
@@ -177,7 +178,7 @@ class FeatureCollection:
         """Check if the geointerfaces are equal."""
         return self._check_interface(other) and all(
             (
-                feature_geo_interface_equals(mine, other)
+                feature_geo_interface_equals(my_interface=mine, other_interface=other)
                 for mine, other in zip(
                     self.__geo_interface__["features"],
                     other.__geo_interface__["features"],  # type: ignore [attr-defined]
@@ -189,12 +190,12 @@ class FeatureCollection:
         """Return the umber of features in this collection."""
         return len(self._features)
 
-    def __iter__(self) -> Iterable[Feature]:
+    def __iter__(self) -> Iterator[Feature]:
         """Iterate over the features of the collection."""
         return iter(self._features)
 
     def __repr__(self) -> str:
-        """Retrun the representation."""
+        """Return the representation."""
         return f"{self.__class__.__name__}({self._features!r})"
 
     @property
