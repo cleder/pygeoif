@@ -39,7 +39,7 @@ It was written to provide clean and python only geometries for fastkml_
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. image:: https://img.shields.io/badge/type-checker-mypy-blue
+.. image:: https://img.shields.io/badge/type%20checker-mypy-blue
     :target: http://mypy-lang.org/
 
 .. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
