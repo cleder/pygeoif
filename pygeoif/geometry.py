@@ -575,9 +575,7 @@ class Polygon(_Geometry):
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
         """
-        interiors: Tuple[LinearRing, ...] = ()
-        if holes:
-            interiors = tuple(LinearRing(hole) for hole in holes)
+        interiors = tuple(LinearRing(hole) for hole in holes) if holes else ()
         exterior = LinearRing(shell)
         object.__setattr__(self, "_geoms", (exterior, interiors))
 
