@@ -58,6 +58,14 @@ It was written to provide clean and python only geometries for fastkml_
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
+.. image:: https://img.shields.io/pypi/pyversions/pygeoif.svg
+    :target: https://pypi.python.org/pypi/pygeoif/
+    :alt: Supported Python versions
+
+.. image:: https://img.shields.io/pypi/implementation/pygeoif.svg
+    :target: https://pypi.python.org/pypi/pygeoif/
+    :alt: Supported Python implementations
+
 Example
 ========
 
