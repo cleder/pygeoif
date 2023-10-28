@@ -20,6 +20,8 @@
 import math
 import warnings
 from itertools import chain
+from typing import Any
+from typing import Hashable
 from typing import Iterable
 from typing import Iterator
 from typing import NoReturn
@@ -48,6 +50,25 @@ from pygeoif.types import PolygonType
 
 class _Geometry:
     """Base Class for geometry objects."""
+
+    __slots__ = ("_geoms",)
+
+    _geoms: Hashable
+
+    def __setattr__(self, *args: Any) -> NoReturn:  # noqa: ANN401
+        msg = f"Attributes of {self.__class__.__name__} cannot be changed"
+        raise AttributeError(
+            msg,
+        )
+
+    def __delattr__(self, *args: Any) -> NoReturn:  # noqa: ANN401
+        msg = f"Attributes of {self.__class__.__name__} cannot be deleted"
+        raise AttributeError(
+            msg,
+        )
+
+    def __hash__(self) -> int:
+        return hash(self._geoms)
 
     def __str__(self) -> str:
         return self.wkt
@@ -217,6 +238,8 @@ class Point(_Geometry):
       1.0
     """
 
+    _geoms: PointType
+
     def __init__(self, x: float, y: float, z: Optional[float] = None) -> None:
         """
         Initialize a Point.
@@ -226,18 +249,22 @@ class Point(_Geometry):
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
         """
-        self._coordinates = cast(
-            PointType,
-            tuple(
-                coordinate
-                for coordinate in (x, y, z)
-                if coordinate is not None and not math.isnan(coordinate)
+        object.__setattr__(
+            self,
+            "_geoms",
+            cast(
+                PointType,
+                tuple(
+                    coordinate
+                    for coordinate in (x, y, z)
+                    if coordinate is not None and not math.isnan(coordinate)
+                ),
             ),
         )
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}{self._coordinates}"
+        return f"{self.geom_type}{self._geoms}"
 
     @property
     def is_empty(self) -> bool:
@@ -246,50 +273,50 @@ class Point(_Geometry):
 
         A Point is considered empty when it has less than 2 coordinates.
         """
-        return len(self._coordinates) < 2  # noqa: PLR2004
+        return len(self._geoms) < 2  # noqa: PLR2004
 
     @property
     def x(self) -> float:
         """Return x coordinate."""
-        return self._coordinates[0]
+        return self._geoms[0]
 
     @property
     def y(self) -> float:
         """Return y coordinate."""
-        return self._coordinates[1]
+        return self._geoms[1]
 
     @property
     def z(self) -> Optional[float]:
         """Return z coordinate."""
         if self.has_z:
-            return self._coordinates[2]  # type: ignore [misc]
+            return self._geoms[2]  # type: ignore [misc]
         msg = f"The {self!r} geometry does not have z values"
         raise DimensionError(msg)
 
     @property
     def coords(self) -> Tuple[PointType]:
         """Return the geometry coordinates."""
-        return (self._coordinates,)
+        return (self._geoms,)
 
     @property
     def has_z(self) -> bool:
         """Return True if the geometry's coordinate sequence(s) have z values."""
-        return len(self._coordinates) == 3  # noqa: PLR2004
+        return len(self._geoms) == 3  # noqa: PLR2004
 
     @property
     def _wkt_coords(self) -> str:
-        return " ".join(str(coordinate) for coordinate in self._coordinates)
+        return " ".join(str(coordinate) for coordinate in self._geoms)
 
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        return " Z " if len(self._coordinates) == 3 else " "  # noqa: PLR2004
+        return " Z " if len(self._geoms) == 3 else " "  # noqa: PLR2004
 
     @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface["coordinates"] = cast(PointType, tuple(self._coordinates))
+        geo_interface["coordinates"] = cast(PointType, tuple(self._geoms))
         return geo_interface
 
     @classmethod
@@ -322,6 +349,8 @@ class LineString(_Geometry):
         A sequence of Points
     """
 
+    _geoms: Tuple[Point, ...]
+
     def __init__(self, coordinates: LineType) -> None:
         """
         Initialize a Linestring.
@@ -337,7 +366,7 @@ class LineString(_Geometry):
 
           >>> a = LineString([(0, 0), (1, 0), (1, 1)])
         """
-        self._geoms = self._set_geoms(coordinates)
+        object.__setattr__(self, "_geoms", self._set_geoms(coordinates))
 
     def __repr__(self) -> str:
         """Return the representation."""
@@ -422,7 +451,7 @@ class LineString(_Geometry):
                 )
             last_len = len(coord)
             point = Point(*coord)
-            if not point.is_empty:
+            if point:
                 geoms.append(point)
         return tuple(geoms)
 
@@ -461,7 +490,7 @@ class LinearRing(LineString):
         """
         super().__init__(coordinates)
         if not self.is_empty and self._geoms[0].coords != self._geoms[-1].coords:
-            self._geoms = (*self._geoms, self._geoms[0])
+            object.__setattr__(self, "_geoms", (*self._geoms, self._geoms[0]))
 
     @property
     def centroid(self) -> Optional[Point]:
@@ -521,6 +550,8 @@ class Polygon(_Geometry):
         A sequence of rings which bound all existing holes.
     """
 
+    _geoms: Tuple[LinearRing, ...]
+
     def __init__(
         self,
         shell: LineType,
@@ -544,10 +575,11 @@ class Polygon(_Geometry):
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
         """
-        self._interiors: Tuple[LinearRing, ...] = ()
+        interiors: Tuple[LinearRing, ...] = ()
         if holes:
-            self._interiors = tuple(LinearRing(hole) for hole in holes)
-        self._exterior = LinearRing(shell)
+            interiors = tuple(LinearRing(hole) for hole in holes)
+        exterior = LinearRing(shell)
+        object.__setattr__(self, "_geoms", (exterior, interiors))
 
     def __repr__(self) -> str:
         """Return the representation."""
@@ -556,12 +588,16 @@ class Polygon(_Geometry):
     @property
     def exterior(self) -> LinearRing:
         """Return the exterior Linear Ring of the polygon."""
-        return self._exterior
+        return self._geoms[0]
 
     @property
     def interiors(self) -> Iterator[LinearRing]:
         """Interiors (Holes) of the polygon."""
-        yield from (interior for interior in self._interiors if interior)
+        yield from (
+            interior
+            for interior in self._geoms[1]  # type: ignore [attr-defined]
+            if interior
+        )
 
     @property
     def is_empty(self) -> bool:
@@ -570,7 +606,7 @@ class Polygon(_Geometry):
 
         A polygon is empty when it does not have an exterior.
         """
-        return self._exterior.is_empty
+        return self._geoms[0].is_empty
 
     @property
     def coords(self) -> PolygonType:
@@ -579,7 +615,7 @@ class Polygon(_Geometry):
 
         Note that this is not implemented in Shapely.
         """
-        if self._interiors:
+        if self._geoms[1]:
             return self.exterior.coords, tuple(
                 interior.coords for interior in self.interiors if interior
             )
@@ -588,7 +624,7 @@ class Polygon(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
-        return self._exterior.has_z
+        return self._geoms[0].has_z
 
     @property
     def maybe_valid(self) -> bool:
@@ -602,7 +638,7 @@ class Polygon(_Geometry):
             return False
         return (
             all(interior.maybe_valid for interior in self.interiors)
-            if self._exterior.maybe_valid
+            if self.exterior.maybe_valid
             else False
         )
 
@@ -692,11 +728,7 @@ class _MultiGeometry(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if any geometry of the collection have z values."""
-        return (
-            any(geom.has_z for geom in self.geoms)
-            if self._geoms  # type: ignore [attr-defined]
-            else None
-        )
+        return any(geom.has_z for geom in self.geoms) if self._geoms else None
 
     @property
     def geoms(self) -> Iterator[_Geometry]:
@@ -735,6 +767,8 @@ class MultiPoint(_MultiGeometry):
         A sequence of Points
     """
 
+    _geoms: Tuple[Point, ...]
+
     def __init__(self, points: Sequence[PointType], unique: bool = False) -> None:
         """
         Create a collection of one or more points.
@@ -759,7 +793,7 @@ class MultiPoint(_MultiGeometry):
         """
         if unique:
             points = set(points)  # type: ignore [assignment]
-        self._geoms = tuple(Point(*point) for point in points)
+        object.__setattr__(self, "_geoms", tuple(Point(*point) for point in points))
 
     def __len__(self) -> int:
         """Return the number of points in this MultiPoint."""
@@ -811,6 +845,8 @@ class MultiLineString(_MultiGeometry):
         A sequence of LineStrings
     """
 
+    _geoms: Tuple[LineString, ...]
+
     def __init__(self, lines: Sequence[LineType], unique: bool = False) -> None:
         """
         Initialize the MultiLineString.
@@ -831,7 +867,7 @@ class MultiLineString(_MultiGeometry):
         """
         if unique:
             lines = {tuple(line) for line in lines}  # type: ignore [assignment]
-        self._geoms = tuple(LineString(line) for line in lines)
+        object.__setattr__(self, "_geoms", tuple(LineString(line) for line in lines))
 
     def __len__(self) -> int:
         """Return the number of lines in the collection."""
@@ -893,6 +929,8 @@ class MultiPolygon(_MultiGeometry):
         A sequence of `Polygon` instances
     """
 
+    _geoms: Tuple[Polygon, ...]
+
     def __init__(self, polygons: Sequence[PolygonType], unique: bool = False) -> None:
         """
         Initialize a Multipolygon.
@@ -926,14 +964,18 @@ class MultiPolygon(_MultiGeometry):
         if unique:
             polygons = set(polygons)  # type: ignore [assignment]
 
-        self._geoms = tuple(
-            Polygon(
-                shell=polygon[0],
-                holes=polygon[1]  # type: ignore [misc]
-                if len(polygon) == 2  # noqa: PLR2004
-                else None,
-            )
-            for polygon in polygons
+        object.__setattr__(
+            self,
+            "_geoms",
+            tuple(
+                Polygon(
+                    shell=polygon[0],
+                    holes=polygon[1]  # type: ignore [misc]
+                    if len(polygon) == 2  # noqa: PLR2004
+                    else None,
+                )
+                for polygon in polygons
+            ),
         )
 
     def __len__(self) -> int:
@@ -1025,6 +1067,8 @@ class GeometryCollection(_MultiGeometry):
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     """
 
+    _geoms: Tuple[Union[Geometry, "GeometryCollection"], ...]
+
     def __init__(
         self,
         geometries: Iterable[Union[Geometry, "GeometryCollection"]],
@@ -1036,7 +1080,7 @@ class GeometryCollection(_MultiGeometry):
         ----
             geometries (Iterable[Geometry]
         """
-        self._geoms = tuple(geom for geom in geometries if geom)
+        object.__setattr__(self, "_geoms", tuple(geom for geom in geometries if geom))
 
     def __eq__(self, other: object) -> bool:
         """

@@ -1,5 +1,7 @@
 """Test Baseclass."""
 
+import pytest
+
 from pygeoif import geometry
 
 
@@ -425,3 +427,29 @@ def test_nested_geometry_collection_repr_eval() -> None:
         ).__geo_interface__
         == gc.__geo_interface__
     )
+
+
+@pytest.mark.xfail(reason="GeometryCollection is not hashable")
+def test_nested_geometry_collection_hash() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
+    line1 = geometry.LineString([(0, 0), (3, 1)])
+    gc2 = geometry.GeometryCollection([gc1, line1])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    i = [(1, 0), (0.5, 0.5), (1, 1), (1.5, 0.5), (1, 0)]
+    poly2 = geometry.Polygon(e, [i])
+    p0 = geometry.Point(0, 0)
+    p1 = geometry.Point(-1, -1)
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    line = geometry.LineString([(0, 0), (1, 1)])
+    gc = geometry.GeometryCollection([gc2, poly1, poly2, p0, p1, ring, line])
+
+    assert hash(gc) == 0
+
+
+@pytest.mark.xfail(reason="GeometryCollection is not hashable")
+def test_hash_empty() -> None:
+    gc = geometry.GeometryCollection([])
+
+    assert hash(gc) == hash(geometry.GeometryCollection([]))

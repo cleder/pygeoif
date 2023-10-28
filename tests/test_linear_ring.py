@@ -230,30 +230,6 @@ def test_centroid_valid() -> None:
     assert line.centroid == geometry.Point(2, 1)
 
 
-def test_centroid_invalid() -> None:
-    ring = geometry.LinearRing([(0, 0), (2, 0), (2, 2), (0, 2)])
-    line = geometry.LineString(
-        [
-            (28, 16),
-            (37, 31),
-            (21, 50),
-            (-21, 64),
-            (-84, 64),
-            (-148, 46),
-            (-95, 10),
-            (-72, 46),
-            (-40, 64),
-            (-9, 64),
-            (12, 50),
-            (20, 31),
-            (15, 16),
-        ],
-    )
-    ring._geoms = line._geoms
-
-    assert ring.centroid is None
-
-
 def test_empty() -> None:
     ring = geometry.LinearRing([])
 
@@ -264,3 +240,9 @@ def test_empty_bounds() -> None:
     ring = geometry.LinearRing([])
 
     assert ring.bounds == ()
+
+
+def test_hash() -> None:
+    ring = geometry.LinearRing([(0, 0), (4, 0), (4, 2), (0, 2)])
+
+    assert hash(ring) == hash(((0, 0), (4, 0), (4, 2), (0, 2), (0, 0)))
