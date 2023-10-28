@@ -21,6 +21,7 @@ import math
 import warnings
 from itertools import chain
 from typing import Any
+from typing import Hashable
 from typing import Iterable
 from typing import Iterator
 from typing import NoReturn
@@ -52,15 +53,22 @@ class _Geometry:
 
     __slots__ = ("_geoms",)
 
-    def __setattr__(self, *args: Any) -> NoReturn:
+    _geoms: Hashable
+
+    def __setattr__(self, *args: Any) -> NoReturn:  # noqa: ANN401
+        msg = f"Attributes of {self.__class__.__name__} cannot be changed"
         raise AttributeError(
-            f"Attributes of {self.__class__.__name__} cannot be changed",
+            msg,
         )
 
-    def __delattr__(self, *args: Any) -> NoReturn:
+    def __delattr__(self, *args: Any) -> NoReturn:  # noqa: ANN401
+        msg = f"Attributes of {self.__class__.__name__} cannot be deleted"
         raise AttributeError(
-            f"Attributes of {self.__class__.__name__} cannot be deleted",
+            msg,
         )
+
+    def __hash__(self) -> int:
+        return hash(self._geoms)
 
     def __str__(self) -> str:
         return self.wkt
@@ -230,6 +238,8 @@ class Point(_Geometry):
       1.0
     """
 
+    _geoms: PointType
+
     def __init__(self, x: float, y: float, z: Optional[float] = None) -> None:
         """
         Initialize a Point.
@@ -338,6 +348,8 @@ class LineString(_Geometry):
     geoms : sequence
         A sequence of Points
     """
+
+    _geoms: Tuple[Point, ...]
 
     def __init__(self, coordinates: LineType) -> None:
         """
@@ -538,6 +550,8 @@ class Polygon(_Geometry):
         A sequence of rings which bound all existing holes.
     """
 
+    _geoms: Tuple[LinearRing, ...]
+
     def __init__(
         self,
         shell: LineType,
@@ -579,7 +593,11 @@ class Polygon(_Geometry):
     @property
     def interiors(self) -> Iterator[LinearRing]:
         """Interiors (Holes) of the polygon."""
-        yield from (interior for interior in self._geoms[1] if interior)
+        yield from (
+            interior
+            for interior in self._geoms[1]  # type: ignore [attr-defined]
+            if interior
+        )
 
     @property
     def is_empty(self) -> bool:
@@ -710,11 +728,7 @@ class _MultiGeometry(_Geometry):
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if any geometry of the collection have z values."""
-        return (
-            any(geom.has_z for geom in self.geoms)
-            if self._geoms  # type: ignore [attr-defined]
-            else None
-        )
+        return any(geom.has_z for geom in self.geoms) if self._geoms else None
 
     @property
     def geoms(self) -> Iterator[_Geometry]:
@@ -752,6 +766,8 @@ class MultiPoint(_MultiGeometry):
     geoms : sequence
         A sequence of Points
     """
+
+    _geoms: Tuple[Point, ...]
 
     def __init__(self, points: Sequence[PointType], unique: bool = False) -> None:
         """
@@ -828,6 +844,8 @@ class MultiLineString(_MultiGeometry):
     geoms : sequence
         A sequence of LineStrings
     """
+
+    _geoms: Tuple[LineString, ...]
 
     def __init__(self, lines: Sequence[LineType], unique: bool = False) -> None:
         """
@@ -910,6 +928,8 @@ class MultiPolygon(_MultiGeometry):
     geoms : sequence
         A sequence of `Polygon` instances
     """
+
+    _geoms: Tuple[Polygon, ...]
 
     def __init__(self, polygons: Sequence[PolygonType], unique: bool = False) -> None:
         """
@@ -1046,6 +1066,8 @@ class GeometryCollection(_MultiGeometry):
     'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
     """
+
+    _geoms: Tuple[Union[Geometry, "GeometryCollection"], ...]
 
     def __init__(
         self,
