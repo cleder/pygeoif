@@ -32,18 +32,23 @@ It was written to provide clean and python only geometries for fastkml_
 
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg?branch=main
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
+    :alt: GitHub Actions
 
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
+    :alt: Codecov
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/psf/black
+    :target: https://github.com/psf/
+    :alt: Black
 
 .. image:: https://img.shields.io/badge/type%20checker-mypy-blue
     :target: http://mypy-lang.org/
+    :alt: Mypy
 
 .. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
     :target: https://www.openhub.net/p/pygeoif/
+    :alt: Openhub
 
 .. image:: https://www.codefactor.io/repository/github/cleder/pygeoif/badge/main
    :target: https://www.codefactor.io/repository/github/cleder/pygeoif/overview/main
