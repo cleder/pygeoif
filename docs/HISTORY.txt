@@ -5,6 +5,7 @@ Changelog
 ------------------
 
  - remove Python 3.7 support
+ - Geometries are now immutable and hashable
 
 1.1.1 (2023/10/27)
 ------------------

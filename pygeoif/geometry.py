@@ -1110,6 +1110,10 @@ class GeometryCollection(_MultiGeometry):
             second=other.__geo_interface__,  # type: ignore [attr-defined]
         )
 
+    def __hash__(self) -> int:
+        """Return the hash of the collection."""
+        return hash(self.wkt)
+
     def __len__(self) -> int:
         """
         Length of the collection.

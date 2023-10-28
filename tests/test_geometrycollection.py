@@ -1,7 +1,5 @@
 """Test Baseclass."""
 
-import pytest
-
 from pygeoif import geometry
 
 
@@ -429,7 +427,6 @@ def test_nested_geometry_collection_repr_eval() -> None:
     )
 
 
-@pytest.mark.xfail(reason="GeometryCollection is not hashable")
 def test_nested_geometry_collection_hash() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
     gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
@@ -445,10 +442,21 @@ def test_nested_geometry_collection_hash() -> None:
     line = geometry.LineString([(0, 0), (1, 1)])
     gc = geometry.GeometryCollection([gc2, poly1, poly2, p0, p1, ring, line])
 
-    assert hash(gc) == 0
+    assert hash(gc) == hash(
+        geometry.GeometryCollection(
+            [
+                gc2,
+                poly1,
+                poly2,
+                p0,
+                p1,
+                ring,
+                line,
+            ],
+        ),
+    )
 
 
-@pytest.mark.xfail(reason="GeometryCollection is not hashable")
 def test_hash_empty() -> None:
     gc = geometry.GeometryCollection([])
 
