@@ -240,3 +240,9 @@ def test_empty_bounds() -> None:
     ring = geometry.LinearRing([])
 
     assert ring.bounds == ()
+
+
+def test_hash() -> None:
+    ring = geometry.LinearRing([(0, 0), (4, 0), (4, 2), (0, 2)])
+
+    assert hash(ring) == hash(((0, 0), (4, 0), (4, 2), (0, 2), (0, 0)))
