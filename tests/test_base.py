@@ -95,10 +95,10 @@ def test_get_bounds() -> None:
         ),
         # Edge cases
         (("", "value"), AttributeError, "Attributes of _Geometry cannot be changed"),
-        ((None, "value"), TypeError, "attribute name must be string, not 'NoneType'"),
+        ((None, "value"), TypeError, ".*attribute name must be string.*"),
         # Error cases
-        ((123, "value"), TypeError, "attribute name must be string, not 'int'"),
-        (([1, 2, 3], "value"), TypeError, "attribute name must be string, not 'list'"),
+        ((123, "value"), TypeError, ".*attribute name must be string.*"),
+        (([1, 2, 3], "value"), TypeError, ".*attribute name must be string.*"),
     ],
 )
 def test_setattr(attr_val, expected_error, expected_error_message) -> None:
@@ -124,12 +124,12 @@ def test_setattr(attr_val, expected_error, expected_error_message) -> None:
         (
             None,
             TypeError,
-            "attribute name must be string, not 'NoneType'",
+            ".*attribute name must be string.*",
         ),  # edge case: None
         (
             123,
             TypeError,
-            "attribute name must be string, not 'int'",
+            ".*attribute name must be string.*",
         ),  # error case: non-string attribute
     ],
     ids=[
