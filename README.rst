@@ -1,6 +1,8 @@
 Introduction
 ============
 
+.. inclusion-marker-do-not-remove
+
 PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_ for geo-spatial (GIS) vector data.
 
 Other Python programs and packages that you may have heard of already
