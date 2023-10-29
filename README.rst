@@ -3,9 +3,10 @@ Introduction
 
 .. inclusion-marker-do-not-remove
 
-PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_ for geo-spatial (GIS) vector data.
+PyGeoIf provides a `GeoJSON-like protocol <https://gist.github.com/2217756>`_
+for geo-spatial (GIS) vector data.
 
-Other Python programs and packages that you may have heard of already
+Other Python programs and packages that you may have heard of that
 implement this protocol:
 
 * `ArcPy <https://www.esri.com/about/newsroom/arcuser/geojson/>`_
@@ -13,6 +14,9 @@ implement this protocol:
 * `PySAL <http://pysal.geodacenter.org/>`_
 * `Shapely <https://github.com/Toblerity/Shapely>`_
 * `pyshp <https://pypi.python.org/pypi/pyshp>`_
+* `GeoPandas <https://geopandas.org/>`_
+* `Karta <https://github.com/fortyninemaps/karta>`_
+* `mapnik <https://github.com/mapnik/mapnik>`_
 
 When you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
@@ -71,6 +75,14 @@ It was written to provide clean and python only geometries for fastkml_
 .. image:: https://img.shields.io/pypi/implementation/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Supported Python implementations
+
+Installation
+------------
+
+You can install PyGeoIf from pypi using pip::
+
+    pip install pygeoif
+
 
 Example
 ========
@@ -321,9 +333,8 @@ Create a geometry from its WKT representation
 signed_area
 ------------
 
-Return the signed area enclosed by a ring using the linear time
-algorithm at http://www.cgafaq.info/wiki/Polygon_Area. A value >= 0
-indicates a counter-clockwise oriented ring.
+Return the signed area enclosed by a ring.
+A value >= 0 indicates a counter-clockwise oriented ring.
 
 
 orient
@@ -349,28 +360,13 @@ Return the ``__geo_interface__`` dictionary.
 Development
 ===========
 
-Installation
-------------
+Clone this repository, create a virtualenv with Python 3.8 or later with
+``python3 -m venv .venv`` and activate it with ``source .venv/bin/activate``.
 
-You can install PyGeoIf from pypi using pip::
-
-    pip install pygeoif
-
-Testing
--------
-
-Install the requirements with ``pip install -r test-requirements.txt``
-and run the unit and static tests with::
-
-    pytest pygeoif
-    pytest --doctest-glob="README.rst"
-    yesqa pygeoif/*.py
-    black pygeoif
-    flake8 pygeoif
-    mypy pygeoif
+Then install the requirements with ``pip install -e ".[dev]"``.
 
 pre-commit
-~~~~~~~~~~~
+----------
 
 Install the ``pre-commit`` hook with::
 
@@ -380,6 +376,19 @@ Install the ``pre-commit`` hook with::
 and check the code with::
 
     pre-commit run --all-files
+
+Testing
+-------
+
+Run the unit and static tests with::
+
+    pytest tests
+    pytest --doctest-glob="README.rst"
+    black pygeoif
+    ruff pygeoif
+    flake8 pygeoif
+    mypy pygeoif
+
 
 
 Acknowledgments
