@@ -91,6 +91,7 @@ content-type = "text/x-rst"
 file = "README.rst"
 
 [project.urls]
+Documentation = "https://pygeoif.readthedocs.io/"
 Homepage = "https://github.com/cleder/pygeoif/"
 
 [tool.flake8]

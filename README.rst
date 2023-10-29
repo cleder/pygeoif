@@ -36,6 +36,10 @@ It was written to provide clean and python only geometries for fastkml_
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
     :alt: GitHub Actions
 
+.. image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
+    :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
     :alt: Codecov
