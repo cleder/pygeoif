@@ -126,7 +126,7 @@ def test_signed_area_crescent_ish() -> None:
 
 
 def test_empty_hull() -> None:
-    assert not convex_hull([])
+    assert convex_hull([]) == []
 
 
 def test_point() -> None:

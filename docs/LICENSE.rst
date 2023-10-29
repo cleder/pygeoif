@@ -18,4 +18,4 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-.. _LGPL: https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html
+.. _LGPL: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html

@@ -182,7 +182,11 @@ class _Geometry:
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        return ""
+        if self.is_empty:
+            return f"{self._wkt_type} EMPTY"
+        if self.has_z:
+            return " Z "
+        return " "
 
     @property
     def _wkt_type(self) -> str:
@@ -308,11 +312,6 @@ class Point(_Geometry):
         return " ".join(str(coordinate) for coordinate in self._geoms)
 
     @property
-    def _wkt_inset(self) -> str:
-        """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        return " Z " if len(self._geoms) == 3 else " "  # noqa: PLR2004
-
-    @property
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
@@ -406,10 +405,6 @@ class LineString(_Geometry):
         Even if this test passes the geometry may still be invalid.
         """
         return len({p.coords[0] for p in self._geoms}) > 1
-
-    @property
-    def _wkt_inset(self) -> str:
-        return self.geoms[0]._wkt_inset  # noqa: SLF001
 
     @property
     def _wkt_coords(self) -> str:
@@ -647,10 +642,6 @@ class Polygon(_Geometry):
             f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
         )
         return f"({ec}){ic}"
-
-    @property
-    def _wkt_inset(self) -> str:
-        return self.exterior._wkt_inset  # noqa: SLF001
 
     @property
     def __geo_interface__(self) -> GeoInterface:

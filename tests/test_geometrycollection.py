@@ -70,7 +70,7 @@ def test_geo_wkt() -> None:
     gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
 
     assert gc.wkt == (
-        "GEOMETRYCOLLECTION"
+        "GEOMETRYCOLLECTION "
         "(POLYGON ((0 0, 1 1, 1 0, 0 0)), "
         "POLYGON ((0 0, 0 2, 2 2, 2 0, 0 0),(1 0, 0.5 0.5, 1 1, 1.5 0.5, 1 0)), "
         "POINT (0 0), POINT (-1 -1), "
@@ -271,7 +271,7 @@ def test_multipoint_wkt() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
     gc = geometry.GeometryCollection([multipoint])
 
-    assert gc.wkt == "GEOMETRYCOLLECTION(MULTIPOINT(0 0, 1 1, 1 2, 2 2))"
+    assert gc.wkt == "GEOMETRYCOLLECTION (MULTIPOINT (0 0, 1 1, 1 2, 2 2))"
 
 
 def test_multipoint_repr() -> None:
@@ -309,8 +309,8 @@ def test_nested_geometry_collection() -> None:
     gc3 = geometry.GeometryCollection([gc2, poly1])
 
     assert gc3.wkt == (
-        "GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(GEOMETRYCOLLECTION("
-        "POINT (0 0), MULTIPOINT(0 0, 1 1, 1 2, 2 2)), LINESTRING (0 0, 3 1)), "
+        "GEOMETRYCOLLECTION (GEOMETRYCOLLECTION (GEOMETRYCOLLECTION ("
+        "POINT (0 0), MULTIPOINT (0 0, 1 1, 1 2, 2 2)), LINESTRING (0 0, 3 1)), "
         "POLYGON ((0 0, 1 1, 1 0, 0 0)))"
     )
 
