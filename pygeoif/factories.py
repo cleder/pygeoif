@@ -60,6 +60,11 @@ inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
 
 
+def get_oriented_ring(ring: LineType, ccw: bool) -> LineType:  # noqa: FBT001
+    s = 1.0 if ccw else -1.0
+    return ring if signed_area(ring) / s >= 0 else ring[::-1]
+
+
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT002
     """
     Return a polygon with exteriors and interiors in the right orientation.
@@ -68,14 +73,9 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT0
     and the interiors will be in clockwise orientation, or
     the other way round when ccw is False.
     """
-
-    def get_oriented_ring(ring: LineType) -> LineType:
-        return ring if signed_area(ring) / s >= 0 else ring[::-1]
-
-    s = 1.0 if ccw else -1.0
-    shell = get_oriented_ring(polygon.exterior.coords)
-    s = -s  # flip orientation for holes
-    holes = [get_oriented_ring(ring.coords) for ring in polygon.interiors]
+    shell = get_oriented_ring(polygon.exterior.coords, ccw)
+    ccw = not ccw  # flip orientation for holes
+    holes = [get_oriented_ring(ring.coords, ccw) for ring in polygon.interiors]
     return Polygon(shell=shell, holes=holes)
 
 
