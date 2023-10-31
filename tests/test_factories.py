@@ -21,6 +21,120 @@ def test_num_float() -> None:
     assert isinstance(factories.num("1.1"), float)
 
 
+def test_force_2d_point() -> None:
+    # 2d point to 2d point (no actual change)
+    p = geometry.Point(-1, 1)
+    p2d = factories.force_2d(p)
+    assert p2d.x == -1
+    assert p2d.y == 1
+    assert not p2d.has_z
+
+    # 3d point to 2d point
+    p = geometry.Point(-1, 1, 2)
+    p2d = factories.force_2d(p)
+    assert p2d.x == -1
+    assert p2d.y == 1
+    assert not p2d.has_z
+
+
+def test_force_2d_multipoint() -> None:
+    # 2d to 2d (no actual change)
+    p = geometry.MultiPoint([(-1, 1), (2, 3)])
+    p2d = factories.force_2d(p)
+    assert list(p2d.geoms) == [geometry.Point(-1, 1), geometry.Point(2, 3)]
+
+
+def test_force_2d_linestring() -> None:
+    # 2d line string to 2d line string (no actual change)
+    ls = geometry.LineString([(1, 2), (3, 4)])
+    l2d = factories.force_2d(ls)
+    assert l2d.coords == ((1, 2), (3, 4))
+
+    # 3d line string to 2d line string
+    ls = geometry.LineString([(1, 2, 3), (4, 5, 6)])
+    l2d = factories.force_2d(ls)
+    assert l2d.coords == ((1, 2), (4, 5))
+
+
+def test_force_2d_linearring() -> None:
+    # 2d linear ring to 2d linear ring (no actual change)
+    r = geometry.LinearRing([(1, 2), (3, 4)])
+    r2d = factories.force_2d(r)
+    assert r2d.coords == ((1, 2), (3, 4), (1, 2))
+
+    # 3d linear ring to 2d linear ring
+    r = geometry.LinearRing([(1, 2, 3), (4, 5, 6)])
+    r2d = factories.force_2d(r)
+    assert r2d.coords == ((1, 2), (4, 5), (1, 2))
+
+
+def test_force_2d_multilinestring() -> None:
+    # 2d multi line string to 2d multi line string (no actual change)
+    mls = geometry.MultiLineString([[(1, 2), (3, 4)], [(5, 6), (7, 8)]])
+    mls2d = factories.force_2d(mls)
+    assert list(mls2d.geoms) == list(mls.geoms)
+
+    # 3d multi line string to 2d multi line string
+    mls = geometry.MultiLineString([[(1, 2, 3), (4, 5, 6)], [(7, 8, 9), (10, 11, 12)]])
+    mls2d = factories.force_2d(mls)
+    assert list(mls2d.geoms) == [geometry.LineString([(1, 2), (4, 5)]), geometry.LineString([(7, 8), (10, 11)])]
+
+def test_force_2d_polygon() -> None:
+    # 2d to 2d (no actual change)
+    external = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
+    p = geometry.Polygon(external, [internal])
+    p2d = factories.force_2d(p)
+    assert p2d.coords[0] == (
+        ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
+    )
+    assert p2d.coords[1] == (
+        ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
+    )
+    assert not p2d.has_z
+    assert p.maybe_valid == p2d.maybe_valid
+
+    # 3d to 2d
+    external = [(0, 0, 1), (0, 2, 1), (2, 2, 1), (2, 0, 1), (0, 0, 1)]
+    internal = [(0.5, 0.5, 1), (0.5, 1.5, 1), (1.5, 1.5, 1), (1.5, 0.5, 1), (0.5, 0.5, 1)]
+
+    p = geometry.Polygon(external, [internal])
+    p2d = factories.force_2d(p)
+    assert p2d.coords[0] == (
+        ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
+    )
+    assert p2d.coords[1] == (
+        ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
+    )
+    assert not p2d.has_z
+
+
+def test_force_2d_multipolygon() -> None:
+    # 2d to 2d (no actual change)
+    external = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
+    mp = geometry.MultiPolygon([(external, [internal]), (external, [internal])])
+    mp2d = factories.force_2d(mp)
+
+    assert list(mp2d.geoms) == list(mp.geoms)
+
+
+def test_force2d_collection() -> None:
+    # 2d to 2d (no actual change)
+    gc = geometry.GeometryCollection([geometry.Point(-1, 1), geometry.Point(-2, 2)])
+    gc2d = factories.force_2d(gc)
+    assert list(gc2d.geoms) == list(gc.geoms)
+
+    # 3d to 2d
+    gc = geometry.GeometryCollection([geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)])
+    gc2d = factories.force_2d(gc)
+    assert list(gc2d.geoms) == [geometry.Point(-1, 1), geometry.Point(-2, 2)]
+
+
+def test_force_2d_nongeo() -> None:
+    pytest.raises(AttributeError, factories.force_2d, (1, 2, 3))
+
+
 def test_orient_true() -> None:
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
