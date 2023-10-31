@@ -182,11 +182,7 @@ class _Geometry:
     @property
     def _wkt_inset(self) -> str:
         """Return Z for 3 dimensional geometry or an empty string for 2 dimensions."""
-        if self.is_empty:
-            return f"{self._wkt_type} EMPTY"
-        if self.has_z:
-            return " Z "
-        return " "
+        return " Z " if self.has_z else " "
 
     @property
     def _wkt_type(self) -> str:
