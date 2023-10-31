@@ -86,7 +86,7 @@ def force_2d(
 
     geometry["coordinates"] = move_coordinates(  # type: ignore [typeddict-unknown-key]
         geometry["coordinates"],  # type: ignore [typeddict-item]
-        (0, 0),  
+        (0, 0),
     )
     return shape(geometry)
 

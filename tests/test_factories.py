@@ -77,7 +77,11 @@ def test_force_2d_multilinestring() -> None:
     # 3d multi line string to 2d multi line string
     mls = geometry.MultiLineString([[(1, 2, 3), (4, 5, 6)], [(7, 8, 9), (10, 11, 12)]])
     mls2d = factories.force_2d(mls)
-    assert list(mls2d.geoms) == [geometry.LineString([(1, 2), (4, 5)]), geometry.LineString([(7, 8), (10, 11)])]
+    assert list(mls2d.geoms) == [
+        geometry.LineString([(1, 2), (4, 5)]),
+        geometry.LineString([(7, 8), (10, 11)]),
+    ]
+
 
 def test_force_2d_polygon() -> None:
     # 2d to 2d (no actual change)
@@ -85,9 +89,7 @@ def test_force_2d_polygon() -> None:
     internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
     p = geometry.Polygon(external, [internal])
     p2d = factories.force_2d(p)
-    assert p2d.coords[0] == (
-        ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
-    )
+    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
     assert p2d.coords[1] == (
         ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
     )
@@ -96,13 +98,17 @@ def test_force_2d_polygon() -> None:
 
     # 3d to 2d
     external = [(0, 0, 1), (0, 2, 1), (2, 2, 1), (2, 0, 1), (0, 0, 1)]
-    internal = [(0.5, 0.5, 1), (0.5, 1.5, 1), (1.5, 1.5, 1), (1.5, 0.5, 1), (0.5, 0.5, 1)]
+    internal = [
+        (0.5, 0.5, 1),
+        (0.5, 1.5, 1),
+        (1.5, 1.5, 1),
+        (1.5, 0.5, 1),
+        (0.5, 0.5, 1),
+    ]
 
     p = geometry.Polygon(external, [internal])
     p2d = factories.force_2d(p)
-    assert p2d.coords[0] == (
-        ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
-    )
+    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
     assert p2d.coords[1] == (
         ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
     )
@@ -126,7 +132,9 @@ def test_force2d_collection() -> None:
     assert list(gc2d.geoms) == list(gc.geoms)
 
     # 3d to 2d
-    gc = geometry.GeometryCollection([geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)])
+    gc = geometry.GeometryCollection(
+        [geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)],
+    )
     gc2d = factories.force_2d(gc)
     assert list(gc2d.geoms) == [geometry.Point(-1, 1), geometry.Point(-2, 2)]
 
