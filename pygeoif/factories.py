@@ -68,19 +68,15 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT0
     and the interiors will be in clockwise orientation, or
     the other way round when ccw is False.
     """
+
+    def get_oriented_ring(ring: LineType) -> LineType:
+        return ring if signed_area(ring) / s >= 0 else ring[::-1]
+
     s = 1.0 if ccw else -1.0
-    rings = []
-    ring = polygon.exterior
-    if signed_area(ring.coords) / s >= 0:
-        rings.append(ring.coords)
-    else:
-        rings.append(list(ring.coords)[::-1])
-    for ring in polygon.interiors:
-        if signed_area(ring.coords) / s <= 0:
-            rings.append(ring.coords)
-        else:
-            rings.append(list(ring.coords)[::-1])
-    return Polygon(shell=rings[0], holes=rings[1:])
+    shell = get_oriented_ring(polygon.exterior.coords)
+    s = -s  # flip orientation for holes
+    holes = [get_oriented_ring(ring.coords) for ring in polygon.interiors]
+    return Polygon(shell=shell, holes=holes)
 
 
 def box(
