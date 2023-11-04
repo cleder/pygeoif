@@ -220,7 +220,7 @@ def move_coordinates(
     Move the coordinates recursively by the given vector.
 
     This forcefully changes the dimension of each of the coordinate to match
-    the dimension of the vector.
+    the dimensionality of the vector.
     >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1))
     ((-1, 1), (-2, 2))
     >>> move_coordinates(((0, 0, 0), (-1, 1, 0)), (-1, 1))
@@ -228,13 +228,25 @@ def move_coordinates(
     >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1, 0))
     ((-1, 1, 0), (-2, 2, 0))
     """
-    if isinstance(coordinates, (tuple, list)) and isinstance(
-        coordinates[0],
-        (int, float),
-    ):
-        # coordinates is just a list of numbers, i.e. represents a single coordinate
+    if is_coordinate(coordinates):
+        # a single coordinate
         return move_coordinate(coordinates, move_by, z)
+    # a list of coordinates
     return tuple(move_coordinates(c, move_by, z) for c in coordinates)
+
+
+def is_coordinate(val: Any) -> bool:  # noqa: ANN401
+    """
+    Check if given value is a coordinate i.e. vector of generic dimensionality.
+
+    >>> is_coordinate((1, 0))
+    True
+    >>> is_coordinate(1)
+    False
+    >>> is_coordinate([(1, 2), (3, 4)])
+    False
+    """
+    return isinstance(val, tuple) and all(isinstance(x, (int, float)) for x in val)
 
 
 __all__ = [
@@ -245,5 +257,6 @@ __all__ = [
     "dedupe",
     "move_coordinate",
     "move_coordinates",
+    "is_coordinate",
     "signed_area",
 ]
