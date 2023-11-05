@@ -24,6 +24,7 @@ from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import WKTParserError
+from pygeoif.functions import move_coordinates
 from pygeoif.functions import signed_area
 from pygeoif.geometry import Geometry
 from pygeoif.geometry import GeometryCollection
@@ -58,6 +59,70 @@ gcre: Pattern[str] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
 outer: Pattern[str] = re.compile(r"\((.+)\)")
 inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
+
+
+def force_2d(
+    context: Union[GeoType, GeoCollectionType],
+) -> Union[Geometry, GeometryCollection]:
+    """
+    Force the dimensionality of a geometry to 2D.
+
+    >>> force_2d(Point(0, 0, 1))
+    Point(0, 0)
+    >>> force_2d(Point(0, 0))
+    Point(0, 0)
+    >>> force_2d(LineString([(0, 0, 0), (0, 1, 1), (1, 1, 2)]))
+    LineString(((0, 0), (0, 1), (1, 1)))
+    """
+    geometry = context if isinstance(context, dict) else mapping(context)
+    if not geometry:
+        msg = "Object does not implement __geo_interface__"
+        raise TypeError(msg)
+    if geometry["type"] == "GeometryCollection":
+        return GeometryCollection(
+            force_2d(g)  # type: ignore [arg-type]
+            for g in geometry["geometries"]  # type: ignore [typeddict-item]
+        )
+
+    geometry["coordinates"] = move_coordinates(  # type: ignore [typeddict-unknown-key]
+        geometry["coordinates"],  # type: ignore [typeddict-item]
+        (0, 0),
+    )
+    return shape(geometry)
+
+
+def force_3d(
+    context: Union[GeoType, GeoCollectionType],
+    z: float = 0,
+) -> Union[Geometry, GeometryCollection]:
+    """
+    Force the dimensionality of a geometry to 3D.
+
+    >>> force_3d(Point(0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(Point(0, 0), 1)
+    Point(0, 0, 1)
+    >>> force_3d(Point(0, 0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(LineString([(0, 0), (0, 1), (1, 1)]))
+    LineString(((0, 0, 0), (0, 1, 0), (1, 1, 0)))
+    """
+    geometry = context if isinstance(context, dict) else mapping(context)
+    if not geometry:
+        msg = "Object does not implement __geo_interface__"
+        raise TypeError(msg)
+    if geometry["type"] == "GeometryCollection":
+        return GeometryCollection(
+            force_3d(g, z)  # type: ignore [arg-type]
+            for g in geometry["geometries"]  # type: ignore [typeddict-item]
+        )
+
+    geometry["coordinates"] = move_coordinates(  # type: ignore [typeddict-unknown-key]
+        geometry["coordinates"],  # type: ignore [typeddict-item]
+        (0, 0, 0),
+        z,
+    )
+    return shape(geometry)
 
 
 def get_oriented_ring(ring: LineType, ccw: bool) -> LineType:  # noqa: FBT001
@@ -332,6 +397,8 @@ def mapping(
 
 
 __all__ = [
+    "force_2d",
+    "force_3d",
     "box",
     "from_wkt",
     "mapping",

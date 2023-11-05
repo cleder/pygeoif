@@ -19,8 +19,10 @@
 import math
 from itertools import groupby
 from itertools import zip_longest
+from typing import Any
 from typing import Iterable
 from typing import List
+from typing import Sequence
 from typing import Tuple
 from typing import Union
 from typing import cast
@@ -188,11 +190,73 @@ def compare_geo_interface(
         return False
 
 
+def move_coordinate(
+    coordinate: Sequence[float],
+    move_by: Sequence[float],
+    z: float = 0,
+) -> Tuple[float, ...]:
+    """
+    Move the coordinate by the given vector.
+
+    This forcefully changes the dimensions of the coordinate to match the latter.
+    >>> move_coordinate((0, 0), (-1, 1))
+    (-1, 1)
+    >>> move_coordinate((0, 0, 0), (-1, 1))
+    (-1, 1)
+    >>> move_coordinate((0, 0), (-1, 1, 0))
+    (-1, 1, 0)
+    """
+    if len(coordinate) > len(move_by):
+        return tuple(c + m for c, m in zip(coordinate, move_by))
+    return tuple(c + m for c, m in zip_longest(coordinate, move_by, fillvalue=z))
+
+
+def move_coordinates(
+    coordinates: Sequence[Any],
+    move_by: Sequence[float],
+    z: float = 0,
+) -> Sequence[Any]:
+    """
+    Move the coordinates recursively by the given vector.
+
+    This forcefully changes the dimension of each of the coordinate to match
+    the dimensionality of the vector.
+    >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1))
+    ((-1, 1), (-2, 2))
+    >>> move_coordinates(((0, 0, 0), (-1, 1, 0)), (-1, 1))
+    ((-1, 1), (-2, 2))
+    >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1, 0))
+    ((-1, 1, 0), (-2, 2, 0))
+    """
+    if is_coordinate(coordinates):
+        # a single coordinate
+        return move_coordinate(coordinates, move_by, z)
+    # a list of coordinates
+    return tuple(move_coordinates(c, move_by, z) for c in coordinates)
+
+
+def is_coordinate(val: Any) -> bool:  # noqa: ANN401
+    """
+    Check if given value is a coordinate i.e. vector of generic dimensionality.
+
+    >>> is_coordinate((1, 0))
+    True
+    >>> is_coordinate(1)
+    False
+    >>> is_coordinate([(1, 2), (3, 4)])
+    False
+    """
+    return isinstance(val, tuple) and all(isinstance(x, (int, float)) for x in val)
+
+
 __all__ = [
     "centroid",
     "compare_coordinates",
     "compare_geo_interface",
     "convex_hull",
     "dedupe",
+    "move_coordinate",
+    "move_coordinates",
+    "is_coordinate",
     "signed_area",
 ]
