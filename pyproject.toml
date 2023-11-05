@@ -69,7 +69,6 @@ linting = [
     "flake8-expression-complexity",
     "flake8-function-order",
     "flake8-length",
-    "flake8-literal",
     "flake8-pep3101",
     "flake8-rst-docstrings",
     "flake8-string-format",

@@ -6,11 +6,12 @@ Changelog
 
  - remove Python 3.7 support
  - Geometries are now immutable and hashable
+ - add ``force_2d`` and ``force_3d`` factories [Alex Svetkin]
 
 1.1.1 (2023/10/27)
 ------------------
 
- - Use pyproject.toml instead of setup.py
+ - Use ``pyproject.toml``, remove ``setup.py`` and ``MANIFEST.in``
 
 1.1 (2023/10/13)
 -----------------
@@ -28,8 +29,8 @@ Changelog
 - changes to keep functionality and interface close to ``shapely``
 - remove support for python 2
 - minimum python version is 3.7
-- rename as_shape to shape
-- add box factory
+- rename ``as_shape`` to ``shape``
+- add ``box`` factory
 - format with black
 - reconstruct objects from their representation
 - Parse WKT that is not in upper case.
@@ -43,7 +44,7 @@ Changelog
 -----------------
 
 - fix broken multipolygon [mindflayer]
-- add "bbox" to `__geo_interface__` output [jzmiller1]
+- add "bbox" to ``__geo_interface__`` output [jzmiller1]
 
 0.6 (2015/08/04)
 -----------------
@@ -53,7 +54,7 @@ Changelog
 0.5 (2015/07/13)
 -----------------
 
-- Add __iter__ method to FeatureCollection and GeometryCollection [jzmiller1].
+- Add ``__iter__`` method to FeatureCollection and GeometryCollection [jzmiller1].
 - add pypy and pypy3 and python 3.4 to travis.
 - Add tox configuration for performing local testing [Ian Lee].
 - Add Travis continuous deployment.
@@ -61,8 +62,8 @@ Changelog
 0.4 (2013/10/25)
 -----------------
 
-- after a year in production promote it to `Development Status :: 5 - Production/Stable`
-- MultiPolygons return tuples as the __geo_interface__
+- after a year in production promote it to ``Development Status :: 5 - Production/Stable``
+- MultiPolygons return tuples as the ``__geo_interface__``
 
 0.3.1 (2012/11/15)
 ------------------
@@ -76,16 +77,16 @@ Changelog
 
 - add GeometryCollection
 - len(Multi*) and len(GeometryCollection) returns the number of contained Geometries
-- add orient function to get clockwise or counterclockwise oriented polygons
-- add signed_area function
-- add _set_orientation method to lineStrings, Polygons and MultiPolygons
+- add ``orient`` function to get clockwise or counterclockwise oriented polygons
+- add ``signed_area`` function
+- add ``_set_orientation`` method to lineStrings, Polygons and MultiPolygons
 
 
 0.2.1 (2012/08/02)
 -------------------
 
-- as_shape also accepts an object that is neither a dictionary nor has a __geo_interface__
-  but can be converted into a __geo_interface__ compliant dictionary
+- ``as_shape`` also accepts an object that is neither a dictionary nor has a ``__geo_interface__``
+  but can be converted into a ``__geo_interface__`` compliant dictionary
 
 
 0.2 (2012/08/01)
@@ -93,7 +94,7 @@ Changelog
 
 - change license to LGPL
 - add wkt as a property
-- as_shape also accepts a __geo_interface__ compliant dictionary
+- ``as_shape`` also accepts a ``__geo_interface__`` compliant dictionary
 - test with python3
 
 
