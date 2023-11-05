@@ -11,8 +11,8 @@ from pygeoif.functions import compare_coordinates
 from pygeoif.functions import compare_geo_interface
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
-from pygeoif.functions import signed_area
 from pygeoif.functions import is_coordinate
+from pygeoif.functions import signed_area
 
 
 def circle_ish(x, y, r, steps):
@@ -462,8 +462,8 @@ def test_is_coordinate() -> None:
 
 def test_is_coordinate_not_composite_coordinates() -> None:
     assert is_coordinate([(1, 2)]) is False
-    assert is_coordinate(((1, 2), )) is False
-    assert is_coordinate((((1, 2), ), )) is False
+    assert is_coordinate(((1, 2),)) is False
+    assert is_coordinate((((1, 2),),)) is False
 
 
 def test_is_coordinate_not_primitive() -> None:
