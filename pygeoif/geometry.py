@@ -117,7 +117,7 @@ class _Geometry:
 
         Returns a representation of the smallest convex Polygon containing
         all the points in the object unless the number of points in the object
-        is less than three.
+        is fewer than three.
         For two points, the convex hull collapses to a LineString;
         for 1, to a Point.
         """
@@ -271,7 +271,7 @@ class Point(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Point is considered empty when it has less than 2 coordinates.
+        A Point is considered empty when it has fewer than 2 coordinates.
         """
         return len(self._geoms) < 2  # noqa: PLR2004
 
@@ -382,7 +382,7 @@ class LineString(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Linestring is considered empty when it has less than 2 points.
+        A Linestring is considered empty when it has fewer than 2 points.
         """
         return len(self._geoms) < 2  # noqa: PLR2004
 

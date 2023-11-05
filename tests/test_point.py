@@ -3,9 +3,11 @@ import math
 from unittest import mock
 
 import pytest
+from hypothesis import given
 
 from pygeoif import geometry
 from pygeoif.exceptions import DimensionError
+from tests.conftest import points
 
 
 def test_empty() -> None:
@@ -250,3 +252,10 @@ def test_hash_empty() -> None:
     point = geometry.Point(None, None)
 
     assert hash(point) == hash(())
+
+
+@given(points("EPSG:4326"))
+def test_repr_eval_hypothesis_epsg_4326(point) -> None:
+    point = geometry.Point(*point)
+
+    assert eval(repr(point), {}, {"Point": geometry.Point}) == point
