@@ -91,6 +91,40 @@ def force_2d(
     return shape(geometry)
 
 
+def force_3d(
+    context: Union[GeoType, GeoCollectionType],
+    z: float = 0,
+) -> Union[Geometry, GeometryCollection]:
+    """
+    Force the dimensionality of a geometry to 3D.
+
+    >>> force_3d(Point(0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(Point(0, 0), 1)
+    Point(0, 0, 1)
+    >>> force_3d(Point(0, 0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(LineString([(0, 0), (0, 1), (1, 1)]))
+    LineString(((0, 0, 0), (0, 1, 0), (1, 1, 0)))
+    """
+    geometry = context if isinstance(context, dict) else mapping(context)
+    if not geometry:
+        msg = "Object does not implement __geo_interface__"
+        raise TypeError(msg)
+    if geometry["type"] == "GeometryCollection":
+        return GeometryCollection(
+            force_3d(g, z)  # type: ignore [arg-type]
+            for g in geometry["geometries"]  # type: ignore [typeddict-item]
+        )
+
+    geometry["coordinates"] = move_coordinates(  # type: ignore [typeddict-unknown-key]
+        geometry["coordinates"],  # type: ignore [typeddict-item]
+        (0, 0, 0),
+        z,
+    )
+    return shape(geometry)
+
+
 def get_oriented_ring(ring: LineType, ccw: bool) -> LineType:  # noqa: FBT001
     s = 1.0 if ccw else -1.0
     return ring if signed_area(ring) / s >= 0 else ring[::-1]
@@ -364,6 +398,7 @@ def mapping(
 
 __all__ = [
     "force_2d",
+    "force_3d",
     "box",
     "from_wkt",
     "mapping",

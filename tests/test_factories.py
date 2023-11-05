@@ -143,6 +143,45 @@ def test_force_2d_nongeo() -> None:
     pytest.raises(AttributeError, factories.force_2d, (1, 2, 3))
 
 
+def test_force_3d_point() -> None:
+    p = geometry.Point(0, 0)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 0
+    assert p3d.y == 0
+    assert p3d.z == 0
+    assert p3d.has_z
+
+
+def test_force_3d_collection() -> None:
+    gc = geometry.GeometryCollection(
+        [geometry.Point(-1, 1), geometry.Point(-2, 2)],
+    )
+    gc3d = factories.force_3d(gc)
+    assert list(gc3d.geoms) == [geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)]
+
+
+def test_force_3d_point_with_z() -> None:
+    p = geometry.Point(0, 0, 1)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 0
+    assert p3d.y == 0
+    assert p3d.z == 1
+    assert p3d.has_z
+
+
+def test_force_3d_point_noop() -> None:
+    p = geometry.Point(1, 2, 3)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 1
+    assert p3d.y == 2
+    assert p3d.z == 3
+    assert p3d.has_z
+
+
+def test_force_3d_nongeo() -> None:
+    pytest.raises(AttributeError, factories.force_3d, (1, 2))
+
+
 def test_orient_true() -> None:
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
