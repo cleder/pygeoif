@@ -23,8 +23,9 @@ from typing import Tuple
 from typing import Union
 
 from typing_extensions import Literal
+from typing_extensions import NotRequired
 from typing_extensions import Protocol
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict  # for Python <3.11 with (Not)Required
 
 Point2D = Tuple[float, float]
 Point3D = Tuple[float, float, float]
@@ -48,17 +49,12 @@ CoordinatesType = Union[
 MultiCoordinatesType = Sequence[CoordinatesType]
 
 
-class GeoInterfaceBase(TypedDict):
+class GeoInterface(TypedDict):
     """Required keys for the GeoInterface."""
 
     type: str
     coordinates: Union[CoordinatesType, MultiCoordinatesType]
-
-
-class GeoInterface(GeoInterfaceBase, total=False):
-    """GeoInterface provides an optional bbox."""
-
-    bbox: Bounds
+    bbox: NotRequired[Bounds]
 
 
 class GeoCollectionInterface(TypedDict):
@@ -66,35 +62,26 @@ class GeoCollectionInterface(TypedDict):
 
     type: Literal["GeometryCollection"]
     geometries: Sequence[Union[GeoInterface, "GeoCollectionInterface"]]
+    bbox: NotRequired[Bounds]
 
 
-class GeoFeatureInterfaceBase(TypedDict):
-    """Required keys for the GeoInterface for Features."""
+class GeoFeatureInterface(TypedDict):
+    """The GeoFeatureInterface has optional keys."""
 
-    type: str
+    type: Literal["Feature"]
+    bbox: NotRequired[Bounds]
+    properties: NotRequired[Dict[str, Any]]
+    id: NotRequired[Union[str, int]]
     geometry: GeoInterface
 
 
-class GeoFeatureInterface(GeoFeatureInterfaceBase, total=False):
-    """The GeoFeatureInterface has optional keys."""
-
-    bbox: Bounds
-    properties: Dict[str, Any]
-    id: Union[str, int]  # noqa: A003
-
-
-class GeoFeatureCollectionInterfaceBase(TypedDict):
-    """Required Keys for the GeoInterface of a FeatureCollection."""
-
-    type: str
-    features: Sequence[GeoFeatureInterface]
-
-
-class GeoFeatureCollectionInterface(GeoFeatureCollectionInterfaceBase, total=False):
+class GeoFeatureCollectionInterface(TypedDict):
     """Bbox and id are optional keys for the GeoFeatureCollectionInterface."""
 
-    bbox: Bounds
-    id: Union[str, int]  # noqa: A003
+    type: Literal["FeatureCollection"]
+    features: Sequence[GeoFeatureInterface]
+    bbox: NotRequired[Bounds]
+    id: NotRequired[Union[str, int]]
 
 
 class GeoType(Protocol):

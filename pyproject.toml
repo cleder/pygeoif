@@ -54,6 +54,7 @@ dev = [
     "pygeoif[complexity]",
     "pygeoif[linting]",
     "pygeoif[tests]",
+    "pygeoif[typing]",
 ]
 linting = [
     "black",
@@ -210,7 +211,7 @@ select = [
     "W",
     "YTT",
 ]
-target-version = "py37"
+target-version = "py38"
 
 [tool.ruff.isort]
 force-single-line = true
