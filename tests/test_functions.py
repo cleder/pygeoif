@@ -3,6 +3,7 @@ import itertools
 import math
 import random
 from typing import Tuple
+from collections.abc import Generator
 
 import pytest
 
@@ -12,6 +13,7 @@ from pygeoif.functions import compare_geo_interface
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
 from pygeoif.functions import signed_area
+from pygeoif.functions import move_coordinates
 
 
 def circle_ish(x, y, r, steps):
@@ -452,3 +454,24 @@ def test_compare_neq_empty_geo_interface() -> None:
     }
 
     assert compare_geo_interface(geo_if, {}) is False
+
+
+def test_move_coordinates() -> None:
+    coords = ((0, 0), (1, 1))
+    moved_coords = move_coordinates(coords, (1, 1))
+
+    assert moved_coords == ((1, 1), (2, 2))
+
+
+def test_move_coordinates_diff_dimenstions() -> None:
+    coords = ((0, 0), )
+    moved_coords = move_coordinates(coords, (0, 0, 0))
+
+    assert moved_coords == ((0, 0, 0),)
+
+def test_move_coordinates_generator() -> None:
+    coords = ((i, i + 1) for i in range(10))
+    moved_coords = move_coordinates(coords, (1, 1))
+
+    assert isinstance(moved_coords, Generator)
+    assert list(moved_coords) == list((i + 1, i + 2) for i in range(10))

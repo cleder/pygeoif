@@ -17,6 +17,7 @@
 #
 """Functions for geometries."""
 import math
+from collections.abc import Generator
 from itertools import groupby
 from itertools import zip_longest
 from typing import Iterable
@@ -229,6 +230,10 @@ def move_coordinates(
     >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1, 0))
     ((-1, 1, 0), (-2, 2, 0))
     """
+    if isinstance(coordinates, Generator):
+        return (  # type: ignore [unreachable]
+            move_coordinates(x, move_by) for x in coordinates
+        )
     if isinstance(coordinates[0], (int, float)):
         return move_coordinate(cast(PointType, coordinates), move_by)
     return cast(
