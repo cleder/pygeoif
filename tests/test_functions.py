@@ -2,8 +2,8 @@
 import itertools
 import math
 import random
-from typing import Tuple
 from collections.abc import Generator
+from typing import Tuple
 
 import pytest
 
@@ -12,8 +12,8 @@ from pygeoif.functions import compare_coordinates
 from pygeoif.functions import compare_geo_interface
 from pygeoif.functions import convex_hull
 from pygeoif.functions import dedupe
-from pygeoif.functions import signed_area
 from pygeoif.functions import move_coordinates
+from pygeoif.functions import signed_area
 
 
 def circle_ish(x, y, r, steps):
@@ -464,10 +464,11 @@ def test_move_coordinates() -> None:
 
 
 def test_move_coordinates_diff_dimenstions() -> None:
-    coords = ((0, 0), )
+    coords = ((0, 0),)
     moved_coords = move_coordinates(coords, (0, 0, 0))
 
     assert moved_coords == ((0, 0, 0),)
+
 
 def test_move_coordinates_generator() -> None:
     coords = ((i, i + 1) for i in range(10))
