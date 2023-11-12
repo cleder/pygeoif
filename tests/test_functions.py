@@ -475,4 +475,4 @@ def test_move_coordinates_generator() -> None:
     moved_coords = move_coordinates(coords, (1, 1))
 
     assert isinstance(moved_coords, Generator)
-    assert list(moved_coords) == list((i + 1, i + 2) for i in range(10))
+    assert list(moved_coords) == [(i + 1, i + 2) for i in range(10)]
