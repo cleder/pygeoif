@@ -955,9 +955,7 @@ class MultiPolygon(_MultiGeometry):
             tuple(
                 Polygon(
                     shell=polygon[0],
-                    holes=polygon[1]  # type: ignore [misc]
-                    if len(polygon) == 2  # noqa: PLR2004
-                    else None,
+                    holes=polygon[1] if len(polygon) == 2 else None,  # noqa: PLR2004
                 )
                 for polygon in polygons
             ),

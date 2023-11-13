@@ -44,12 +44,9 @@ def signed_area(coords: LineType) -> float:
     xs, ys = map(list, zip(*(coord[:2] for coord in coords)))
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
-    return (
-        sum(
-            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore [operator]
-            for i in range(1, len(coords))
-        )
-        / 2.0
+    return cast(
+        float,
+        sum(xs[i] * (ys[i + 1] - ys[i - 1]) for i in range(1, len(coords))) / 2.0,
     )
 
 
