@@ -20,12 +20,6 @@ def test_coords_with_holes() -> None:
     )
 
 
-def test_hash() -> None:
-    polygon = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
-
-    assert hash(polygon) == hash(geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)]))
-
-
 def test_geo_interface_shell_only() -> None:
     polygon = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
 

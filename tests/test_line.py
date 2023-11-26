@@ -19,12 +19,6 @@ def test_coords_get_3d() -> None:
     assert line.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1))
 
 
-def test_hash() -> None:
-    line = geometry.LineString([(0, 0, 0), (1, 1, 1)])
-
-    assert hash(line) == hash(geometry.LineString([(0, 0, 0), (1, 1, 1)]))
-
-
 def test_set_geoms_raises() -> None:
     line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
 

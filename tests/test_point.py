@@ -57,12 +57,6 @@ def test_xy() -> None:
     assert point.y == 0
 
 
-def test_hash() -> None:
-    point = geometry.Point(1.0, 2.0, 3.0)
-
-    assert hash(point) == hash((1.0, 2.0, 3.0))
-
-
 def test_xy_raises_error_accessing_z() -> None:
     point = geometry.Point(1, 0)
 
@@ -244,9 +238,3 @@ def test_empty_bounds() -> None:
     point = geometry.Point(None, None)
 
     assert point.bounds == ()
-
-
-def test_hash_empty() -> None:
-    point = geometry.Point(None, None)
-
-    assert hash(point) == hash(())

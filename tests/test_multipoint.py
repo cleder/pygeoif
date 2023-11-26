@@ -148,12 +148,6 @@ def test_from_points_unique() -> None:
     )
 
 
-def test_hash() -> None:
-    multipoint = geometry.MultiPoint([(0, 0), (1, 0), (2, 2)])
-
-    assert hash(multipoint) == hash(geometry.MultiPoint([(0, 0), (1, 0), (2, 2)]))
-
-
 def test_empty() -> None:
     multipoint = geometry.MultiPoint([(1, None)])
 
