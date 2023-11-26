@@ -5,7 +5,7 @@ Changelog
 ------------------
 
  - remove Python 3.7 support
- - Geometries are now immutable and hashable
+ - Geometries are now immutable (but not hashable)
  - add ``force_2d`` and ``force_3d`` factories [Alex Svetkin]
 
 1.1.1 (2023/10/27)

@@ -200,11 +200,3 @@ def test_empty_bounds() -> None:
     lines = geometry.MultiLineString([])
 
     assert lines.bounds == ()
-
-
-def test_hash() -> None:
-    lines = geometry.MultiLineString(([(0, 0), (1, 1)], [[0.0, 0.0], [1.0, 2.0]]))
-
-    assert hash(lines) == hash(
-        geometry.MultiLineString(([(0, 0), (1, 1)], [[0.0, 0.0], [1.0, 2.0]])),
-    )
