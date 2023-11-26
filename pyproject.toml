@@ -96,6 +96,15 @@ Changelog = "https://github.com/cleder/pygeoif/blob/develop/docs/HISTORY.rst"
 Documentation = "https://pygeoif.readthedocs.io/"
 Homepage = "https://github.com/cleder/pygeoif/"
 
+[tool.coverage.paths]
+source = [
+    "pygeoif",
+    "tests",
+]
+
+[tool.coverage.run]
+branch = true
+
 [tool.flake8]
 max_line_length = 88
 
