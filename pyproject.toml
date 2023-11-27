@@ -261,4 +261,5 @@ exclude = [
 ]
 include = [
     "pygeoif*",
+    "pygeoif/py.typed",
 ]
