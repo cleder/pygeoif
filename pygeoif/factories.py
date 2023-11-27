@@ -24,6 +24,7 @@ from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import WKTParserError
+from pygeoif.functions import move_geo_interface
 from pygeoif.functions import signed_area
 from pygeoif.geometry import Geometry
 from pygeoif.geometry import GeometryCollection
@@ -60,6 +61,11 @@ inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
 
 
+def get_oriented_ring(ring: LineType, ccw: bool) -> LineType:  # noqa: FBT001
+    s = 1.0 if ccw else -1.0
+    return ring if signed_area(ring) / s >= 0 else ring[::-1]
+
+
 def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT002
     """
     Return a polygon with exteriors and interiors in the right orientation.
@@ -68,19 +74,10 @@ def orient(polygon: Polygon, ccw: bool = True) -> Polygon:  # noqa: FBT001, FBT0
     and the interiors will be in clockwise orientation, or
     the other way round when ccw is False.
     """
-    s = 1.0 if ccw else -1.0
-    rings = []
-    ring = polygon.exterior
-    if signed_area(ring.coords) / s >= 0:
-        rings.append(ring.coords)
-    else:
-        rings.append(list(ring.coords)[::-1])
-    for ring in polygon.interiors:
-        if signed_area(ring.coords) / s <= 0:
-            rings.append(ring.coords)
-        else:
-            rings.append(list(ring.coords)[::-1])
-    return Polygon(shell=rings[0], holes=rings[1:])
+    shell = get_oriented_ring(polygon.exterior.coords, ccw)
+    ccw = not ccw  # flip orientation for holes
+    holes = [get_oriented_ring(ring.coords, ccw) for ring in polygon.interiors]
+    return Polygon(shell=shell, holes=holes)
 
 
 def box(
@@ -335,7 +332,46 @@ def mapping(
     return ob.__geo_interface__
 
 
+def force_2d(
+    context: Union[GeoType, GeoCollectionType],
+) -> Union[Geometry, GeometryCollection]:
+    """
+    Force the dimensionality of a geometry to 2D.
+
+    >>> force_2d(Point(0, 0, 1))
+    Point(0, 0)
+    >>> force_2d(Point(0, 0))
+    Point(0, 0)
+    >>> force_2d(LineString([(0, 0, 0), (0, 1, 1), (1, 1, 2)]))
+    LineString(((0, 0), (0, 1), (1, 1)))
+    """
+    geometry = mapping(context)
+    return shape(move_geo_interface(geometry, (0, 0)))
+
+
+def force_3d(
+    context: Union[GeoType, GeoCollectionType],
+    z: float = 0,
+) -> Union[Geometry, GeometryCollection]:
+    """
+    Force the dimensionality of a geometry to 3D.
+
+    >>> force_3d(Point(0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(Point(0, 0), 1)
+    Point(0, 0, 1)
+    >>> force_3d(Point(0, 0, 0))
+    Point(0, 0, 0)
+    >>> force_3d(LineString([(0, 0), (0, 1), (1, 1)]))
+    LineString(((0, 0, 0), (0, 1, 0), (1, 1, 0)))
+    """
+    geometry = mapping(context)
+    return shape(move_geo_interface(geometry, (0, 0, z)))
+
+
 __all__ = [
+    "force_2d",
+    "force_3d",
     "box",
     "from_wkt",
     "mapping",

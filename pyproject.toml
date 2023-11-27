@@ -54,6 +54,7 @@ dev = [
     "pygeoif[complexity]",
     "pygeoif[linting]",
     "pygeoif[tests]",
+    "pygeoif[typing]",
 ]
 linting = [
     "black",
@@ -68,7 +69,6 @@ linting = [
     "flake8-expression-complexity",
     "flake8-function-order",
     "flake8-length",
-    "flake8-literal",
     "flake8-pep3101",
     "flake8-rst-docstrings",
     "flake8-string-format",
@@ -91,7 +91,18 @@ content-type = "text/x-rst"
 file = "README.rst"
 
 [project.urls]
+Changelog = "https://github.com/cleder/pygeoif/blob/develop/docs/HISTORY.rst"
+Documentation = "https://pygeoif.readthedocs.io/"
 Homepage = "https://github.com/cleder/pygeoif/"
+
+[tool.coverage.paths]
+source = [
+    "pygeoif",
+    "tests",
+]
+
+[tool.coverage.run]
+branch = true
 
 [tool.flake8]
 max_line_length = 88
@@ -209,7 +220,7 @@ select = [
     "W",
     "YTT",
 ]
-target-version = "py37"
+target-version = "py38"
 
 [tool.ruff.isort]
 force-single-line = true
@@ -250,4 +261,5 @@ exclude = [
 ]
 include = [
     "pygeoif*",
+    "pygeoif/py.typed",
 ]

@@ -31,6 +31,7 @@ from pygeoif.types import GeoInterface
 from pygeoif.types import LineType
 from pygeoif.types import MultiCoordinatesType
 from pygeoif.types import Point2D
+from pygeoif.types import PointType
 
 
 def signed_area(coords: LineType) -> float:
@@ -43,12 +44,9 @@ def signed_area(coords: LineType) -> float:
     xs, ys = map(list, zip(*(coord[:2] for coord in coords)))
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
-    return (
-        sum(
-            xs[i] * (ys[i + 1] - ys[i - 1])  # type: ignore [operator]
-            for i in range(1, len(coords))
-        )
-        / 2.0
+    return cast(
+        float,
+        sum(xs[i] * (ys[i + 1] - ys[i - 1]) for i in range(1, len(coords))) / 2.0,
     )
 
 
@@ -188,11 +186,83 @@ def compare_geo_interface(
         return False
 
 
+def move_coordinate(
+    coordinate: PointType,
+    move_by: PointType,
+) -> PointType:
+    """
+    Move the coordinate by the given vector.
+
+    This forcefully changes the dimensions of the coordinate to match the latter.
+    >>> move_coordinate((0, 0), (-1, 1))
+    (-1, 1)
+    >>> move_coordinate((0, 0, 0), (-1, 1))
+    (-1, 1)
+    >>> move_coordinate((0, 0), (-1, 1, 0))
+    (-1, 1, 0)
+    """
+    if len(coordinate) < len(move_by):
+        return cast(
+            PointType,
+            tuple(c + m for c, m in zip_longest(coordinate, move_by, fillvalue=0)),
+        )
+
+    return cast(PointType, tuple(c + m for c, m in zip(coordinate, move_by)))
+
+
+def move_coordinates(
+    coordinates: CoordinatesType,
+    move_by: PointType,
+) -> CoordinatesType:
+    """
+    Move the coordinates recursively by the given vector.
+
+    This forcefully changes the dimension of each of the coordinate to match
+    the dimensionality of the vector.
+    >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1))
+    ((-1, 1), (-2, 2))
+    >>> move_coordinates(((0, 0, 0), (-1, 1, 0)), (-1, 1))
+    ((-1, 1), (-2, 2))
+    >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1, 0))
+    ((-1, 1, 0), (-2, 2, 0))
+    """
+    if isinstance(coordinates[0], (int, float)):
+        return move_coordinate(cast(PointType, coordinates), move_by)
+    return cast(
+        CoordinatesType,
+        tuple(move_coordinates(cast(CoordinatesType, c), move_by) for c in coordinates),
+    )
+
+
+def move_geo_interface(
+    interface: Union[GeoInterface, GeoCollectionInterface],
+    move_by: PointType,
+) -> Union[GeoInterface, GeoCollectionInterface]:
+    """Move the coordinates of the geo interface by the given vector."""
+    if interface["type"] == "GeometryCollection":
+        return {
+            "type": "GeometryCollection",
+            "geometries": tuple(
+                move_geo_interface(g, move_by)
+                for g in interface["geometries"]  # type: ignore [typeddict-item]
+            ),
+        }
+    return {
+        "type": interface["type"],
+        "coordinates": move_coordinates(
+            interface["coordinates"],  # type: ignore [typeddict-item, arg-type]
+            move_by,
+        ),
+    }
+
+
 __all__ = [
     "centroid",
     "compare_coordinates",
     "compare_geo_interface",
     "convex_hull",
     "dedupe",
+    "move_coordinate",
+    "move_coordinates",
     "signed_area",
 ]

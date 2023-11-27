@@ -52,13 +52,13 @@ def test_wkt() -> None:
         ([(0, 0), (1, 1), (1, 2), (2, 2)], [[0.0, 0.0], [1.0, 2.0]]),
     )
 
-    assert lines.wkt == "MULTILINESTRING((0 0, 1 1, 1 2, 2 2),(0.0 0.0, 1.0 2.0))"
+    assert lines.wkt == "MULTILINESTRING ((0 0, 1 1, 1 2, 2 2),(0.0 0.0, 1.0 2.0))"
 
 
 def test_wkt_single_line() -> None:
     lines = geometry.MultiLineString(([(0, 0), (1, 1), (1, 2), (2, 2)],))
 
-    assert lines.wkt == "MULTILINESTRING((0 0, 1 1, 1 2, 2 2))"
+    assert lines.wkt == "MULTILINESTRING ((0 0, 1 1, 1 2, 2 2))"
 
 
 def test_repr() -> None:

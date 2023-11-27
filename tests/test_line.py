@@ -19,6 +19,12 @@ def test_coords_get_3d() -> None:
     assert line.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1))
 
 
+def test_empty_points_omitted() -> None:
+    line = geometry.LineString([(0, 0, 0), (None, None, None), (2, 2, 2)])
+
+    assert line.coords == ((0, 0, 0), (2, 2, 2))
+
+
 def test_set_geoms_raises() -> None:
     line = geometry.LineString([(0, 0), (1, 0)])  # pragma: no mutate
 

@@ -46,9 +46,9 @@ def feature_geo_interface_equals(
             my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
             compare_coordinates(
                 coords=my_interface["geometry"]["coordinates"],
-                other=other_interface["geometry"].get(
+                other=other_interface["geometry"].get(  # type: ignore [arg-type]
                     "coordinates",
-                ),  # type: ignore[arg-type]
+                ),
             ),
         ],
     )
@@ -128,7 +128,7 @@ class Feature:
     def __geo_interface__(self) -> GeoFeatureInterface:
         """Return the GeoInterface of the geometry with properties."""
         geo_interface: GeoFeatureInterface = {
-            "type": self.__class__.__name__,
+            "type": "Feature",
             "bbox": cast(Bounds, self._geometry.bounds),
             "geometry": self._geometry.__geo_interface__,
             "properties": self._properties,
@@ -220,7 +220,7 @@ class FeatureCollection:
     def __geo_interface__(self) -> GeoFeatureCollectionInterface:
         """Return the GeoInterface of the feature."""
         return {
-            "type": self.__class__.__name__,
+            "type": "FeatureCollection",
             "bbox": self.bounds,
             "features": tuple(feature.__geo_interface__ for feature in self._features),
         }

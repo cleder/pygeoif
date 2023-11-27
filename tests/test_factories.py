@@ -21,6 +21,167 @@ def test_num_float() -> None:
     assert isinstance(factories.num("1.1"), float)
 
 
+def test_force_2d_point() -> None:
+    # 2d point to 2d point (no actual change)
+    p = geometry.Point(-1, 1)
+    p2d = factories.force_2d(p)
+    assert p2d.x == -1
+    assert p2d.y == 1
+    assert not p2d.has_z
+
+    # 3d point to 2d point
+    p = geometry.Point(-1, 1, 2)
+    p2d = factories.force_2d(p)
+    assert p2d.x == -1
+    assert p2d.y == 1
+    assert not p2d.has_z
+
+
+def test_force_2d_multipoint() -> None:
+    # 2d to 2d (no actual change)
+    p = geometry.MultiPoint([(-1, 1), (2, 3)])
+    p2d = factories.force_2d(p)
+    assert list(p2d.geoms) == [geometry.Point(-1, 1), geometry.Point(2, 3)]
+
+
+def test_force_2d_linestring() -> None:
+    # 2d line string to 2d line string (no actual change)
+    ls = geometry.LineString([(1, 2), (3, 4)])
+    l2d = factories.force_2d(ls)
+    assert l2d.coords == ((1, 2), (3, 4))
+
+    # 3d line string to 2d line string
+    ls = geometry.LineString([(1, 2, 3), (4, 5, 6)])
+    l2d = factories.force_2d(ls)
+    assert l2d.coords == ((1, 2), (4, 5))
+
+
+def test_force_2d_linearring() -> None:
+    # 2d linear ring to 2d linear ring (no actual change)
+    r = geometry.LinearRing([(1, 2), (3, 4)])
+    r2d = factories.force_2d(r)
+    assert r2d.coords == ((1, 2), (3, 4), (1, 2))
+
+    # 3d linear ring to 2d linear ring
+    r = geometry.LinearRing([(1, 2, 3), (4, 5, 6)])
+    r2d = factories.force_2d(r)
+    assert r2d.coords == ((1, 2), (4, 5), (1, 2))
+
+
+def test_force_2d_multilinestring() -> None:
+    # 2d multi line string to 2d multi line string (no actual change)
+    mls = geometry.MultiLineString([[(1, 2), (3, 4)], [(5, 6), (7, 8)]])
+    mls2d = factories.force_2d(mls)
+    assert list(mls2d.geoms) == list(mls.geoms)
+
+    # 3d multi line string to 2d multi line string
+    mls = geometry.MultiLineString([[(1, 2, 3), (4, 5, 6)], [(7, 8, 9), (10, 11, 12)]])
+    mls2d = factories.force_2d(mls)
+    assert list(mls2d.geoms) == [
+        geometry.LineString([(1, 2), (4, 5)]),
+        geometry.LineString([(7, 8), (10, 11)]),
+    ]
+
+
+def test_force_2d_polygon() -> None:
+    # 2d to 2d (no actual change)
+    external = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
+    p = geometry.Polygon(external, [internal])
+    p2d = factories.force_2d(p)
+    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
+    assert p2d.coords[1] == (
+        ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
+    )
+    assert not p2d.has_z
+    assert p.maybe_valid == p2d.maybe_valid
+
+    # 3d to 2d
+    external = [(0, 0, 1), (0, 2, 1), (2, 2, 1), (2, 0, 1), (0, 0, 1)]
+    internal = [
+        (0.5, 0.5, 1),
+        (0.5, 1.5, 1),
+        (1.5, 1.5, 1),
+        (1.5, 0.5, 1),
+        (0.5, 0.5, 1),
+    ]
+
+    p = geometry.Polygon(external, [internal])
+    p2d = factories.force_2d(p)
+    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
+    assert p2d.coords[1] == (
+        ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
+    )
+    assert not p2d.has_z
+
+
+def test_force_2d_multipolygon() -> None:
+    # 2d to 2d (no actual change)
+    external = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
+    internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
+    mp = geometry.MultiPolygon([(external, [internal]), (external, [internal])])
+    mp2d = factories.force_2d(mp)
+
+    assert list(mp2d.geoms) == list(mp.geoms)
+
+
+def test_force2d_collection() -> None:
+    # 2d to 2d (no actual change)
+    gc = geometry.GeometryCollection([geometry.Point(-1, 1), geometry.Point(-2, 2)])
+    gc2d = factories.force_2d(gc)
+    assert list(gc2d.geoms) == list(gc.geoms)
+
+    # 3d to 2d
+    gc = geometry.GeometryCollection(
+        [geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)],
+    )
+    gc2d = factories.force_2d(gc)
+    assert list(gc2d.geoms) == [geometry.Point(-1, 1), geometry.Point(-2, 2)]
+
+
+def test_force_2d_nongeo() -> None:
+    pytest.raises(AttributeError, factories.force_2d, (1, 2, 3))
+
+
+def test_force_3d_point() -> None:
+    p = geometry.Point(0, 0)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 0
+    assert p3d.y == 0
+    assert p3d.z == 0
+    assert p3d.has_z
+
+
+def test_force_3d_collection() -> None:
+    gc = geometry.GeometryCollection(
+        [geometry.Point(-1, 1), geometry.Point(-2, 2)],
+    )
+    gc3d = factories.force_3d(gc)
+    assert list(gc3d.geoms) == [geometry.Point(-1, 1, 0), geometry.Point(-2, 2, 0)]
+
+
+def test_force_3d_point_with_z() -> None:
+    p = geometry.Point(0, 0, 1)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 0
+    assert p3d.y == 0
+    assert p3d.z == 1
+    assert p3d.has_z
+
+
+def test_force_3d_point_noop() -> None:
+    p = geometry.Point(1, 2, 3)
+    p3d = factories.force_3d(p)
+    assert p3d.x == 1
+    assert p3d.y == 2
+    assert p3d.z == 3
+    assert p3d.has_z
+
+
+def test_force_3d_nongeo() -> None:
+    pytest.raises(AttributeError, factories.force_3d, (1, 2))
+
+
 def test_orient_true() -> None:
     ext = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
     int_1 = [(0.5, 0.25), (1.5, 0.25), (1.5, 1.25), (0.5, 1.25), (0.5, 0.25)]
@@ -108,8 +269,8 @@ class TestWKT:
               (30 20, 20 25, 20 15, 30 20)))""",
         """MULTIPOLYGON (((30 20, 10 40, 45 40, 30 20)),
               ((15 5, 40 10, 10 20, 5 10, 15 5)))""",
-        "MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))",
-        "GEOMETRYCOLLECTION(POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))",
+        "MULTIPOLYGON (((0 0,10 0,10 10,0 10,0 0)),((5 5,7 5,7 7,5 7, 5 5)))",
+        "GEOMETRYCOLLECTION (POINT(10 10), POINT(30 30), LINESTRING(15 15, 20 20))",
     ]
 
     # these are valid WKTs but not supported
@@ -209,7 +370,7 @@ class TestWKT:
         assert isinstance(p, geometry.MultiPoint)
         assert next(iter(p.geoms)).x == 3.5
         assert list(p.geoms)[1].y == 10.5
-        assert p.wkt == "MULTIPOINT(3.5 5.6, 4.8 10.5)"
+        assert p.wkt == "MULTIPOINT (3.5 5.6, 4.8 10.5)"
         p = factories.from_wkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
         assert isinstance(p, geometry.MultiPoint)
         assert next(iter(p.geoms)).x == 10.0
@@ -221,14 +382,14 @@ class TestWKT:
 
     def test_multilinestring(self) -> None:
         p = factories.from_wkt(
-            "MULTILINESTRING((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))",
+            "MULTILINESTRING ((3 4,10 50,20 25),(-5 -8,-10 -8,-15 -4))",
         )
 
         assert isinstance(p, geometry.MultiLineString)
         assert next(iter(p.geoms)).coords == (((3, 4), (10, 50), (20, 25)))
         assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))
         assert (
-            p.wkt == "MULTILINESTRING((3 4, 10 50, "
+            p.wkt == "MULTILINESTRING ((3 4, 10 50, "
             "20 25),(-5 -8, "
             "-10 -8, -15 -4))"
         )
@@ -241,12 +402,12 @@ class TestWKT:
 
         assert isinstance(p, geometry.MultiLineString)
         assert p.wkt == (
-            "MULTILINESTRING((10 10, 20 20, 10 40),(40 40, 30 30, 40 20, 30 10))"
+            "MULTILINESTRING ((10 10, 20 20, 10 40),(40 40, 30 30, 40 20, 30 10))"
         )
 
     def test_multipolygon(self) -> None:
         p = factories.from_wkt(
-            "MULTIPOLYGON(((0 0,10 20,30 40,0 0),"
+            "MULTIPOLYGON (((0 0,10 20,30 40,0 0),"
             "(1 1,2 2,3 3,1 1)),"
             "((100 100,110 110,120 120,100 100)))",
         )
@@ -273,7 +434,7 @@ class TestWKT:
             (100.0, 100.0),
         )
         assert (
-            p.wkt == "MULTIPOLYGON(((0 0, 10 20, "
+            p.wkt == "MULTIPOLYGON (((0 0, 10 20, "
             "30 40, 0 0),"
             "(1 1, 2 2, 3 3, 1 1)),"
             "((100 100, 110 110,"
@@ -322,7 +483,7 @@ class TestWKT:
         assert len(list(gc.geoms)) == 2
         assert isinstance(next(iter(gc.geoms)), geometry.Point)
         assert isinstance(list(gc.geoms)[1], geometry.LineString)
-        assert gc.wkt == "GEOMETRYCOLLECTION(POINT (4 6), LINESTRING (4 6, 7 10))"
+        assert gc.wkt == "GEOMETRYCOLLECTION (POINT (4 6), LINESTRING (4 6, 7 10))"
 
     def test_wkt_ok(self) -> None:
         for wkt in self.wkt_ok:
