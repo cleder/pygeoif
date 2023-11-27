@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.0 (unreleased)
+1.2.0 (2023/11/27)
 ------------------
 
  - remove Python 3.7 support
