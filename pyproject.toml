@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
 ]
 dependencies = [
     "typing_extensions",
