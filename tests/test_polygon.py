@@ -1,4 +1,5 @@
 """Test Polygon."""
+
 from unittest import mock
 
 from pygeoif import geometry
