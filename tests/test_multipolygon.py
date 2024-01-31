@@ -1,4 +1,5 @@
 """Test MultiPolygon."""
+
 from pygeoif import geometry
 
 
