@@ -154,6 +154,9 @@ reportMissingTypeStubs = true
 
 [tool.ruff]
 fix = true
+target-version = "py38"
+
+[tool.ruff.lint]
 ignore = [
     "ANN101",
     "ANN102",
@@ -221,12 +224,11 @@ select = [
     "W",
     "YTT",
 ]
-target-version = "py38"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = true
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "pygeoif/factories.py" = [
     "SLF001",
 ]
