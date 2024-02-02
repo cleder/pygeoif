@@ -233,6 +233,7 @@ class Point(_Geometry):
       -1.0
       >>> p.x
       1.0
+
     """
 
     _geoms: PointType
@@ -245,6 +246,7 @@ class Point(_Geometry):
         ----------
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
+
         """
         object.__setattr__(
             self,
@@ -339,6 +341,7 @@ class LineString(_Geometry):
     ----------
     geoms : sequence
         A sequence of Points
+
     """
 
     _geoms: Tuple[Point, ...]
@@ -357,6 +360,7 @@ class LineString(_Geometry):
         Create a line with two segments
 
           >>> a = LineString([(0, 0), (1, 0), (1, 1)])
+
         """
         object.__setattr__(self, "_geoms", self._set_geoms(coordinates))
 
@@ -475,6 +479,7 @@ class LinearRing(LineString):
         ----
             coordinates (Sequence):
                 A sequence of (x, y [,z]) numeric coordinate pairs or triples
+
         """
         super().__init__(coordinates)
         if not self.is_empty and self._geoms[0].coords != self._geoms[-1].coords:
@@ -536,6 +541,7 @@ class Polygon(_Geometry):
         The ring which bounds the positive space of the polygon.
     interiors : sequence
         A sequence of rings which bound all existing holes.
+
     """
 
     _geoms: Tuple[LinearRing, ...]
@@ -562,6 +568,7 @@ class Polygon(_Geometry):
 
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
+
         """
         interiors = tuple(LinearRing(hole) for hole in holes) if holes else ()
         exterior = LinearRing(shell)
@@ -747,6 +754,7 @@ class MultiPoint(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of Points
+
     """
 
     _geoms: Tuple[Point, ...]
@@ -772,6 +780,7 @@ class MultiPoint(_MultiGeometry):
           2
           >>> type(ob.geoms[0]) == Point
           True
+
         """
         if unique:
             points = set(points)  # type: ignore [assignment]
@@ -825,6 +834,7 @@ class MultiLineString(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of LineStrings
+
     """
 
     _geoms: Tuple[LineString, ...]
@@ -846,6 +856,7 @@ class MultiLineString(_MultiGeometry):
         Construct a collection containing one line string.
 
           >>> lines = MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
+
         """
         if unique:
             lines = {tuple(line) for line in lines}  # type: ignore [assignment]
@@ -909,6 +920,7 @@ class MultiPolygon(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of `Polygon` instances
+
     """
 
     _geoms: Tuple[Polygon, ...]
@@ -942,6 +954,7 @@ class MultiPolygon(_MultiGeometry):
           1
           >>> type(ob.geoms[0]) == Polygon
           True
+
         """
         if unique:
             polygons = set(polygons)  # type: ignore [assignment]
@@ -1045,6 +1058,7 @@ class GeometryCollection(_MultiGeometry):
     {'type': 'GeometryCollection',
     'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
+
     """
 
     _geoms: Tuple[Union[Geometry, "GeometryCollection"], ...]
@@ -1059,6 +1073,7 @@ class GeometryCollection(_MultiGeometry):
         Args:
         ----
             geometries (Iterable[Geometry]
+
         """
         object.__setattr__(self, "_geoms", tuple(geom for geom in geometries if geom))
 
@@ -1099,6 +1114,7 @@ class GeometryCollection(_MultiGeometry):
         Returns
         -------
             int: Number of geometries in the collection.
+
         """
         return len(self._geoms)
 

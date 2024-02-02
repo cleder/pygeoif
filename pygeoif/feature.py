@@ -75,6 +75,7 @@ class Feature:
      {'Name': 'Sample Point', 'Other': 'Other Data'}
       >>> a.properties['Name']
      'Sample Point'
+
     """
 
     def __init__(
@@ -168,6 +169,7 @@ class FeatureCollection:
     {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},
      'type': 'Feature',
      'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+
     """
 
     def __init__(self, features: Sequence[Feature]) -> None:

@@ -130,6 +130,7 @@ def shape(
     >>> geom2 = shape(geom)
     >>> geom == geom2
     True
+
     """
     type_map = {
         "Point": Point,
@@ -173,6 +174,7 @@ def num(number: str) -> float:
     Returns
     -------
     float or an integer if the string can be converted to an integer
+
     """
     f = float(number)
     return int(f) if int(f) == f else f
@@ -328,6 +330,7 @@ def mapping(
     >>> pt = Point(0, 0)
     >>> mapping(pt)
     {'type': 'Point', 'bbox': (0, 0, 0, 0), 'coordinates': (0, 0)}
+
     """
     return ob.__geo_interface__
 
