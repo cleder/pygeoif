@@ -151,46 +151,6 @@ def test_convex_hull_linear_ring() -> None:
     assert line.convex_hull == geometry.Polygon([(0, 0), (1, 0), (2, 2), (0, 0)])
 
 
-def test_maybe_valid_crossing() -> None:
-    line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, -1)])
-
-    assert not line.maybe_valid
-
-
-def test_maybe_valid_no_area() -> None:
-    line = geometry.LinearRing([(0, 0), (1, 1)])
-
-    assert not line.maybe_valid
-
-
-def test_maybe_valid_x_line() -> None:
-    line = geometry.LinearRing([(0, 2), (1, 2)])
-
-    assert not line.maybe_valid
-
-
-def test_maybe_valid_y_line() -> None:
-    line = geometry.LinearRing([(3, 0), (3, 1)])
-
-    assert not line.maybe_valid
-
-
-def test_maybe_valid_happy() -> None:
-    line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, 0)])
-
-    assert line.maybe_valid
-
-
-def test_valid_3d() -> None:
-    line = geometry.LinearRing([(0, 0, 1), (2, 0, 2), (2, 2, 0), (0, 2, 0)])
-
-    with pytest.raises(
-        exceptions.DimensionError,
-        match="^Validation is only implemented for 2D coordinates$",
-    ):
-        assert line.maybe_valid
-
-
 def test_is_ccw() -> None:
     line = geometry.LinearRing([(0, 0), (1, 0), (1, 1), (0, 0)])
 

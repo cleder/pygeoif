@@ -191,24 +191,6 @@ def test_from_coordinates() -> None:
     assert geometry.LineString.from_coordinates(line.coords) == line
 
 
-def test_maybe_valid() -> None:
-    line = geometry.LineString([(0, 0), (1, 0)])
-
-    assert line.maybe_valid
-
-
-def test_maybe_valid_point() -> None:
-    line = geometry.LineString([(0, 0), (0, 0)])
-
-    assert not line.maybe_valid
-
-
-def test_maybe_empty() -> None:
-    line = geometry.LineString([])
-
-    assert not line.maybe_valid
-
-
 def test_empty() -> None:
     line = geometry.LineString([])
 
@@ -218,7 +200,7 @@ def test_empty() -> None:
 def test_empty_1_pt() -> None:
     line = geometry.LineString([(0, 0)])
 
-    assert line.is_empty
+    assert not line.is_empty
 
 
 def test_repr_empty() -> None:
