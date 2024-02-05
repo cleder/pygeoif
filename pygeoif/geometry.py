@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2023  Christian Ledermann
+#   Copyright (C) 2012 -2024  Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -233,6 +233,7 @@ class Point(_Geometry):
       -1.0
       >>> p.x
       1.0
+
     """
 
     _geoms: PointType
@@ -245,6 +246,7 @@ class Point(_Geometry):
         ----------
         2 or 3 coordinate parameters: x, y, [z] : float
             Easting, northing, and elevation.
+
         """
         object.__setattr__(
             self,
@@ -339,6 +341,7 @@ class LineString(_Geometry):
     ----------
     geoms : sequence
         A sequence of Points
+
     """
 
     _geoms: Tuple[Point, ...]
@@ -357,6 +360,7 @@ class LineString(_Geometry):
         Create a line with two segments
 
           >>> a = LineString([(0, 0), (1, 0), (1, 1)])
+
         """
         object.__setattr__(self, "_geoms", self._set_geoms(coordinates))
 
@@ -379,25 +383,14 @@ class LineString(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Linestring is considered empty when it has less than 2 points.
+        A Linestring is considered empty when it has no points.
         """
-        return len(self._geoms) < 2  # noqa: PLR2004
+        return len(self._geoms) == 0
 
     @property
     def has_z(self) -> Optional[bool]:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._geoms[0].has_z if self.geoms else None
-
-    @property
-    def maybe_valid(self) -> bool:
-        """
-        Check validity of the coordinates.
-
-        Returns False if the coordinates collapse to a single Point.
-        This only highlights obvious problems with this geometry.
-        Even if this test passes the geometry may still be invalid.
-        """
-        return len({p.coords[0] for p in self._geoms}) > 1
 
     @property
     def _wkt_coords(self) -> str:
@@ -475,6 +468,7 @@ class LinearRing(LineString):
         ----
             coordinates (Sequence):
                 A sequence of (x, y [,z]) numeric coordinate pairs or triples
+
         """
         super().__init__(coordinates)
         if not self.is_empty and self._geoms[0].coords != self._geoms[-1].coords:
@@ -501,26 +495,6 @@ class LinearRing(LineString):
         """Return True if the ring is oriented counter clock-wise."""
         return signed_area(self.coords) >= 0
 
-    @property
-    def maybe_valid(self) -> bool:
-        """
-        Check validity of the coordinates.
-
-        This only highlights obvious problems with this geometry.
-        Even if this test passes the geometry may still be invalid.
-        """
-        if self.has_z:
-            msg = "Validation is only implemented for 2D coordinates"
-            raise DimensionError(msg)
-        min_x, min_y, max_x, max_y = self.bounds  # type: ignore [misc]
-        if min_x == max_x or min_y == max_y:
-            return False
-        try:
-            _, area = centroid(self.coords)
-        except ZeroDivisionError:
-            return False
-        return math.isclose(a=area, b=signed_area(self.coords))
-
 
 class Polygon(_Geometry):
     """
@@ -536,6 +510,7 @@ class Polygon(_Geometry):
         The ring which bounds the positive space of the polygon.
     interiors : sequence
         A sequence of rings which bound all existing holes.
+
     """
 
     _geoms: Tuple[LinearRing, ...]
@@ -562,6 +537,7 @@ class Polygon(_Geometry):
 
           >>> coords = ((0., 0.), (0., 1.), (1., 1.), (1., 0.), (0., 0.))
           >>> polygon = Polygon(coords)
+
         """
         interiors = tuple(LinearRing(hole) for hole in holes) if holes else ()
         exterior = LinearRing(shell)
@@ -613,22 +589,6 @@ class Polygon(_Geometry):
         return self._geoms[0].has_z
 
     @property
-    def maybe_valid(self) -> bool:
-        """
-        Check validity of the coordinates.
-
-        This only highlights obvious problems with this geometry.
-        Even if this test passes the geometry may still be invalid.
-        """
-        if not self._check_interior_bounds():
-            return False
-        return (
-            all(interior.maybe_valid for interior in self.interiors)
-            if self.exterior.maybe_valid
-            else False
-        )
-
-    @property
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords  # noqa: SLF001
         ic = "".join(
@@ -664,22 +624,6 @@ class Polygon(_Geometry):
             shell=cast(LineType, geo_interface["coordinates"][0]),
             holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),
         )
-
-    def _check_interior_bounds(self) -> bool:
-        """Check that the bounding boxes of holes are inside the bounds of the shell."""
-        bounds = self.bounds
-        if not bounds:
-            return False
-        for interior in self.interiors:
-            i_box = cast(Bounds, interior.bounds)
-            if (
-                bounds[0] > i_box[0]
-                or bounds[1] > i_box[1]
-                or bounds[2] < i_box[2]
-                or bounds[3] < i_box[3]
-            ):
-                return False
-        return True
 
     def _get_bounds(self) -> Bounds:
         return self.exterior._get_bounds()  # noqa: SLF001
@@ -747,6 +691,7 @@ class MultiPoint(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of Points
+
     """
 
     _geoms: Tuple[Point, ...]
@@ -772,6 +717,7 @@ class MultiPoint(_MultiGeometry):
           2
           >>> type(ob.geoms[0]) == Point
           True
+
         """
         if unique:
             points = set(points)  # type: ignore [assignment]
@@ -825,6 +771,7 @@ class MultiLineString(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of LineStrings
+
     """
 
     _geoms: Tuple[LineString, ...]
@@ -846,6 +793,7 @@ class MultiLineString(_MultiGeometry):
         Construct a collection containing one line string.
 
           >>> lines = MultiLineString( [[[0.0, 0.0], [1.0, 2.0]]] )
+
         """
         if unique:
             lines = {tuple(line) for line in lines}  # type: ignore [assignment]
@@ -909,6 +857,7 @@ class MultiPolygon(_MultiGeometry):
     ----------
     geoms : sequence
         A sequence of `Polygon` instances
+
     """
 
     _geoms: Tuple[Polygon, ...]
@@ -942,6 +891,7 @@ class MultiPolygon(_MultiGeometry):
           1
           >>> type(ob.geoms[0]) == Polygon
           True
+
         """
         if unique:
             polygons = set(polygons)  # type: ignore [assignment]
@@ -1045,6 +995,7 @@ class GeometryCollection(_MultiGeometry):
     {'type': 'GeometryCollection',
     'geometries': [{'type': 'Point', 'coordinates': (1.0, -1.0)},
     {'type': 'Point', 'coordinates': (1.0, -1.0)}]}
+
     """
 
     _geoms: Tuple[Union[Geometry, "GeometryCollection"], ...]
@@ -1059,6 +1010,7 @@ class GeometryCollection(_MultiGeometry):
         Args:
         ----
             geometries (Iterable[Geometry]
+
         """
         object.__setattr__(self, "_geoms", tuple(geom for geom in geometries if geom))
 
@@ -1099,6 +1051,7 @@ class GeometryCollection(_MultiGeometry):
         Returns
         -------
             int: Number of geometries in the collection.
+
         """
         return len(self._geoms)
 

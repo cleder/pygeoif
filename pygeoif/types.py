@@ -87,13 +87,17 @@ class GeoFeatureCollectionInterface(TypedDict):
 class GeoType(Protocol):
     """Any compatible type that implements the __geo_interface__."""
 
-    __geo_interface__: GeoInterface
+    @property
+    def __geo_interface__(self) -> GeoInterface:
+        """Return the GeoInterface."""
 
 
 class GeoCollectionType(Protocol):
     """Any compatible type that implements the __geo_interface__."""
 
-    __geo_interface__: GeoCollectionInterface
+    @property
+    def __geo_interface__(self) -> GeoCollectionInterface:
+        """Return the GeoInterface."""
 
 
 __all__ = [

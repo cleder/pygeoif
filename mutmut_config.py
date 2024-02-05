@@ -1,4 +1,5 @@
 """Mutmut configuration."""
+
 from typing import Protocol
 
 files_to_mutate = [

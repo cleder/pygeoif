@@ -76,6 +76,18 @@ It was written to provide clean and python only geometries for fastkml_
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Supported Python implementations
 
+.. image:: https://img.shields.io/pypi/v/pygeoif.svg
+    :target: https://pypi.python.org/pypi/pygeoif/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/l/pygeoif.svg
+    :target: https://pypi.python.org/pypi/pygeoif/
+    :alt: License
+
+.. image:: https://img.shields.io/pypi/dm/pygeoif.svg
+    :target: https://pypi.python.org/pypi/pygeoif/
+    :alt: Downloads
+
 Installation
 ------------
 
@@ -103,7 +115,7 @@ Example
 
 
 You find more examples in the
-`tests <https://github.com/cleder/pygeoif/tree/main/pygeoif/tests>`_
+`tests <https://github.com/cleder/pygeoif/tree/main/tests>`_
 directory which cover every aspect of pygeoif or in fastkml_.
 
 Classes

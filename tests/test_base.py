@@ -1,4 +1,5 @@
 """Test Baseclass."""
+
 from unittest import mock
 
 import pytest
