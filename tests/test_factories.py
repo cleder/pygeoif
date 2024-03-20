@@ -94,7 +94,6 @@ def test_force_2d_polygon() -> None:
         ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
     )
     assert not p2d.has_z
-    assert p.maybe_valid == p2d.maybe_valid
 
     # 3d to 2d
     external = [(0, 0, 1), (0, 2, 1), (2, 2, 1), (2, 0, 1), (0, 0, 1)]

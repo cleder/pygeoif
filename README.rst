@@ -115,7 +115,7 @@ Example
 
 
 You find more examples in the
-`tests <https://github.com/cleder/pygeoif/tree/main/pygeoif/tests>`_
+`tests <https://github.com/cleder/pygeoif/tree/main/tests>`_
 directory which cover every aspect of pygeoif or in fastkml_.
 
 Classes

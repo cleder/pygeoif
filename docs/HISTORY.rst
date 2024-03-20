@@ -1,9 +1,17 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.4.0 (unreleased)
 ------------------
 
+
+
+1.3.0 (2024/02/05)
+------------------
+
+- add Python 3.13 to supported versions
+- remove ``maybe_valid`` methods
+- GeoType and GeoCollectionType protocols to use a property instead of an attribute
 
 1.2.0 (2023/11/27)
 ------------------

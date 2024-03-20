@@ -1,4 +1,5 @@
 """Test MultiLineString."""
+
 from pygeoif import geometry
 
 

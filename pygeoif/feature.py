@@ -75,6 +75,7 @@ class Feature:
      {'Name': 'Sample Point', 'Other': 'Other Data'}
       >>> a.properties['Name']
      'Sample Point'
+
     """
 
     def __init__(
@@ -110,7 +111,7 @@ class Feature:
         )
 
     @property
-    def id(self) -> Optional[Union[str, int]]:  # noqa: A003
+    def id(self) -> Optional[Union[str, int]]:
         """Return the id of the feature."""
         return self._feature_id
 
@@ -168,6 +169,7 @@ class FeatureCollection:
     {'geometry': {'type': 'Point', 'coordinates': (1.0, -1.0)},
      'type': 'Feature',
      'properties': {'Other': 'Other Data2', 'Name': 'Sample Point2'}}]}
+
     """
 
     def __init__(self, features: Sequence[Feature]) -> None:

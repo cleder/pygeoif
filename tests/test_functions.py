@@ -1,4 +1,5 @@
 """Test geometric functions."""
+
 import itertools
 import math
 import random

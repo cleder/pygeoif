@@ -1,4 +1,5 @@
 """Test Point."""
+
 import math
 from unittest import mock
 

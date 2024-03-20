@@ -1,4 +1,5 @@
 """Test Polygon."""
+
 from unittest import mock
 
 from pygeoif import geometry
@@ -249,77 +250,6 @@ def test_from_coordinates_with_holes() -> None:
     assert geometry.Polygon.from_coordinates(polygon.coords) == polygon
 
 
-def test_maybe_valid() -> None:
-    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-    i = [(0.5, 0.5), (1, 1), (0.5, 1)]
-    polygon = geometry.Polygon(e, [i])
-
-    assert polygon.maybe_valid
-
-
-def test_maybe_valid_touching_hole() -> None:
-    """A Hole may touch an exterior at one point."""
-    e = [(0, 0), (0, 4), (4, 4), (4, 0)]
-    interiors_gen = (((1, 1), (2, 3), e[pt]) for pt in range(len(e)))
-    for polygon in (geometry.Polygon(e, [interior]) for interior in interiors_gen):
-        assert polygon.maybe_valid
-
-
-def test_is_invalid_hole_too_big_y() -> None:
-    """A Hole may not cross an exterior."""
-    e = [(0, 0), (0, 4), (4, 4), (4, 0)]
-    outside = (
-        (-1, -1),
-        (-1, 5),
-        (5, 5),
-        (5, -1),
-        (-1, 0),
-        (-1, 4),
-        (5, 4),
-        (5, 0),
-        (0, -1),
-        (0, 5),
-        (4, 5),
-        (4, -1),
-    )
-    interiors_gen = (
-        ((1 + (i & 1), 1), (3, 3 - (i & 1)), outside[i]) for i in range(len(e))
-    )
-    for polygon in (geometry.Polygon(e, [interior]) for interior in interiors_gen):
-        assert not polygon.maybe_valid
-
-
-def test_is_invalid_hole_too_big_x() -> None:
-    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-    i = [(0.5, 0.5), (3, 1), (0.5, 1)]
-    polygon = geometry.Polygon(e, [i])
-
-    assert not polygon.maybe_valid
-
-
-def test_is_invalid_hole_too_big_min() -> None:
-    e = [(0, 0), (0, 2), (2, 2), (2, 0), (0, 0)]
-    i = [(-0.5, -0.5), (3, 1), (0.5, 1)]
-    polygon = geometry.Polygon(e, [i])
-
-    assert not polygon.maybe_valid
-
-
-def test_is_invalid_exterior() -> None:
-    e = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
-    polygon = geometry.Polygon(e)
-
-    assert not polygon.maybe_valid
-
-
-def test_is_invalid_interior() -> None:
-    e = [(-2, -2), (-2, 2), (2, 2), (2, -2), (-2, -2)]
-    i = [(0, 0), (1, 0), (1, 1), (0, -1), (0, 0)]
-    polygon = geometry.Polygon(e, [i])
-
-    assert not polygon.maybe_valid
-
-
 def test_empty() -> None:
     polygon = geometry.Polygon([])
 
@@ -342,9 +272,3 @@ def test_empty_bounds() -> None:
     polygon = geometry.Polygon([])
 
     assert polygon.bounds == ()
-
-
-def test_maybe_valid_empty() -> None:
-    polygon = geometry.Polygon([])
-
-    assert not polygon.maybe_valid
