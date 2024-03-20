@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13-dev']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13-dev']
 
     steps:
       - uses: actions/checkout@v4
@@ -19,8 +19,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[tests]"
+          python -m pip install --upgrade uv
+          uv pip install -e ".[tests]"
       - name: Test with pytest
         run: |
           pytest tests --cov=tests --cov=pygeoif --cov-report=xml
@@ -46,8 +46,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[typing, complexity, linting]"
+          python -m pip install --upgrade uv
+          uv pip install -e ".[typing, complexity, linting]"
       - name: Typecheck
         run: |
           mypy pygeoif
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pypy-version: ['pypy-3.7', 'pypy-3.8', 'pypy-3.9', 'pypy-3.10']
+        pypy-version: ['pypy-3.8', 'pypy-3.9', 'pypy-3.10']
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.pypy-version }}
