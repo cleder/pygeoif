@@ -376,7 +376,7 @@ class LineString(_Geometry):
     @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
-        return tuple(point.coords[0] for point in self.geoms)
+        return cast(LineType, tuple(point.coords[0] for point in self.geoms))
 
     @property
     def is_empty(self) -> bool:
@@ -404,14 +404,14 @@ class LineString(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "LineString":
+    def from_coordinates(cls, coordinates: LineType) -> "LineString":
         """Construct a linestring from coordinates."""
         return cls(coordinates)
 
     @classmethod
     def from_points(cls, *args: Point) -> "LineString":
         """Create a linestring from points."""
-        return cls(tuple(point.coords[0] for point in args))
+        return cls(cast(LineType, tuple(point.coords[0] for point in args)))
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
@@ -578,10 +578,14 @@ class Polygon(_Geometry):
         Note that this is not implemented in Shapely.
         """
         if self._geoms[1]:
-            return self.exterior.coords, tuple(
-                interior.coords for interior in self.interiors if interior
+            return cast(
+                PolygonType,
+                (
+                    self.exterior.coords,
+                    tuple(interior.coords for interior in self.interiors if interior),
+                ),
             )
-        return (self.exterior.coords,)
+        return cast(PolygonType, (self.exterior.coords,))
 
     @property
     def has_z(self) -> Optional[bool]:

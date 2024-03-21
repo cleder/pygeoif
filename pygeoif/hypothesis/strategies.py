@@ -32,9 +32,9 @@ class Srs:
     ----------
         name (str): The name of the SRS.
         min_xyz (Tuple[Optional[float], Optional[float], Optional[float]]):
-        The minimum x, y, and z values of the SRS.
+        - The minimum x, y, and z values of the SRS.
         max_xyz (Tuple[Optional[float], Optional[float], Optional[float]]):
-        The maximum x, y, and z values of the SRS.
+        - The maximum x, y, and z values of the SRS.
 
     """
 

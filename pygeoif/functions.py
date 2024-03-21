@@ -28,6 +28,7 @@ from typing import cast
 from pygeoif.types import CoordinatesType
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
+from pygeoif.types import Line2D
 from pygeoif.types import LineType
 from pygeoif.types import MultiCoordinatesType
 from pygeoif.types import Point2D
@@ -95,7 +96,7 @@ def _build_hull(points: Iterable[Point2D]) -> List[Point2D]:
     return hull
 
 
-def convex_hull(points: Iterable[Point2D]) -> LineType:
+def convex_hull(points: Iterable[Point2D]) -> Line2D:
     """
     Compute the convex hull of a set of 2D points.
 
@@ -137,7 +138,7 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 
 def dedupe(coords: LineType) -> LineType:
     """Remove duplicate Points from a LineString."""
-    return tuple(coord for coord, _count in groupby(coords))
+    return cast(LineType, tuple(coord for coord, _count in groupby(coords)))
 
 
 def compare_coordinates(

@@ -35,11 +35,11 @@ from pygeoif.geometry import MultiPoint
 from pygeoif.geometry import MultiPolygon
 from pygeoif.geometry import Point
 from pygeoif.geometry import Polygon
-from pygeoif.types import Exteriors
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoCollectionType
 from pygeoif.types import GeoInterface
 from pygeoif.types import GeoType
+from pygeoif.types import Interiors
 from pygeoif.types import LineType
 from pygeoif.types import PointType
 from pygeoif.types import PolygonType
@@ -188,27 +188,34 @@ def _point_from_wkt_coordinates(coordinates: str) -> Point:
 def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
     return LineString(
-        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
+        cast(
+            LineType,  #
+            [tuple(num(c) for c in coord.split()) for coord in coords],
+        ),
     )
 
 
 def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
     coords = coordinates.split(",")
     return LinearRing(
-        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
+        cast(
+            LineType,
+            [tuple(num(c) for c in coord.split()) for coord in coords],
+        ),
     )
 
 
 def _shell_holes_from_wkt_coords(
     coords: List[str],
-) -> Tuple[LineType, Exteriors]:
+) -> Tuple[LineType, Interiors]:
     """Extract shell and holes from polygon wkt coordinates."""
-    interior: LineType = [
-        cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords[0]
-    ]
+    exterior: LineType = cast(
+        LineType,
+        [tuple(num(c) for c in coord.split()) for coord in coords[0]],
+    )
     if len(coords) > 1:
         # we have a polygon with holes
-        exteriors = [
+        interiors = [
             cast(
                 LineType,
                 [
@@ -219,8 +226,8 @@ def _shell_holes_from_wkt_coords(
             for ext in coords[1:]
         ]
     else:
-        exteriors = None
-    return interior, exteriors
+        interiors = None
+    return exterior, interiors
 
 
 def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
@@ -243,10 +250,13 @@ def _multipoint_from_wkt_coordinates(coordinates: str) -> MultiPoint:
 
 def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
     coords = [
-        [
-            cast(PointType, tuple(num(c) for c in coord.split()))
-            for coord in lines.strip("()").split(",")
-        ]
+        cast(
+            LineType,
+            [
+                tuple(num(c) for c in coord.split())
+                for coord in lines.strip("()").split(",")
+            ],
+        )
         for lines in inner.findall(coordinates)
     ]
     return MultiLineString(coords)
