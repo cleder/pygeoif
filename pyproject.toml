@@ -57,6 +57,9 @@ dev = [
     "pygeoif[tests]",
     "pygeoif[typing]",
 ]
+hypothesis = [
+    "hypothesis",
+]
 linting = [
     "black",
     "flake8",
@@ -85,6 +88,7 @@ tests = [
     "pytest-cov",
 ]
 typing = [
+    "hypothesis",
     "mypy",
 ]
 
