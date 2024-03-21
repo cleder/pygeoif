@@ -16,8 +16,6 @@ __all__ = [
     "Srs",
     "epsg4326",
     "point_coords",
-    "point_coords_2d",
-    "point_coords_3d",
     "points",
 ]
 
@@ -52,7 +50,7 @@ coordinate = partial(st.floats, allow_infinity=False, allow_nan=False)
 
 
 @st.composite
-def point_coords_2d(
+def _point_coords_2d(
     draw: st.DrawFn,
     srs: Optional[Srs] = None,
 ) -> Point2D:
@@ -78,7 +76,7 @@ def point_coords_2d(
 
 
 @st.composite
-def point_coords_3d(
+def _point_coords_3d(
     draw: st.DrawFn,
     srs: Optional[Srs] = None,
 ) -> Point3D:
@@ -106,7 +104,11 @@ def point_coords_3d(
 
 
 @st.composite
-def point_coords(draw: st.DrawFn, srs: Optional[Srs] = None) -> PointType:
+def point_coords(
+    draw: st.DrawFn,
+    srs: Optional[Srs] = None,
+    has_z: Optional[bool] = None,
+) -> PointType:
     """
     Generate a random point in either 2D or 3D space.
 
@@ -114,17 +116,26 @@ def point_coords(draw: st.DrawFn, srs: Optional[Srs] = None) -> PointType:
     ----
         draw: The draw function from the hypothesis library.
         srs: An optional parameter specifying the spatial reference system.
+        has_z: An optional parameter specifying whether to generate 2D or 3D points.
 
     Returns:
     -------
-        A randomly generated point in either 2D or 3D space.
+        A tuple representing the point in either 2D or 3D space.
 
     """
-    return draw(st.one_of(point_coords_2d(srs), point_coords_3d(srs)))
+    if has_z is True:
+        return draw(_point_coords_3d(srs))
+    if has_z is False:
+        return draw(_point_coords_2d(srs))
+    return draw(st.one_of(_point_coords_2d(srs), _point_coords_3d(srs)))
 
 
 @st.composite
-def points(draw: st.DrawFn, srs: Optional[Srs] = None) -> Point:
+def points(
+    draw: st.DrawFn,
+    srs: Optional[Srs] = None,
+    has_z: Optional[bool] = None,
+) -> Point:
     """
     Generate a random point in either 2D or 3D space.
 
@@ -132,10 +143,11 @@ def points(draw: st.DrawFn, srs: Optional[Srs] = None) -> Point:
     ----
         draw: The draw function from the hypothesis library.
         srs: An optional parameter specifying the spatial reference system.
+        has_z: An optional parameter specifying whether to generate 2D or 3D points.
 
     Returns:
     -------
         A randomly generated point in either 2D or 3D space.
 
     """
-    return Point(*draw(point_coords(srs)))
+    return Point(*draw(point_coords(srs, has_z)))
