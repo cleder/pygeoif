@@ -4,10 +4,13 @@ from dataclasses import dataclass
 from functools import partial
 from typing import Optional
 from typing import Tuple
+from typing import cast
 
 import hypothesis.strategies as st
 
+from pygeoif.geometry import LineString
 from pygeoif.geometry import Point
+from pygeoif.types import LineType
 from pygeoif.types import Point2D
 from pygeoif.types import Point3D
 from pygeoif.types import PointType
@@ -15,6 +18,8 @@ from pygeoif.types import PointType
 __all__ = [
     "Srs",
     "epsg4326",
+    "line_coords",
+    "line_string",
     "point_coords",
     "points",
 ]
@@ -151,3 +156,82 @@ def points(
 
     """
     return Point(*draw(point_coords(srs, has_z)))
+
+
+@st.composite
+def line_coords(  # noqa: PLR0913
+    draw: st.DrawFn,
+    min_points: int,
+    max_points: Optional[int] = None,
+    srs: Optional[Srs] = None,
+    has_z: Optional[bool] = None,
+    unique: bool = False,  # noqa: FBT001,FBT002
+) -> LineType:
+    """
+    Generate a random line in either 2D or 3D space.
+
+    Args:
+    ----
+        draw: The draw function from the hypothesis library.
+        min_points: Minimum number of points in the line
+        max_points: Maximum number of points in the line
+        srs: An optional parameter specifying the spatial reference system.
+        has_z: An optional parameter specifying whether to generate 2D or 3D points.
+        unique: Optional flag to generate unique points (default False).
+
+    Returns:
+    -------
+        A list of point coordinates representing the line in either 2D or 3D space.
+
+    """
+    if has_z is None:
+        has_z = draw(st.booleans())
+    return cast(
+        LineType,
+        draw(
+            st.lists(
+                point_coords(srs, has_z),
+                min_size=min_points,
+                max_size=max_points,
+                unique=unique,
+            ),
+        ),
+    )
+
+
+@st.composite
+def line_string(
+    draw: st.DrawFn,
+    max_points: Optional[int] = None,
+    srs: Optional[Srs] = None,
+    has_z: Optional[bool] = None,
+) -> LineString:
+    """
+    Generate a random linestring in either 2D or 3D space.
+
+    Args:
+    ----
+        draw: The draw function from the hypothesis library.
+        max_points: Maximum number of points in the line (must be greater than 1)
+        srs: An optional parameter specifying the spatial reference system.
+        has_z: An optional parameter specifying whether to generate 2D or 3D points.
+
+    Returns:
+    -------
+        A LineString representing the randomly generated linestring in either 2D or 3D
+        space.
+
+    """
+    if max_points is not None and max_points < 2:  # noqa: PLR2004
+        raise ValueError("max_points must be greater than 1")  # noqa: TRY003,EM101
+    return LineString(
+        draw(
+            line_coords(
+                min_points=2,
+                max_points=max_points,
+                srs=srs,
+                has_z=has_z,
+                unique=True,
+            ),
+        ),
+    )

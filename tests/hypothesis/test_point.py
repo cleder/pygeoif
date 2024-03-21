@@ -9,22 +9,23 @@ from pygeoif.factories import shape
 from pygeoif.hypothesis.strategies import epsg4326
 from pygeoif.hypothesis.strategies import point_coords
 from pygeoif.hypothesis.strategies import points
+from pygeoif.types import PointType
 
 
 @given(point_coords(epsg4326))
-def test_from_wkt_epsg_4326(point) -> None:
+def test_from_wkt_epsg_4326(point: PointType) -> None:
     point = geometry.Point(*point)
 
     assert point == from_wkt(str(point))
 
 
 @given(points())
-def test_repr_eval(point) -> None:
+def test_repr_eval(point: geometry.Point) -> None:
     assert eval(repr(point), {}, {"Point": geometry.Point}) == point
 
 
 @given(points())
-def test_shape(point) -> None:
+def test_shape(point: geometry.Point) -> None:
     assert point == shape(point)
 
 
