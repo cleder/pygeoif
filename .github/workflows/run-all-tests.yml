@@ -24,15 +24,7 @@ jobs:
       - name: Test with pytest, excluding hypothesis tests
         run: >-
           pytest tests
-          --cov=tests --cov=pygeoif --cov-report=xml
           --ignore=tests/hypothesis
-      - name: "Upload coverage to Codecov"
-        if: ${{ matrix.python-version==3.11 }}
-        uses: codecov/codecov-action@v4
-        with:
-          fail_ci_if_error: true
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   hypothesis-tests:
     runs-on: ubuntu-latest
@@ -52,7 +44,13 @@ jobs:
           python -m pip install -e ".[tests]"
       - name: Test with pytest including hypothesis tests
         run: |
-          pytest tests
+          pytest tests --cov=tests --cov=pygeoif --cov-report=xml
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   static-tests:
     runs-on: ubuntu-latest
