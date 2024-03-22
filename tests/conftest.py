@@ -8,3 +8,4 @@ Run this profile with ``pytest --hypothesis-profile=exhaustive``
 from hypothesis import settings
 
 settings.register_profile("exhaustive", max_examples=10_000)
+settings.register_profile("coverage", max_examples=10)

@@ -43,8 +43,30 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[tests]"
       - name: Test with pytest including hypothesis tests
+        run: >-
+          pytest tests
+
+  test-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
-          pytest tests --cov=tests --cov=pygeoif --cov-report=xml
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[tests]"
+      - name: Test with pytest including hypothesis tests and coverage
+        run: >-
+          pytest tests
+          --cov=tests --cov=pygeoif --cov-report=xml
+          --hypothesis-profile=coverage
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v4
         with:
