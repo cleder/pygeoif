@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13-dev']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13-dev']
 
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +21,53 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[tests]"
-      - name: Test with pytest
+      - name: Test with pytest, excluding hypothesis tests
+        run: >-
+          pytest tests
+          --ignore=tests/hypothesis
+
+  hypothesis-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
-          pytest tests --cov=tests --cov=pygeoif --cov-report=xml
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[tests]"
+      - name: Test with pytest including hypothesis tests
+        run: >-
+          pytest tests
+
+  test-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[tests]"
+      - name: Test with pytest including hypothesis tests and coverage
+        run: >-
+          pytest tests
+          --cov=tests --cov=pygeoif --cov-report=xml
+          --hypothesis-profile=coverage
       - name: "Upload coverage to Codecov"
-        if: ${{ matrix.python-version==3.11 }}
         uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: true
@@ -67,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pypy-version: ['pypy-3.7', 'pypy-3.8', 'pypy-3.9', 'pypy-3.10']
+        pypy-version: ['pypy-3.8', 'pypy-3.9', 'pypy-3.10']
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.pypy-version }}
@@ -78,13 +120,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[tests]"
-      - name: Test with pytest
+      - name: Test with pytest, excluding hypothesis tests
         run: |
-          pytest tests
+          pytest tests --ignore=tests/hypothesis
 
   publish:
     if: "github.event_name == 'push' && github.repository == 'cleder/pygeoif'"
-    needs: [cpython, static-tests, pypy]
+    needs: [cpython, static-tests, pypy, hypothesis-tests]
     name: Build and publish to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:

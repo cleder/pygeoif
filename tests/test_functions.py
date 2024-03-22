@@ -151,7 +151,7 @@ def test_line_minimal() -> None:
 
     hull = convex_hull(pts)
 
-    assert hull == [(0, 0), (1, 0), (1, 1), (0, 0)]
+    assert hull == ((0, 0), (1, 0), (1, 1), (0, 0))
 
 
 def test_line2() -> None:
@@ -173,7 +173,7 @@ def test_line3() -> None:
 def test_square() -> None:
     pts = list(itertools.product(range(100), range(100)))
     hull = convex_hull(pts)
-    assert hull == [(0, 0), (99, 0), (99, 99), (0, 99), (0, 0)]
+    assert hull == ((0, 0), (99, 0), (99, 99), (0, 99), (0, 0))
 
 
 def test_triangle() -> None:
@@ -181,7 +181,7 @@ def test_triangle() -> None:
     for x in range(100):
         pts.extend((x, y) for y in range(x + 1))
     hull = convex_hull(pts)
-    assert hull == [(0, 0), (99, 0), (99, 99), (0, 0)]
+    assert hull == ((0, 0), (99, 0), (99, 99), (0, 0))
 
 
 def test_trapezoid() -> None:
@@ -189,7 +189,7 @@ def test_trapezoid() -> None:
     for x in range(100):
         pts.extend((x, y) for y in range(-x - 1, x + 1))
     hull = convex_hull(pts)
-    assert hull == [(0, -1), (99, -100), (99, 99), (0, 0), (0, -1)]
+    assert hull == ((0, -1), (99, -100), (99, 99), (0, 0), (0, -1))
 
 
 def test_circles() -> None:

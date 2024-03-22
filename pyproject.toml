@@ -15,7 +15,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -40,7 +39,7 @@ keywords = [
     "WKT",
 ]
 name = "pygeoif"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 
 [project.license]
 text = "LGPL"
@@ -56,6 +55,9 @@ dev = [
     "pygeoif[linting]",
     "pygeoif[tests]",
     "pygeoif[typing]",
+]
+hypothesis = [
+    "hypothesis",
 ]
 linting = [
     "black",
@@ -80,10 +82,12 @@ linting = [
     "yamllint",
 ]
 tests = [
+    "hypothesis",
     "pytest",
     "pytest-cov",
 ]
 typing = [
+    "hypothesis",
     "mypy",
 ]
 

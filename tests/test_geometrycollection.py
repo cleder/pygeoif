@@ -1,6 +1,9 @@
 """Test Baseclass."""
 
+import pytest
+
 from pygeoif import geometry
+from pygeoif.factories import from_wkt
 
 
 def test_geo_interface() -> None:
@@ -393,6 +396,7 @@ def test_geometry_collection_neq_when_empty() -> None:
 
     assert gc1 != gc2
     assert gc2 != gc1
+    assert gc1 != gc1  # noqa: PLR0124
 
 
 def test_nested_geometry_collection_repr_eval() -> None:
@@ -425,3 +429,47 @@ def test_nested_geometry_collection_repr_eval() -> None:
         ).__geo_interface__
         == gc.__geo_interface__
     )
+
+
+def test_multipoint_collection_wkt_roundtrip() -> None:
+    gc = geometry.GeometryCollection((geometry.MultiPoint(((0.0, 0.0),)),))
+    assert from_wkt(str(gc)) == gc
+
+
+def test_multi_geometry_collection_wkt() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    line = geometry.LineString([(0, 0), (3, 1)])
+    lines = geometry.MultiLineString(
+        ([(0, 0), (1, 1), (1, 2), (2, 2)], [[0.0, 0.0], [1.0, 2.0]]),
+    )
+    polys = geometry.MultiPolygon(
+        [
+            (
+                ((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),
+                (((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)),),
+            ),
+            (((0, 0), (0, 1), (1, 1), (1, 0)),),
+            (
+                ((0, 0), (0, 1), (1, 1), (1, 0)),
+                (((0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)),),
+            ),
+            (((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (1.0, 0.0)),),
+        ],
+        unique=True,
+    )
+    ring = geometry.LinearRing([(0, 0), (1, 1), (1, 0), (0, 0)])
+    gc = geometry.GeometryCollection([multipoint, line, lines, polys, ring])
+
+    assert from_wkt(str(gc)) == gc
+
+
+@pytest.mark.xfail(reason="WKT parsing for nested GeometryCollections not implemented.")
+def test_nested_geometry_collections_wkt() -> None:
+    multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
+    gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
+    line = geometry.LineString([(0, 0), (3, 1)])
+    gc2 = geometry.GeometryCollection([gc1, line])
+    poly1 = geometry.Polygon([(0, 0), (1, 1), (1, 0), (0, 0)])
+    gc3 = geometry.GeometryCollection([gc2, poly1])
+
+    assert from_wkt(str(gc3)) == gc3

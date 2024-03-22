@@ -3,8 +3,10 @@ Changelog
 
 1.4.0 (unreleased)
 ------------------
-
-
+ - add Hypothesis tests [Ben Shaver, Christian Ledermann]
+ - fix ``convex_hull`` edge-cases discovered by Hypothesis tests
+ - fix ``from_wkt`` to include multi geometries in GeometryCollections
+ - drop Python 3.7 support
 
 1.3.0 (2024/02/05)
 ------------------

@@ -503,6 +503,12 @@ class TestAsShape:
         s = factories.shape(f)
         assert f.__geo_interface__ == s.__geo_interface__
 
+    def test_point_00(self) -> None:
+        f = geometry.Point(0, 0)
+
+        assert f
+        assert f == factories.shape(f)
+
     def test_linestring(self) -> None:
         f = geometry.LineString([(0, 0), (1, 1)])
         s = factories.shape(f)
