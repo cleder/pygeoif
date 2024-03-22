@@ -13,13 +13,11 @@ from pygeoif.hypothesis.strategies import line_strings
 
 @given(line_strings(srs=epsg4326))
 def test_from_wkt_epsg_4326(line: geometry.LineString) -> None:
-
     assert line == from_wkt(str(line))
 
 
 @given(line_strings())
 def test_repr_eval(line: geometry.LineString) -> None:
-
     assert eval(repr(line), {}, {"LineString": geometry.LineString}) == line
 
 

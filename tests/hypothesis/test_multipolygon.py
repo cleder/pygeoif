@@ -13,13 +13,11 @@ from pygeoif.hypothesis.strategies import multi_polygons
 
 @given(multi_polygons(srs=epsg4326))
 def test_from_wkt_epsg_4326(multi_poly: geometry.MultiPolygon) -> None:
-
     assert multi_poly == from_wkt(str(multi_poly))
 
 
 @given(multi_polygons(srs=epsg4326))
 def test_repr_eval(multi_poly: geometry.MultiPolygon) -> None:
-
     assert (
         eval(repr(multi_poly), {}, {"MultiPolygon": geometry.MultiPolygon})
         == multi_poly

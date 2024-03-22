@@ -12,7 +12,6 @@ from pygeoif.hypothesis.strategies import multi_points
 
 @given(multi_points(srs=epsg4326))
 def test_from_wkt_epsg_4326(multi_point: geometry.MultiPoint) -> None:
-
     assert multi_point == from_wkt(str(multi_point))
 
 

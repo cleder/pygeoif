@@ -11,13 +11,11 @@ from pygeoif.hypothesis.strategies import linear_rings
 
 @given(linear_rings(srs=epsg4326))
 def test_from_wkt_epsg_4326(line: geometry.LinearRing) -> None:
-
     assert line == from_wkt(str(line))
 
 
 @given(linear_rings())
 def test_repr_eval(line: geometry.LinearRing) -> None:
-
     assert eval(repr(line), {}, {"LinearRing": geometry.LinearRing}) == line
 
 

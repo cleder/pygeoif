@@ -12,13 +12,11 @@ from pygeoif.hypothesis.strategies import polygons
 
 @given(polygons(srs=epsg4326))
 def test_from_wkt_epsg_4326(poly: geometry.Polygon) -> None:
-
     assert poly == from_wkt(str(poly))
 
 
 @given(polygons())
 def test_repr_eval(poly: geometry.Polygon) -> None:
-
     assert eval(repr(poly), {}, {"Polygon": geometry.Polygon}) == poly
 
 
