@@ -33,26 +33,32 @@ out of points, polygons from linear rings, multi polygons from
 polygons, etc. It was inspired by shapely and implements the
 geometries in a way that when you are familiar with pygeoif,
 you will feel right at home with shapely or the other way round.
+It provides Hypothesis strategies for all geometries for property based
+testing with Hypothesis_.
 
 It was written to provide clean and python only geometries for fastkml_
+
+.. image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
+    :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation
 
 .. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg?branch=main
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
     :alt: GitHub Actions
 
-.. image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
-    :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
 .. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
     :alt: Codecov
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. image:: https://img.shields.io/badge/property_based_tests-hypothesis-green
+    :target: https://hypothesis.works
+    :alt: Hypothesis
+
+.. image:: https://img.shields.io/badge/code_style-black-000000.svg
     :target: https://github.com/psf/
     :alt: Black
 
-.. image:: https://img.shields.io/badge/type%20checker-mypy-blue
+.. image:: https://img.shields.io/badge/type_checker-mypy-blue
     :target: http://mypy-lang.org/
     :alt: Mypy
 
@@ -411,3 +417,4 @@ The tests were improved with mutmut_ which discovered some nasty edge cases.
 .. _mutmut: https://github.com/boxed/mutmut
 .. _GeoJSON: https://geojson.org/
 .. _fastkml: http://pypi.python.org/pypi/fastkml/
+.. _Hypothesis: https://hypothesis.works
