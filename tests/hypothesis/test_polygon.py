@@ -1,5 +1,6 @@
 """Test Polygons with Hypothesis."""
 
+import pytest
 from hypothesis import given
 
 from pygeoif import geometry
@@ -8,6 +9,11 @@ from pygeoif.factories import from_wkt
 from pygeoif.factories import shape
 from pygeoif.hypothesis.strategies import epsg4326
 from pygeoif.hypothesis.strategies import polygons
+
+
+def test_max_points_lt_3() -> None:
+    with pytest.raises(ValueError, match="^max_points must be greater than 3$"):
+        polygons(max_points=3).example()
 
 
 @given(polygons(srs=epsg4326))

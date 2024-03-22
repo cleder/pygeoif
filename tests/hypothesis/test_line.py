@@ -1,5 +1,6 @@
 """Test LineStrings with Hypothesis."""
 
+import pytest
 from hypothesis import given
 
 from pygeoif import geometry
@@ -9,6 +10,11 @@ from pygeoif.factories import from_wkt
 from pygeoif.factories import shape
 from pygeoif.hypothesis.strategies import epsg4326
 from pygeoif.hypothesis.strategies import line_strings
+
+
+def test_max_points_lt_2() -> None:
+    with pytest.raises(ValueError, match="^max_points must be greater than 1$"):
+        line_strings(max_points=1).example()
 
 
 @given(line_strings(srs=epsg4326))

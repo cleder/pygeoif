@@ -35,6 +35,11 @@ def test_repr_eval(multi_poly: geometry.GeometryCollection) -> None:
     )
 
 
-@given(geometry_collections(srs=epsg4326))
-def test_shape(multi_poly: geometry.GeometryCollection) -> None:
+@given(geometry_collections(srs=epsg4326, has_z=False))
+def test_shape_2d(multi_poly: geometry.GeometryCollection) -> None:
+    assert multi_poly == shape(multi_poly)
+
+
+@given(geometry_collections(srs=epsg4326, has_z=True))
+def test_shape_3d(multi_poly: geometry.GeometryCollection) -> None:
     assert multi_poly == shape(multi_poly)
