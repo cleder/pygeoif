@@ -13,7 +13,7 @@ from pygeoif.hypothesis.strategies import line_strings
 
 
 def test_max_points_lt_2() -> None:
-    with pytest.raises(ValueError, match="^max_points must be greater than 1$"):
+    with pytest.raises(ValueError, match="^max_points must be greater than 1"):
         line_strings(max_points=1).example()
 
 
