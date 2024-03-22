@@ -51,7 +51,12 @@ epsg4326 = Srs(
     max_xyz=(180.0, 90.0, 1_000_000_000_000.0),
 )
 
-coordinate = partial(st.floats, allow_infinity=False, allow_nan=False)
+coordinate = partial(
+    st.floats,
+    allow_infinity=False,
+    allow_nan=False,
+    allow_subnormal=False,
+)
 
 
 @st.composite
