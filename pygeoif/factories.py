@@ -55,7 +55,9 @@ wkt_regex: Pattern[str] = re.compile(
     ),
     flags=re.I,
 )
-gcre: Pattern[str] = re.compile(r"POINT|LINESTRING|LINEARRING|POLYGON")
+gcre: Pattern[str] = re.compile(
+    r"POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON",
+)
 outer: Pattern[str] = re.compile(r"\((.+)\)")
 inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")

@@ -12,7 +12,7 @@ from pygeoif.hypothesis.strategies import points
 from pygeoif.types import PointType
 
 
-@given(point_coords(epsg4326))
+@given(point_coords(srs=epsg4326))
 def test_from_wkt_epsg_4326(point: PointType) -> None:
     point = geometry.Point(*point)
 
@@ -38,3 +38,4 @@ def test_bounds(point: geometry.Point) -> None:
 @given(points())
 def test_convex_hull(point: geometry.Point) -> None:
     assert point.convex_hull == force_2d(point)
+    assert point.convex_hull.bounds == point.bounds
