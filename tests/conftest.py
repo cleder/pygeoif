@@ -1,0 +1,10 @@
+"""
+Configure the tests.
+
+Register the hypothesis 'exhaustive' profile to run 10 thousand examples.
+Run this profile with ``pytest --hypothesis-profile=exhaustive``
+"""
+
+from hypothesis import settings
+
+settings.register_profile("exhaustive", max_examples=10_000)

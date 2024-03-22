@@ -74,6 +74,11 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
     return cast(Point2D, tuple(ans)), signed_area / 2.0
 
 
+def dedupe(coords: LineType) -> LineType:
+    """Remove duplicate Points from a LineString."""
+    return cast(LineType, tuple(coord for coord, _count in groupby(coords)))
+
+
 def _orientation(p: Point2D, q: Point2D, r: Point2D) -> float:
     """
     Calculate orientation of three points (p, q, r).
@@ -127,11 +132,6 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
         return upper
     # Remove duplicate points (at the end of upper and beginning of lower)
     return dedupe(upper + lower)
-
-
-def dedupe(coords: LineType) -> LineType:
-    """Remove duplicate Points from a LineString."""
-    return cast(LineType, tuple(coord for coord, _count in groupby(coords)))
 
 
 def compare_coordinates(

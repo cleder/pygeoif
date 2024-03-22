@@ -47,8 +47,8 @@ class Srs:
 
 epsg4326 = Srs(
     name="EPSG:4326",
-    min_xyz=(-180.0, -90.0, -1_000_000_000_000.0),
-    max_xyz=(180.0, 90.0, 1_000_000_000_000.0),
+    min_xyz=(-180.0, -90.0, -999_999_995_904.0),
+    max_xyz=(180.0, 90.0, 999_999_995_904.0),
 )
 
 coordinate = partial(
@@ -56,6 +56,7 @@ coordinate = partial(
     allow_infinity=False,
     allow_nan=False,
     allow_subnormal=False,
+    width=32,
 )
 
 
