@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2022  Christian Ledermann
+#   Copyright (C) 2012 - 2024 Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -30,13 +30,22 @@ from typing_extensions import TypedDict  # for Python <3.11 with (Not)Required
 Point2D = Tuple[float, float]
 Point3D = Tuple[float, float, float]
 PointType = Union[Point2D, Point3D]
-LineType = Sequence[PointType]
-PolygonType = Union[
-    Tuple[LineType, Sequence[LineType]],
-    Tuple[LineType],
+Line2D = Sequence[Point2D]
+Line3D = Sequence[Point3D]
+LineType = Union[Line2D, Line3D]
+Interiors = Optional[Sequence[LineType]]
+Poly2d = Union[
+    Tuple[Line2D, Sequence[Line2D]],
+    Tuple[Line2D],
 ]
-
-Exteriors = Optional[Sequence[LineType]]
+Poly3d = Union[
+    Tuple[Line3D, Sequence[Line3D]],
+    Tuple[Line3D],
+]
+PolygonType = Union[
+    Poly2d,
+    Poly3d,
+]
 
 MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
 Bounds = Tuple[float, float, float, float]
@@ -103,7 +112,7 @@ class GeoCollectionType(Protocol):
 __all__ = [
     "Bounds",
     "CoordinatesType",
-    "Exteriors",
+    "Interiors",
     "GeoCollectionInterface",
     "GeoCollectionType",
     "GeoFeatureCollectionInterface",

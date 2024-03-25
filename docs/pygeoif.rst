@@ -65,3 +65,11 @@ pygeoif.about module
    :members:
    :undoc-members:
    :special-members: __version__
+
+pygeoif.hypothesis.strategies module
+--------------------
+
+.. automodule:: pygeoif.hypothesis.strategies
+   :members:
+   :undoc-members:
+   :special-members: __version__

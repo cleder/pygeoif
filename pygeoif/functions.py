@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2023  Christian Ledermann
+#   Copyright (C) 2012 - 2024 Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -74,70 +74,64 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
     return cast(Point2D, tuple(ans)), signed_area / 2.0
 
 
-def _cross(o: Point2D, a: Point2D, b: Point2D) -> float:
+def dedupe(coords: LineType) -> LineType:
+    """Remove duplicate Points from a LineString."""
+    return cast(LineType, tuple(coord for coord, _count in groupby(coords)))
+
+
+def _orientation(p: Point2D, q: Point2D, r: Point2D) -> float:
     """
-    2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
+    Calculate orientation of three points (p, q, r).
 
-    Returns a positive value, if OAB makes a counter-clockwise turn,
-    negative for clockwise turn, and zero if the points are collinear.
+    Returns
+    -------
+    negative if counterclockwise
+    0 if colinear
+    positive if clockwise
+
     """
-    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    return (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
 
 
-def _build_hull(points: Iterable[Point2D]) -> List[Point2D]:
-    hull: List[Point2D] = []
+def _hull(points: Iterable[Point2D]) -> List[Point2D]:
+    """Construct the upper/lower hull of a set of points."""
+    stack: List[Point2D] = []
     for p in points:
         while (
-            len(hull) >= 2 and _cross(o=hull[-2], a=hull[-1], b=p) <= 0  # noqa: PLR2004
+            len(stack) >= 2  # noqa: PLR2004
+            and _orientation(stack[-2], stack[-1], p) >= 0
         ):
-            hull.pop()
-        hull.append(p)
-    return hull
+            stack.pop()
+        stack.append(p)
+    return stack
 
 
 def convex_hull(points: Iterable[Point2D]) -> LineType:
     """
-    Compute the convex hull of a set of 2D points.
+    Return the convex hull of a set of points using Andrew's monotone chain algorithm.
 
-    Input: an iterable sequence of (x, y) pairs representing the points.
-    Output: a list of vertices of the convex hull in counter-clockwise order,
-    starting from the vertex with the lexicographically smallest coordinates.
+    Args:
+    ----
+        points (Iterable[Point2D]): A collection of 2D points.
 
-    Andrew's monotone chain convex hull algorithm constructs the convex hull
-    of a set of 2-dimensional points in O(n log n) time.
+    Returns:
+    -------
+        LineType: The convex hull, represented as a list of points.
 
-    It does so by first sorting the points lexicographically
-    (first by x-coordinate, and in case of a tie, by y-coordinate),
-    and then constructing upper and lower hulls of the points.
-
-    An upper hull is the part of the convex hull, which is visible from the above.
-    It runs from its rightmost point to the leftmost point in counterclockwise order.
-    Lower hull is the remaining part of the convex hull.
     """
-    # Sort the points lexicographically (tuples are compared lexicographically).
-    # Remove duplicates to detect the case we have just one unique point.
     points = sorted(set(points))
-
-    # Boring case: no points, a single point or a line between two points,
-    # possibly repeated multiple times.
+    # No points, a single point or a line between two points
     if len(points) <= 2:  # noqa: PLR2004
         return points
 
-    lower = _build_hull(points)
-    upper = _build_hull(reversed(points))
-
+    # Construct the upper and lower hulls
+    upper = _hull(points)
+    lower = _hull(reversed(points))
     if len(lower) == len(upper) == 2 and set(lower) == set(upper):  # noqa: PLR2004
         # all points are in a straight line
-        return lower
-    # Concatenation of the lower and upper hulls gives the convex hull.
-    # Last point of lower list is omitted
-    # because it is repeated at the beginning of the upper list.
-    return lower[:-1] + upper
-
-
-def dedupe(coords: LineType) -> LineType:
-    """Remove duplicate Points from a LineString."""
-    return tuple(coord for coord, _count in groupby(coords))
+        return upper
+    # Remove duplicate points (at the end of upper and beginning of lower)
+    return dedupe(upper + lower)
 
 
 def compare_coordinates(

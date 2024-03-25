@@ -1,21 +1,31 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.4.0 (2024/03/25)
 ------------------
 
+- add Hypothesis tests [Ben Shaver, Christian Ledermann]
+- fix ``convex_hull`` edge-cases discovered by Hypothesis tests
+- fix ``from_wkt`` to include multi geometries in GeometryCollections
+- drop Python 3.7 support
+
+1.3.0 (2024/02/05)
+------------------
+
+- add Python 3.13 to supported versions
+- remove ``maybe_valid`` methods
+- GeoType and GeoCollectionType protocols to use a property instead of an attribute
 
 1.2.0 (2023/11/27)
 ------------------
 
- - remove Python 3.7 support
- - Geometries are now immutable (but not hashable)
- - add ``force_2d`` and ``force_3d`` factories [Alex Svetkin]
+- Geometries are now immutable (but not hashable)
+- add ``force_2d`` and ``force_3d`` factories [Alex Svetkin]
 
 1.1.1 (2023/10/27)
 ------------------
 
- - Use ``pyproject.toml``, remove ``setup.py`` and ``MANIFEST.in``
+- Use ``pyproject.toml``, remove ``setup.py`` and ``MANIFEST.in``
 
 1.1 (2023/10/13)
 -----------------

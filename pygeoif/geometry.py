@@ -114,7 +114,7 @@ class _Geometry:
 
         Returns a representation of the smallest convex Polygon containing
         all the points in the object unless the number of points in the object
-        is less than three.
+        is fewer than three.
         For two points, the convex hull collapses to a LineString;
         for 1, to a Point.
         """
@@ -270,7 +270,7 @@ class Point(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Point is considered empty when it has less than 2 coordinates.
+        A Point is considered empty when it has fewer than 2 coordinates.
         """
         return len(self._geoms) < 2  # noqa: PLR2004
 
@@ -376,7 +376,7 @@ class LineString(_Geometry):
     @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
-        return tuple(point.coords[0] for point in self.geoms)
+        return cast(LineType, tuple(point.coords[0] for point in self.geoms))
 
     @property
     def is_empty(self) -> bool:
@@ -404,14 +404,14 @@ class LineString(_Geometry):
         return geo_interface
 
     @classmethod
-    def from_coordinates(cls, coordinates: Sequence[PointType]) -> "LineString":
+    def from_coordinates(cls, coordinates: LineType) -> "LineString":
         """Construct a linestring from coordinates."""
         return cls(coordinates)
 
     @classmethod
     def from_points(cls, *args: Point) -> "LineString":
         """Create a linestring from points."""
-        return cls(tuple(point.coords[0] for point in args))
+        return cls(cast(LineType, tuple(point.coords[0] for point in args)))
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
@@ -578,10 +578,14 @@ class Polygon(_Geometry):
         Note that this is not implemented in Shapely.
         """
         if self._geoms[1]:
-            return self.exterior.coords, tuple(
-                interior.coords for interior in self.interiors if interior
+            return cast(
+                PolygonType,
+                (
+                    self.exterior.coords,
+                    tuple(interior.coords for interior in self.interiors if interior),
+                ),
             )
-        return (self.exterior.coords,)
+        return cast(PolygonType, (self.exterior.coords,))
 
     @property
     def has_z(self) -> Optional[bool]:
