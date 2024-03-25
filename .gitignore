@@ -14,7 +14,7 @@ coverage.xml
 .watchmanconfig
 html/
 .dccache
-.pytest_cache
+.pytest_cache/
 .pyre/
 .mypy_cache/
 .pytype/
