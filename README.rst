@@ -99,8 +99,7 @@ It was written to provide clean and python only geometries for fastkml_
 Installation
 ------------
 
-You can install PyGeoIf from pypi using pip:
-.. code-block:: console
+You can install PyGeoIf from pypi using pip::
 
     pip install pygeoif
 
@@ -397,22 +396,19 @@ Then install the requirements with ``pip install -e ".[dev]"``.
 pre-commit
 ----------
 
-Install the ``pre-commit`` hook with:
-.. code-block:: console
+Install the ``pre-commit`` hook with::
 
     pip install pre-commit
     pre-commit install
 
-and check the code with:
-.. code-block:: console
+and check the code with::
 
     pre-commit run --all-files
 
 Testing
 -------
 
-Run the unit and static tests with:
-.. code-block:: console
+Run the unit and static tests with::
 
     pytest tests
     pytest --doctest-glob="README.rst"
