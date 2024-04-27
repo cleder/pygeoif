@@ -89,7 +89,7 @@ def test_force_2d_polygon() -> None:
     internal = [(0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)]
     p = geometry.Polygon(external, [internal])
     p2d = factories.force_2d(p)
-    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
+    assert p2d.coords[0] == ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
     assert p2d.coords[1] == (
         ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
     )
@@ -107,7 +107,7 @@ def test_force_2d_polygon() -> None:
 
     p = geometry.Polygon(external, [internal])
     p2d = factories.force_2d(p)
-    assert p2d.coords[0] == (((0, 0), (0, 2), (2, 2), (2, 0), (0, 0)))
+    assert p2d.coords[0] == ((0, 0), (0, 2), (2, 2), (2, 0), (0, 0))
     assert p2d.coords[1] == (
         ((0.5, 0.5), (0.5, 1.5), (1.5, 1.5), (1.5, 0.5), (0.5, 0.5)),
     )
@@ -261,8 +261,10 @@ class TestWKT:
         "POINT M (1 1 80)",
         "LINESTRING(3 4,10 50,20 25)",
         "LINESTRING (30 10, 10 30, 40 40)",
-        "MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)),"
-        "((60 60, 70 70, 80 60, 60 60 )))",
+        (
+            "MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)),"
+            "((60 60, 70 70, 80 60, 60 60 )))"
+        ),
         """MULTIPOLYGON (((40 40, 20 45, 45 30, 40 40)),
               ((20 35, 45 20, 30 5, 10 10, 10 30, 20 35),
               (30 20, 20 25, 20 15, 30 20)))""",
@@ -385,8 +387,8 @@ class TestWKT:
         )
 
         assert isinstance(p, geometry.MultiLineString)
-        assert next(iter(p.geoms)).coords == (((3, 4), (10, 50), (20, 25)))
-        assert list(p.geoms)[1].coords == (((-5, -8), (-10, -8), (-15, -4)))
+        assert next(iter(p.geoms)).coords == ((3, 4), (10, 50), (20, 25))
+        assert list(p.geoms)[1].coords == ((-5, -8), (-10, -8), (-15, -4))
         assert (
             p.wkt == "MULTILINESTRING ((3 4, 10 50, "
             "20 25),(-5 -8, "

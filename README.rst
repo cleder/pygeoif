@@ -50,9 +50,9 @@ It was written to provide clean and python only geometries for fastkml_
     :target: https://codecov.io/gh/cleder/pygeoif
     :alt: Codecov
 
-.. image:: https://img.shields.io/badge/property_based_tests-hypothesis-green
-    :target: https://hypothesis.works
-    :alt: Hypothesis
+.. image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
+   :alt: Tested with Hypothesis
+   :target: https://hypothesis.readthedocs.io
 
 .. image:: https://img.shields.io/badge/code_style-black-000000.svg
     :target: https://github.com/psf/

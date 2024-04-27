@@ -1,5 +1,7 @@
 """Test MultiPoint."""
 
+import math
+
 import pytest
 
 from pygeoif import geometry
@@ -156,9 +158,9 @@ def test_empty() -> None:
 
 
 def test_repr_empty() -> None:
-    multipoint = geometry.MultiPoint([(None, None)])
+    multipoint = geometry.MultiPoint([(math.nan, math.nan)])
 
-    assert repr(multipoint) == "MultiPoint(((),))"
+    assert repr(multipoint) == "MultiPoint(())"
 
 
 def test_empty_bounds() -> None:

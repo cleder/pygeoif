@@ -248,21 +248,17 @@ class Point(_Geometry):
             Easting, northing, and elevation.
 
         """
+        geoms = (x, y, z) if z is not None else (x, y)
         object.__setattr__(
             self,
             "_geoms",
-            cast(
-                PointType,
-                tuple(
-                    coordinate
-                    for coordinate in (x, y, z)
-                    if coordinate is not None and not math.isnan(coordinate)
-                ),
-            ),
+            geoms,
         )
 
     def __repr__(self) -> str:
         """Return the representation."""
+        if self.is_empty:
+            return f"{self.geom_type}()"
         return f"{self.geom_type}{self._geoms}"
 
     @property
@@ -270,9 +266,9 @@ class Point(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Point is considered empty when it has fewer than 2 coordinates.
+        A Point is considered empty when it has no valid coordinates.
         """
-        return len(self._geoms) < 2  # noqa: PLR2004
+        return any(coord is None or math.isnan(coord) for coord in self._geoms)
 
     @property
     def x(self) -> float:
@@ -733,7 +729,9 @@ class MultiPoint(_MultiGeometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
+        return (
+            f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms if geom)})"
+        )
 
     @property
     def geoms(self) -> Iterator[Point]:

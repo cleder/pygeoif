@@ -68,8 +68,8 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
         ans[0] += (coord[0] + next_coord[0]) * area
         ans[1] += (coord[1] + next_coord[1]) * area
 
-    ans[0] = (ans[0]) / (3 * signed_area)
-    ans[1] = (ans[1]) / (3 * signed_area)
+    ans[0] = ans[0] / (3 * signed_area)
+    ans[1] = ans[1] / (3 * signed_area)
 
     return cast(Point2D, tuple(ans)), signed_area / 2.0
 
