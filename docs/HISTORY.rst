@@ -4,6 +4,7 @@ Changelog
 1.5.0 (unreleased)
 ------------------
 
+- fix handling of empty geometries.
 
 1.4.0 (2024/03/25)
 ------------------
