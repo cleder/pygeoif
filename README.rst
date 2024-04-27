@@ -106,6 +106,7 @@ You can install PyGeoIf from pypi using pip::
 
 Example
 ========
+.. code-block:: pycon
 
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
@@ -161,7 +162,6 @@ x, y, z : float
 
 Example
 ~~~~~~~~
-
 .. code-block:: pycon
 
     >>> from pygeoif import Point
@@ -271,7 +271,6 @@ So it's very rarely used in the real GIS professional world.
 
 Example
 ~~~~~~~~
-
 .. code-block:: pycon
 
     >>> from pygeoif import geometry
