@@ -289,9 +289,9 @@ class Point(_Geometry):
         raise DimensionError(msg)
 
     @property
-    def coords(self) -> Tuple[PointType]:
+    def coords(self) -> Union[Tuple[PointType], Tuple[()]]:
         """Return the geometry coordinates."""
-        return (self._geoms,)
+        return () if self.is_empty else (self._geoms,)
 
     @property
     def has_z(self) -> bool:
@@ -372,7 +372,10 @@ class LineString(_Geometry):
     @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
-        return cast(LineType, tuple(point.coords[0] for point in self.geoms))
+        return cast(
+            LineType,
+            tuple(point.coords[0] for point in self.geoms if point.coords),
+        )
 
     @property
     def is_empty(self) -> bool:
@@ -407,7 +410,9 @@ class LineString(_Geometry):
     @classmethod
     def from_points(cls, *args: Point) -> "LineString":
         """Create a linestring from points."""
-        return cls(cast(LineType, tuple(point.coords[0] for point in args)))
+        return cls(
+            cast(LineType, tuple(point.coords[0] for point in args if point.coords)),
+        )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
@@ -730,7 +735,8 @@ class MultiPoint(_MultiGeometry):
     def __repr__(self) -> str:
         """Return the representation."""
         return (
-            f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms if geom)})"
+            f"{self.geom_type}"
+            f"({tuple(geom.coords[0] for geom in self._geoms if geom.coords)})"
         )
 
     @property
@@ -746,13 +752,15 @@ class MultiPoint(_MultiGeometry):
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface["coordinates"] = tuple(geom.coords[0] for geom in self.geoms)
+        geo_interface["coordinates"] = tuple(
+            geom.coords[0] for geom in self.geoms if geom.coords
+        )
         return geo_interface
 
     @classmethod
     def from_points(cls, *args: Point, unique: bool = False) -> "MultiPoint":
         """Create a MultiPoint from Points."""
-        return cls([point.coords[0] for point in args], unique=unique)
+        return cls([point.coords[0] for point in args if point.coords], unique=unique)
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPoint":

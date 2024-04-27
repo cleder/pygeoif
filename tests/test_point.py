@@ -82,6 +82,12 @@ def test_repr_empty() -> None:
     assert repr(point) == "Point()"
 
 
+def test_coords_empty() -> None:
+    point = geometry.Point(None, None)
+
+    assert point.coords == ()
+
+
 def test_repr2d() -> None:
     point = geometry.Point(1, 0)
 

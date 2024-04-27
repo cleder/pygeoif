@@ -220,3 +220,15 @@ def test_empty_bounds() -> None:
     line = geometry.LineString([])
 
     assert line.bounds == ()
+
+
+def test_bounds_1_pt() -> None:
+    line = geometry.LineString([(0, 0)])
+
+    assert line.bounds == (0, 0, 0, 0)
+
+
+def test_empty_coords() -> None:
+    line = geometry.LineString([])
+
+    assert line.coords == ()
