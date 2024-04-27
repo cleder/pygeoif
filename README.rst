@@ -162,14 +162,16 @@ x, y, z : float
 Example
 ~~~~~~~~
 
-      >>> from pygeoif import Point
-      >>> p = Point(1.0, -1.0)
-      >>> print(p)
-      POINT (1.0 -1.0)
-      >>> p.y
-      -1.0
-      >>> p.x
-      1.0
+.. code-block:: pycon
+
+    >>> from pygeoif import Point
+    >>> p = Point(1.0, -1.0)
+    >>> print(p)
+    POINT (1.0 -1.0)
+    >>> p.y
+    -1.0
+    >>> p.x
+    1.0
 
 
 
@@ -270,6 +272,8 @@ So it's very rarely used in the real GIS professional world.
 Example
 ~~~~~~~~
 
+.. code-block:: pycon
+
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1.0, -1.0)
     >>> p2 = geometry.Point(1.0, -1.0)
@@ -291,6 +295,8 @@ properties : dict
 
 Example
 ~~~~~~~~
+.. code-block:: pycon
+
       >>> from pygeoif import Point, Feature
       >>> p = Point(1.0, -1.0)
       >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
@@ -311,6 +317,7 @@ features: sequence
 
 Example
 ~~~~~~~~
+.. code-block:: pycon
 
     >>> from pygeoif import Point, Feature, FeatureCollection
     >>> p = Point(1.0, -1.0)
@@ -332,6 +339,7 @@ shape
 
 Create a pygeoif feature from an object that provides the ``__geo_interface__``
 or any GeoJSON_ compatible dictionary.
+.. code-block:: pycon
 
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry, shape
@@ -343,6 +351,7 @@ from_wkt
 ---------
 
 Create a geometry from its WKT representation
+.. code-block:: pycon
 
     >>> from pygeoif import from_wkt
     >>> p = from_wkt('POINT (0 1)')
@@ -389,11 +398,13 @@ pre-commit
 ----------
 
 Install the ``pre-commit`` hook with::
+.. code-block:: console
 
     pip install pre-commit
     pre-commit install
 
 and check the code with::
+.. code-block:: console
 
     pre-commit run --all-files
 
@@ -401,6 +412,7 @@ Testing
 -------
 
 Run the unit and static tests with::
+.. code-block:: console
 
     pytest tests
     pytest --doctest-glob="README.rst"
