@@ -338,6 +338,7 @@ shape
 
 Create a pygeoif feature from an object that provides the ``__geo_interface__``
 or any GeoJSON_ compatible dictionary.
+
 .. code-block:: pycon
 
     >>> from shapely.geometry import Point
@@ -350,6 +351,7 @@ from_wkt
 ---------
 
 Create a geometry from its WKT representation
+
 .. code-block:: pycon
 
     >>> from pygeoif import from_wkt
