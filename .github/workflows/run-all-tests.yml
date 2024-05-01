@@ -92,7 +92,7 @@ jobs:
           python -m pip install -e ".[typing, complexity, linting]"
       - name: Typecheck
         run: |
-          mypy pygeoif
+          mypy pygeoif tests
       - name: Linting
         run: |
           flake8 pygeoif
