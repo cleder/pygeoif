@@ -171,13 +171,13 @@ def test_fuzz_compare_coordinates(
     )
     flat_other = [other] if isinstance(other, float) else more_itertools.collapse(other)
 
-    if any(math.isnan(c) for c in flat_coords):
+    if any(math.isnan(c) for c in flat_coords):  # pragma: no cover
         assert not pygeoif.functions.compare_coordinates(coords=coords, other=coords)
-    else:
+    else:  # pragma: no cover
         assert pygeoif.functions.compare_coordinates(coords=coords, other=coords)
-    if any(math.isnan(c) for c in flat_other):
+    if any(math.isnan(c) for c in flat_other):  # pragma: no cover
         assert not pygeoif.functions.compare_coordinates(coords=other, other=other)
-    else:
+    else:  # pragma: no cover
         assert pygeoif.functions.compare_coordinates(coords=other, other=other)
 
 
