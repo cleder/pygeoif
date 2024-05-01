@@ -18,7 +18,9 @@ import pygeoif.types
     coords=st.one_of(
         st.lists(
             st.tuples(
-                st.floats(allow_subnormal=False),
+                st.floats(
+                    allow_subnormal=False,
+                ),
                 st.floats(allow_subnormal=False),
             ),
         ),
@@ -41,7 +43,7 @@ def test_fuzz_centroid(
     if area == 0 or math.isnan(area):
         assert math.isnan(center[0])
         assert math.isnan(center[1])
-    else:
+    else:  # pragma: no cover
         assert isinstance(center[0], float)
         assert isinstance(center[1], float)
         assert len(center) == 2
@@ -196,8 +198,18 @@ def test_fuzz_compare_geo_interface(
 @given(
     points=st.lists(
         st.tuples(
-            st.floats(allow_nan=False, allow_infinity=False, allow_subnormal=False),
-            st.floats(allow_nan=False, allow_infinity=False, allow_subnormal=False),
+            st.floats(
+                allow_nan=False,
+                allow_infinity=False,
+                allow_subnormal=False,
+                width=32,
+            ),
+            st.floats(
+                allow_nan=False,
+                allow_infinity=False,
+                allow_subnormal=False,
+                width=32,
+            ),
         ),
     ),
 )

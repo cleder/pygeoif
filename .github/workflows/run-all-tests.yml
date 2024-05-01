@@ -44,7 +44,7 @@ jobs:
           python -m pip install -e ".[tests]"
       - name: Test with pytest including hypothesis tests
         run: >-
-          pytest tests
+          pytest tests --hypothesis-profile=ci
 
   test-coverage:
     runs-on: ubuntu-latest
