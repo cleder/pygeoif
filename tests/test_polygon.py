@@ -62,6 +62,18 @@ def test_from_dict_shell_only() -> None:
     }
 
 
+def test_from_dict_empty_coordinates() -> None:
+    polygon = geometry.Polygon._from_dict(
+        {
+            "type": "Polygon",
+            "bbox": (0.0, 0.0, 1.0, 1.0),
+            "coordinates": (),
+        },
+    )
+
+    assert polygon.is_empty
+
+
 def test_from_dict_with_holes() -> None:
     polygon = geometry.Polygon._from_dict(
         {
