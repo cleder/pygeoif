@@ -219,6 +219,7 @@ def test_fuzz_convex_hull(points: typing.List[typing.Tuple[float, float]]) -> No
     for coord in hull:
         assert coord in points
     assert len(hull) <= len(points) + 1
+    assert pygeoif.functions.signed_area(hull) >= 0
 
 
 @given(
