@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - fix handling of empty geometries.
+- more hypothesis tests
 
 1.4.0 (2024/03/25)
 ------------------
