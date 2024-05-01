@@ -57,11 +57,21 @@ CoordinatesType = Union[
 ]
 MultiCoordinatesType = Sequence[CoordinatesType]
 
+GeomType = Literal[
+    "Point",
+    "LineString",
+    "LinearRing",
+    "Polygon",
+    "MultiPoint",
+    "MultiLineString",
+    "MultiPolygon",
+]
+
 
 class GeoInterface(TypedDict):
     """Required keys for the GeoInterface."""
 
-    type: str
+    type: GeomType
     coordinates: Union[CoordinatesType, MultiCoordinatesType]
     bbox: NotRequired[Bounds]
 

@@ -232,3 +232,9 @@ def test_empty_coords() -> None:
     line = geometry.LineString([])
 
     assert line.coords == ()
+
+
+def test_empty_coords_nan() -> None:
+    line = geometry.LineString(((math.nan, math.nan),))
+
+    assert line.coords == ()

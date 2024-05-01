@@ -85,6 +85,7 @@ linting = [
 ]
 tests = [
     "hypothesis",
+    "more_itertools",
     "pytest",
     "pytest-cov",
 ]

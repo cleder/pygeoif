@@ -41,6 +41,7 @@ from pygeoif.functions import signed_area
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
+from pygeoif.types import GeomType
 from pygeoif.types import GeoType
 from pygeoif.types import LineType
 from pygeoif.types import Point2D
@@ -166,7 +167,7 @@ class _Geometry:
             msg = "Empty Geometry"
             raise AttributeError(msg)
         return {
-            "type": self.geom_type,
+            "type": cast(GeomType, self.geom_type),
             "bbox": cast(Bounds, self.bounds),
             "coordinates": (),
         }
@@ -481,9 +482,9 @@ class LinearRing(LineString):
         if self.has_z:
             msg = "Centeroid is only implemented for 2D coordinates"
             raise DimensionError(msg)
-        try:
-            cent, area = centroid(self.coords)
-        except ZeroDivisionError:
+
+        cent, area = centroid(self.coords)
+        if any(math.isnan(coord) for coord in cent):
             return None
         return (
             Point(x=cent[0], y=cent[1])
@@ -625,6 +626,8 @@ class Polygon(_Geometry):
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":
         cls._check_dict(geo_interface)
+        if not geo_interface["coordinates"]:
+            return cls(shell=(), holes=())
         return cls(
             shell=cast(LineType, geo_interface["coordinates"][0]),
             holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),

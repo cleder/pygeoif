@@ -167,3 +167,9 @@ def test_empty_bounds() -> None:
     multipoint = geometry.MultiPoint([(None, None)])
 
     assert multipoint.bounds == ()
+
+
+def test_empty_geoms() -> None:
+    multipoint = geometry.MultiPoint([(math.nan, math.nan)])
+
+    assert not list(multipoint.geoms)
