@@ -150,15 +150,12 @@ def shape(
         )
         raise TypeError(msg)
 
-    constructor = type_map.get(geometry["type"])
-    if constructor:
+    if constructor := type_map.get(geometry["type"]):
         return constructor._from_dict(  # type: ignore [attr-defined, no-any-return]
             geometry,
         )
     if geometry["type"] == "GeometryCollection":
-        geometries = [
-            shape(fi) for fi in geometry["geometries"]  # type: ignore [typeddict-item]
-        ]
+        geometries = [shape(fi) for fi in geometry["geometries"]]
         return GeometryCollection(geometries)
     msg = f"[{geometry['type']} is not implemented"
     raise NotImplementedError(msg)

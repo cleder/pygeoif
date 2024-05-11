@@ -1,5 +1,6 @@
 """Test LineString."""
 
+import math
 from unittest import mock
 
 import pytest
@@ -18,6 +19,12 @@ def test_coords_get_3d() -> None:
     line = geometry.LineString([(0, 0, 0), (1, 1, 1)])
 
     assert line.coords == ((0.0, 0.0, 0), (1.0, 1.0, 1))
+
+
+def test_coords_get_nan() -> None:
+    line = geometry.LineString([(0, math.nan, 0), (1, 1, math.nan), (2, 2, 2)])
+
+    assert line.coords == ((2, 2, 2),)
 
 
 def test_empty_points_omitted() -> None:
@@ -213,3 +220,21 @@ def test_empty_bounds() -> None:
     line = geometry.LineString([])
 
     assert line.bounds == ()
+
+
+def test_bounds_1_pt() -> None:
+    line = geometry.LineString([(0, 0)])
+
+    assert line.bounds == (0, 0, 0, 0)
+
+
+def test_empty_coords() -> None:
+    line = geometry.LineString([])
+
+    assert line.coords == ()
+
+
+def test_empty_coords_nan() -> None:
+    line = geometry.LineString(((math.nan, math.nan),))
+
+    assert line.coords == ()

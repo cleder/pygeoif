@@ -10,6 +10,7 @@ authors = [
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "Framework :: Hypothesis",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
     "Operating System :: OS Independent",
@@ -35,6 +36,7 @@ dynamic = [
 ]
 keywords = [
     "GIS",
+    "Hypothesis",
     "Spatial",
     "WKT",
 ]
@@ -83,6 +85,7 @@ linting = [
 ]
 tests = [
     "hypothesis",
+    "more_itertools",
     "pytest",
     "pytest-cov",
 ]

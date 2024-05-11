@@ -72,8 +72,7 @@ def test_signed_area2() -> None:
 
 def test_centroid_line() -> None:
     a0 = [(0, 0), (1, 1), (0, 0)]
-    with pytest.raises(ZeroDivisionError):
-        assert centroid(a0)
+    assert centroid(a0) == ((math.nan, math.nan), 0)
 
 
 def test_signed_area_0_3d() -> None:

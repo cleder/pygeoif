@@ -38,59 +38,61 @@ testing with Hypothesis_.
 
 It was written to provide clean and python only geometries for fastkml_
 
-.. image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
+|doc| |test| |cov| |hypothesis| |black| |mypy| |openhub| |factor| |commit| |py| |implement| |latest| |license| |downloads|
+
+.. |doc| image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
     :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation
 
-.. image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg?branch=main
+.. |test| image:: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml/badge.svg?branch=main
     :target: https://github.com/cleder/pygeoif/actions/workflows/run-all-tests.yml
     :alt: GitHub Actions
 
-.. image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
+.. |cov| image:: https://codecov.io/gh/cleder/pygeoif/branch/main/graph/badge.svg?token=2EfiwBXs9X
     :target: https://codecov.io/gh/cleder/pygeoif
     :alt: Codecov
 
-.. image:: https://img.shields.io/badge/property_based_tests-hypothesis-green
-    :target: https://hypothesis.works
-    :alt: Hypothesis
+.. |hypothesis| image:: https://img.shields.io/badge/hypothesis-tested-brightgreen.svg
+   :alt: Tested with Hypothesis
+   :target: https://hypothesis.readthedocs.io
 
-.. image:: https://img.shields.io/badge/code_style-black-000000.svg
+.. |black| image:: https://img.shields.io/badge/code_style-black-000000.svg
     :target: https://github.com/psf/
     :alt: Black
 
-.. image:: https://img.shields.io/badge/type_checker-mypy-blue
+.. |mypy| image:: https://img.shields.io/badge/type_checker-mypy-blue
     :target: http://mypy-lang.org/
     :alt: Mypy
 
-.. image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
+.. |openhub| image:: https://www.openhub.net/p/pygeoif/widgets/project_thin_badge.gif
     :target: https://www.openhub.net/p/pygeoif/
     :alt: Openhub
 
-.. image:: https://www.codefactor.io/repository/github/cleder/pygeoif/badge/main
+.. |factor| image:: https://www.codefactor.io/repository/github/cleder/pygeoif/badge/main
    :target: https://www.codefactor.io/repository/github/cleder/pygeoif/overview/main
    :alt: CodeFactor
 
-.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
+.. |commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-.. image:: https://img.shields.io/pypi/pyversions/pygeoif.svg
+.. |py| image:: https://img.shields.io/pypi/pyversions/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Supported Python versions
 
-.. image:: https://img.shields.io/pypi/implementation/pygeoif.svg
+.. |implement| image:: https://img.shields.io/pypi/implementation/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Supported Python implementations
 
-.. image:: https://img.shields.io/pypi/v/pygeoif.svg
+.. |latest| image:: https://img.shields.io/pypi/v/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/l/pygeoif.svg
+.. |license| image:: https://img.shields.io/pypi/l/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: License
 
-.. image:: https://img.shields.io/pypi/dm/pygeoif.svg
+.. |downloads| image:: https://img.shields.io/pypi/dm/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Downloads
 
@@ -104,6 +106,7 @@ You can install PyGeoIf from pypi using pip::
 
 Example
 ========
+.. code-block:: pycon
 
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1,1)
@@ -159,15 +162,16 @@ x, y, z : float
 
 Example
 ~~~~~~~~
+.. code-block: pycon
 
-      >>> from pygeoif import Point
-      >>> p = Point(1.0, -1.0)
-      >>> print(p)
-      POINT (1.0 -1.0)
-      >>> p.y
-      -1.0
-      >>> p.x
-      1.0
+    >>> from pygeoif import Point
+    >>> p = Point(1.0, -1.0)
+    >>> print(p)
+    POINT (1.0 -1.0)
+    >>> p.y
+    -1.0
+    >>> p.x
+    1.0
 
 
 
@@ -267,6 +271,7 @@ So it's very rarely used in the real GIS professional world.
 
 Example
 ~~~~~~~~
+.. code-block:: pycon
 
     >>> from pygeoif import geometry
     >>> p = geometry.Point(1.0, -1.0)
@@ -289,6 +294,8 @@ properties : dict
 
 Example
 ~~~~~~~~
+.. code-block:: pycon
+
       >>> from pygeoif import Point, Feature
       >>> p = Point(1.0, -1.0)
       >>> props = {'Name': 'Sample Point', 'Other': 'Other Data'}
@@ -309,6 +316,7 @@ features: sequence
 
 Example
 ~~~~~~~~
+.. code-block:: pycon
 
     >>> from pygeoif import Point, Feature, FeatureCollection
     >>> p = Point(1.0, -1.0)
@@ -331,6 +339,8 @@ shape
 Create a pygeoif feature from an object that provides the ``__geo_interface__``
 or any GeoJSON_ compatible dictionary.
 
+.. code-block:: pycon
+
     >>> from shapely.geometry import Point
     >>> from pygeoif import geometry, shape
     >>> shape(Point(0,0))
@@ -341,6 +351,8 @@ from_wkt
 ---------
 
 Create a geometry from its WKT representation
+
+.. code-block:: pycon
 
     >>> from pygeoif import from_wkt
     >>> p = from_wkt('POINT (0 1)')

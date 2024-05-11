@@ -41,6 +41,8 @@ def signed_area(coords: LineType) -> float:
     Linear time algorithm: http://www.cgafaq.info/wiki/Polygon_Area.
     A value >= 0 indicates a counter-clockwise oriented ring.
     """
+    if len(coords) < 3:  # noqa: PLR2004
+        return 0.0
     xs, ys = map(list, zip(*(coord[:2] for coord in coords)))
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
@@ -53,7 +55,6 @@ def signed_area(coords: LineType) -> float:
 def centroid(coords: LineType) -> Tuple[Point2D, float]:
     """Calculate the coordinates of the centroid and the area of a LineString."""
     ans: List[float] = [0, 0]
-
     n = len(coords)
     signed_area = 0.0
 
@@ -68,8 +69,11 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
         ans[0] += (coord[0] + next_coord[0]) * area
         ans[1] += (coord[1] + next_coord[1]) * area
 
-    ans[0] = (ans[0]) / (3 * signed_area)
-    ans[1] = (ans[1]) / (3 * signed_area)
+    if signed_area == 0 or math.isnan(signed_area):
+        return ((math.nan, math.nan), signed_area)
+
+    ans[0] = ans[0] / (3 * signed_area)
+    ans[1] = ans[1] / (3 * signed_area)
 
     return cast(Point2D, tuple(ans)), signed_area / 2.0
 
@@ -167,13 +171,13 @@ def compare_geo_interface(
             return all(
                 compare_geo_interface(first=g1, second=g2)  # type: ignore [arg-type]
                 for g1, g2 in zip_longest(
-                    first["geometries"],  # type: ignore [typeddict-item]
+                    first["geometries"],
                     second["geometries"],  # type: ignore [typeddict-item]
                     fillvalue={"type": None, "coordinates": ()},
                 )
             )
         return compare_coordinates(
-            coords=first["coordinates"],  # type: ignore [typeddict-item]
+            coords=first["coordinates"],
             other=second["coordinates"],  # type: ignore [typeddict-item]
         )
     except KeyError:
@@ -220,6 +224,8 @@ def move_coordinates(
     >>> move_coordinates(((0, 0), (-1, 1)), (-1, 1, 0))
     ((-1, 1, 0), (-2, 2, 0))
     """
+    if not coordinates:
+        return coordinates
     if isinstance(coordinates[0], (int, float)):
         return move_coordinate(cast(PointType, coordinates), move_by)
     return cast(
@@ -237,14 +243,13 @@ def move_geo_interface(
         return {
             "type": "GeometryCollection",
             "geometries": tuple(
-                move_geo_interface(g, move_by)
-                for g in interface["geometries"]  # type: ignore [typeddict-item]
+                move_geo_interface(g, move_by) for g in interface["geometries"]
             ),
         }
     return {
         "type": interface["type"],
         "coordinates": move_coordinates(
-            interface["coordinates"],  # type: ignore [typeddict-item, arg-type]
+            interface["coordinates"],  # type: ignore [arg-type]
             move_by,
         ),
     }

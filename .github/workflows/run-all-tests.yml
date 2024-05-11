@@ -44,7 +44,7 @@ jobs:
           python -m pip install -e ".[tests]"
       - name: Test with pytest including hypothesis tests
         run: >-
-          pytest tests
+          pytest tests --hypothesis-profile=ci
 
   test-coverage:
     runs-on: ubuntu-latest
@@ -92,7 +92,7 @@ jobs:
           python -m pip install -e ".[typing, complexity, linting]"
       - name: Typecheck
         run: |
-          mypy pygeoif
+          mypy pygeoif tests
       - name: Linting
         run: |
           flake8 pygeoif

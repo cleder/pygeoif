@@ -41,6 +41,7 @@ from pygeoif.functions import signed_area
 from pygeoif.types import Bounds
 from pygeoif.types import GeoCollectionInterface
 from pygeoif.types import GeoInterface
+from pygeoif.types import GeomType
 from pygeoif.types import GeoType
 from pygeoif.types import LineType
 from pygeoif.types import Point2D
@@ -166,7 +167,7 @@ class _Geometry:
             msg = "Empty Geometry"
             raise AttributeError(msg)
         return {
-            "type": self.geom_type,
+            "type": cast(GeomType, self.geom_type),
             "bbox": cast(Bounds, self.bounds),
             "coordinates": (),
         }
@@ -248,21 +249,17 @@ class Point(_Geometry):
             Easting, northing, and elevation.
 
         """
+        geoms = (x, y, z) if z is not None else (x, y)
         object.__setattr__(
             self,
             "_geoms",
-            cast(
-                PointType,
-                tuple(
-                    coordinate
-                    for coordinate in (x, y, z)
-                    if coordinate is not None and not math.isnan(coordinate)
-                ),
-            ),
+            geoms,
         )
 
     def __repr__(self) -> str:
         """Return the representation."""
+        if self.is_empty:
+            return f"{self.geom_type}()"
         return f"{self.geom_type}{self._geoms}"
 
     @property
@@ -270,9 +267,9 @@ class Point(_Geometry):
         """
         Return if this geometry is empty.
 
-        A Point is considered empty when it has fewer than 2 coordinates.
+        A Point is considered empty when it has no valid coordinates.
         """
-        return len(self._geoms) < 2  # noqa: PLR2004
+        return any(coord is None or math.isnan(coord) for coord in self._geoms)
 
     @property
     def x(self) -> float:
@@ -293,9 +290,9 @@ class Point(_Geometry):
         raise DimensionError(msg)
 
     @property
-    def coords(self) -> Tuple[PointType]:
+    def coords(self) -> Union[Tuple[PointType], Tuple[()]]:
         """Return the geometry coordinates."""
-        return (self._geoms,)
+        return () if self.is_empty else (self._geoms,)
 
     @property
     def has_z(self) -> bool:
@@ -376,7 +373,10 @@ class LineString(_Geometry):
     @property
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
-        return cast(LineType, tuple(point.coords[0] for point in self.geoms))
+        return cast(
+            LineType,
+            tuple(point.coords[0] for point in self.geoms if point.coords),
+        )
 
     @property
     def is_empty(self) -> bool:
@@ -411,7 +411,9 @@ class LineString(_Geometry):
     @classmethod
     def from_points(cls, *args: Point) -> "LineString":
         """Create a linestring from points."""
-        return cls(cast(LineType, tuple(point.coords[0] for point in args)))
+        return cls(
+            cast(LineType, tuple(point.coords[0] for point in args if point.coords)),
+        )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
@@ -480,9 +482,9 @@ class LinearRing(LineString):
         if self.has_z:
             msg = "Centeroid is only implemented for 2D coordinates"
             raise DimensionError(msg)
-        try:
-            cent, area = centroid(self.coords)
-        except ZeroDivisionError:
+
+        cent, area = centroid(self.coords)
+        if any(math.isnan(coord) for coord in cent):
             return None
         return (
             Point(x=cent[0], y=cent[1])
@@ -624,6 +626,8 @@ class Polygon(_Geometry):
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "Polygon":
         cls._check_dict(geo_interface)
+        if not geo_interface["coordinates"]:
+            return cls(shell=(), holes=())
         return cls(
             shell=cast(LineType, geo_interface["coordinates"][0]),
             holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),
@@ -733,7 +737,10 @@ class MultiPoint(_MultiGeometry):
 
     def __repr__(self) -> str:
         """Return the representation."""
-        return f"{self.geom_type}({tuple(geom.coords[0] for geom in self._geoms)})"
+        return (
+            f"{self.geom_type}"
+            f"({tuple(geom.coords[0] for geom in self._geoms if geom.coords)})"
+        )
 
     @property
     def geoms(self) -> Iterator[Point]:
@@ -748,13 +755,15 @@ class MultiPoint(_MultiGeometry):
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface["coordinates"] = tuple(geom.coords[0] for geom in self.geoms)
+        geo_interface["coordinates"] = tuple(
+            geom.coords[0] for geom in self.geoms if geom.coords
+        )
         return geo_interface
 
     @classmethod
     def from_points(cls, *args: Point, unique: bool = False) -> "MultiPoint":
         """Create a MultiPoint from Points."""
-        return cls([point.coords[0] for point in args], unique=unique)
+        return cls([point.coords[0] for point in args if point.coords], unique=unique)
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPoint":
