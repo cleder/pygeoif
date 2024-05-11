@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5.0 (unreleased)
+1.5.0 (2024/05/11)
 ------------------
 
 - fix handling of empty geometries.
