@@ -40,12 +40,12 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.4.8'
+    rev: 'v0.4.9'
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -86,7 +86,7 @@ repos:
     hooks:
       - id: pyprojectsort
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.28.4"
+    rev: "0.28.5"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
