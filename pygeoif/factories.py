@@ -53,7 +53,7 @@ wkt_regex: Pattern[str] = re.compile(
         "GEOMETRYCOLLECTION)"
         r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$"
     ),
-    flags=re.I,
+    flags=re.IGNORECASE,
 )
 gcre: Pattern[str] = re.compile(
     r"POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON",
@@ -92,7 +92,7 @@ def box(
     """Return a rectangular polygon with configurable normal vector."""
     coords = [(maxx, miny), (maxx, maxy), (minx, maxy), (minx, miny)]
     if not ccw:
-        coords = coords[::-1]
+        coords.reverse()
     return Polygon(coords)
 
 
@@ -188,7 +188,7 @@ def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
     return LineString(
         cast(
-            LineType,  #
+            LineType,
             [tuple(num(c) for c in coord.split()) for coord in coords],
         ),
     )
