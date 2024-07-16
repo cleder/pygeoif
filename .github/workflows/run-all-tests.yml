@@ -97,7 +97,7 @@ jobs:
         run: |
           flake8 pygeoif
           black --check pygeoif tests
-          ruff --no-fix pygeoif tests
+          ruff check --no-fix pygeoif tests
           yamllint .github/workflows/
       - name: Check complexity
         run: |
