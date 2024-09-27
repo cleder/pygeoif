@@ -3,9 +3,47 @@
 import unittest
 
 import pytest
+from hypothesis import given
+from hypothesis.strategies import composite
+from hypothesis.strategies import dictionaries
+from hypothesis.strategies import floats
+from hypothesis.strategies import lists
+from hypothesis.strategies import none
+from hypothesis.strategies import one_of
+from hypothesis.strategies import text
+from hypothesis.strategies import tuples
 
 from pygeoif import feature
 from pygeoif import geometry
+
+
+@composite
+def polygons(draw):
+    """Generate a polygon geometry"""
+    """The polygon is closed"""
+    coords = draw(coordinates())
+    coords.append(coords[0])
+    return geometry.Polygon(coords)
+
+
+@composite
+def coordinates(draw):
+    """Generate a list of coordinates for geometries"""
+    return draw(
+        lists(
+            tuples(
+                floats(min_value=180, max_value=180), floats(min_value=90, max_value=90),
+            ),
+            min_size=3,
+            max_size=10,
+        ),
+    )
+
+
+@composite
+def properties(draw):
+    """Generate random properties"""
+    return draw(dictionaries(text(), one_of(text(), floats(), none()), max_size=5))
 
 
 class TestFeature:
@@ -99,6 +137,21 @@ class TestFeature:
             ).__geo_interface__
             == self.f2.__geo_interface__
         )
+
+    @given(polygon=polygons(), props=properties())
+    def test_feature_with_random_data(self, polygon, props) -> None:
+        f = feature.Feature(polygon, props)
+        assert isinstance(f, feature.Feature)
+        assert f.geometry == polygon
+        assert f.properties == props
+
+    @given(polygon=polygons())
+    def test_feature_collection_with_random_features(self, polygon) -> None:
+        f1 = feature.Feature(polygon)
+        f2 = feature.Feature(polygon)
+        fc = feature.FeatureCollection([f1, f2])
+        assert isinstance(fc, feature.FeatureCollection)
+        assert len(fc) == 2
 
     def test_featurecollection(self) -> None:
         pytest.raises(TypeError, feature.FeatureCollection)
