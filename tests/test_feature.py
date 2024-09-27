@@ -32,7 +32,8 @@ def coordinates(draw):
     return draw(
         lists(
             tuples(
-                floats(min_value=180, max_value=180), floats(min_value=90, max_value=90),
+                floats(min_value=180, max_value=180),
+                floats(min_value=90, max_value=90),
             ),
             min_size=3,
             max_size=10,
