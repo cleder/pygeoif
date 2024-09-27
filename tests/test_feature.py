@@ -1,4 +1,4 @@
-"""Test Feature and FeatureCollection."""
+# """Test Feature and FeatureCollection."""
 
 import unittest
 
@@ -19,8 +19,8 @@ from pygeoif import geometry
 
 @composite
 def polygons(draw):
-    """Generate a polygon geometry"""
-    """The polygon is closed"""
+    # """Generate a polygon geometry"""
+    # """The polygon is closed"""
     coords = draw(coordinates())
     coords.append(coords[0])
     return geometry.Polygon(coords)
@@ -28,7 +28,7 @@ def polygons(draw):
 
 @composite
 def coordinates(draw):
-    """Generate a list of coordinates for geometries"""
+    # """Generate a list of coordinates for geometries"""
     return draw(
         lists(
             tuples(
@@ -42,7 +42,7 @@ def coordinates(draw):
 
 @composite
 def properties(draw):
-    """Generate random properties"""
+    # """Generate random properties"""
     return draw(dictionaries(text(), one_of(text(), floats(), none()), max_size=5))
 
 
