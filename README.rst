@@ -93,7 +93,7 @@ It was written to provide clean and python only geometries for fastkml_
     :alt: License
 
 .. |downloads| image:: https://img.shields.io/pypi/dm/pygeoif.svg
-    :target: https://pypi.python.org/pypi/pygeoif/
+    :target: https://www.pepy.tech/projects/pygeoif
     :alt: Downloads
 
 Installation
