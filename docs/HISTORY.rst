@@ -4,6 +4,8 @@ Changelog
 1.6.0 (unreleased)
 ------------------
 
+- expose ``force_2d`` and ``force_3d`` factories in the top-level module.
+
 
 1.5.0 (2024/05/11)
 ------------------
