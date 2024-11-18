@@ -41,7 +41,7 @@ repos:
 #       - id: docformatter
 #         args: [--in-place, --make-summary-multi-line, --close-quotes-on-newline, --wrap-summaries, "88"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.7.3'
+    rev: 'v0.7.4'
     hooks:
       - id: ruff
       - id: ruff-format
