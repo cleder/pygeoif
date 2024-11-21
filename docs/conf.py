@@ -49,3 +49,11 @@ except ImportError:
     pass
 
 autodoc_member_order = "bysource"
+
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "cleder",  # Username
+    "github_repo": "pygeoif",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/docs/",  # Path in the checkout to the docs root
+}
