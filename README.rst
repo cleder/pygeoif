@@ -38,7 +38,7 @@ testing with Hypothesis_.
 
 It was written to provide clean and python only geometries for fastkml_
 
-|doc| |test| |cov| |hypothesis| |black| |mypy| |openhub| |factor| |commit| |py| |conda| |implement| |latest| |license| |downloads|
+|doc| |test| |cov| |hypothesis| |black| |mypy| |openhub| |factor| |commit| |py| |implement| |latest| |conda| |license| |downloads|
 
 .. |doc| image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
     :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
