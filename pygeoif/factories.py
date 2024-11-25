@@ -15,6 +15,7 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Geometry Factories."""
+
 import re
 from typing import List
 from typing import Optional
@@ -382,9 +383,9 @@ def force_3d(
 
 
 __all__ = [
+    "box",
     "force_2d",
     "force_3d",
-    "box",
     "from_wkt",
     "mapping",
     "orient",
