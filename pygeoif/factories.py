@@ -278,6 +278,19 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
 
 
 def split_wkt_components(wkt: str) -> List[str]:
+    """
+    Split a WKT (Well-Known Text) string into its individual components.
+
+    This function takes a WKT string and splits it into a list of components,
+    ensuring that commas within nested parentheses are not considered as split points.
+
+    Args:
+        wkt (str): The WKT string to be split.
+
+    Returns:
+        List[str]: A list of strings, each representing a component of the WKT string.
+
+    """
     components = []
     start = 0
     open_count = 0
