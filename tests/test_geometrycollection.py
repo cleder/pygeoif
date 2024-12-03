@@ -1,7 +1,5 @@
 """Test Baseclass."""
 
-import pytest
-
 from pygeoif import geometry
 from pygeoif.factories import from_wkt
 
@@ -463,7 +461,6 @@ def test_multi_geometry_collection_wkt() -> None:
     assert from_wkt(str(gc)) == gc
 
 
-@pytest.mark.xfail(reason="WKT parsing for nested GeometryCollections not implemented.")
 def test_nested_geometry_collections_wkt() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
     gc1 = geometry.GeometryCollection([geometry.Point(0, 0), multipoint])
