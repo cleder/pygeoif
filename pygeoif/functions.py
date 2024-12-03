@@ -16,6 +16,7 @@
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 """Functions for geometries."""
+
 import math
 from itertools import groupby
 from itertools import zip_longest

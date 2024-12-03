@@ -20,7 +20,6 @@
 
 import math
 import warnings
-from itertools import chain
 from typing import Any
 from typing import Hashable
 from typing import Iterable
@@ -859,10 +858,8 @@ class MultiLineString(_MultiGeometry):
         return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return (
-            (pt.x, pt.y)
-            for pt in chain.from_iterable(line.geoms for line in self.geoms)
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 class MultiPolygon(_MultiGeometry):
@@ -970,10 +967,8 @@ class MultiPolygon(_MultiGeometry):
         return cls(cast(Sequence[PolygonType], coords))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return (
-            (pt.x, pt.y)
-            for pt in chain.from_iterable(poly.exterior.geoms for poly in self.geoms)
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 Geometry = Union[
@@ -1091,10 +1086,8 @@ class GeometryCollection(_MultiGeometry):
         }
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return chain.from_iterable(
-            geom._prepare_hull()  # noqa: SLF001
-            for geom in self.geoms
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 __all__ = [

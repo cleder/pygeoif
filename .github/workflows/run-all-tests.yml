@@ -96,7 +96,7 @@ jobs:
       - name: Linting
         run: |
           flake8 pygeoif
-          black --check pygeoif tests
+          ruff format --check pygeoif tests
           ruff check --no-fix pygeoif tests
           yamllint .github/workflows/
       - name: Check complexity

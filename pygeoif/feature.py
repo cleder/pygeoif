@@ -17,6 +17,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Features."""
+
 from typing import Any
 from typing import Dict
 from typing import Generator
@@ -229,9 +230,7 @@ class FeatureCollection:
 
     def _check_interface(self, other: object) -> bool:
         try:
-            return self.__geo_interface__[
-                "type"
-            ] == other.__geo_interface__.get(  # type: ignore [attr-defined]
+            return self.__geo_interface__["type"] == other.__geo_interface__.get(  # type: ignore [attr-defined]
                 "type",
             ) and len(
                 self.__geo_interface__["features"],
