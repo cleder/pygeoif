@@ -17,6 +17,7 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+
 import math
 import warnings
 from itertools import chain
@@ -598,7 +599,8 @@ class Polygon(_Geometry):
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords  # noqa: SLF001
         ic = "".join(
-            f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
+            f",({interior._wkt_coords})"  # noqa: SLF001
+            for interior in self.interiors
         )
         return f"({ec}){ic}"
 
@@ -749,7 +751,10 @@ class MultiPoint(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ", ".join(point._wkt_coords for point in self.geoms)  # noqa: SLF001
+        return ", ".join(
+            f"({point._wkt_coords})"  # noqa: SLF001
+            for point in self.geoms
+        )
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -828,7 +833,8 @@ class MultiLineString(_MultiGeometry):
     @property
     def _wkt_coords(self) -> str:
         return ",".join(
-            f"({linestring._wkt_coords})" for linestring in self.geoms  # noqa: SLF001
+            f"({linestring._wkt_coords})"  # noqa: SLF001
+            for linestring in self.geoms
         )
 
     @property
@@ -1086,7 +1092,8 @@ class GeometryCollection(_MultiGeometry):
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return chain.from_iterable(
-            geom._prepare_hull() for geom in self.geoms  # noqa: SLF001
+            geom._prepare_hull()  # noqa: SLF001
+            for geom in self.geoms
         )
 
 

@@ -371,7 +371,7 @@ class TestWKT:
         assert isinstance(p, geometry.MultiPoint)
         assert next(iter(p.geoms)).x == 3.5
         assert list(p.geoms)[1].y == 10.5
-        assert p.wkt == "MULTIPOINT (3.5 5.6, 4.8 10.5)"
+        assert p.wkt == "MULTIPOINT ((3.5 5.6), (4.8 10.5))"
         p = factories.from_wkt("MULTIPOINT ((10 40), (40 30), (20 20), (30 10))")
         assert isinstance(p, geometry.MultiPoint)
         assert next(iter(p.geoms)).x == 10.0
