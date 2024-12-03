@@ -56,9 +56,6 @@ wkt_regex: Pattern[str] = re.compile(
     ),
     flags=re.IGNORECASE,
 )
-gcre: Pattern[str] = re.compile(
-    r"POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON",
-)
 outer: Pattern[str] = re.compile(r"\((.+)\)")
 inner: Pattern[str] = re.compile(r"\([^)]*\)")
 mpre: Pattern[str] = re.compile(r"\(\((.+?)\)\)")
@@ -280,13 +277,42 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
     return MultiPolygon(polygons)
 
 
+def split_wkt_components(wkt: str) -> List[str]:
+    """
+    Split a WKT (Well-Known Text) string into its individual components.
+
+    This function takes a WKT string and splits it into a list of components,
+    ensuring that commas within nested parentheses are not considered as split points.
+
+    Args:
+        wkt (str): The WKT string to be split.
+
+    Returns:
+        List[str]: A list of strings, each representing a component of the WKT string.
+
+    """
+    components = []
+    start = 0
+    open_count = 0
+
+    for i, char in enumerate(wkt):
+        if char == "(":
+            open_count += 1
+        elif char == ")":
+            open_count -= 1
+        elif char == "," and open_count == 0:
+            # Split only at commas outside parentheses
+            components.append(wkt[start:i].strip())
+            start = i + 1
+
+    # Add the final component
+    components.append(wkt[start:].strip())
+    return components
+
+
 def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
-    gc_types = gcre.findall(coordinates)
-    gc_coords = gcre.split(coordinates)[1:]
-    geometries: List[Geometry] = []
-    for gc_type, gc_coord in zip(gc_types, gc_coords):
-        gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
-        geometries.append(cast(Geometry, from_wkt(gc_wkt)))
+    components = split_wkt_components(coordinates)
+    geometries = (cast(Geometry, from_wkt(gc_wkt)) for gc_wkt in components)
     return GeometryCollection(geometries)
 
 
