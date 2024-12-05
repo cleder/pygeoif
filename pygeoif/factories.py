@@ -95,6 +95,7 @@ def box(
     if not ccw:
         coords.reverse()
 
+
 def shape(
     context: Union[
         GeoType,
