@@ -92,8 +92,7 @@ def box(
     if not ccw:
         coords.reverse()
     return Polygon(coords)
-    if not ccw:
-        coords.reverse()
+
 
 def shape(
     context: Union[
