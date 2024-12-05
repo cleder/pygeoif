@@ -129,11 +129,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: hynek/build-and-inspect-python-package@v2
       - name: Install uv
         uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
       - uses: hynek/build-and-inspect-python-package@v2
       - uses: actions/setup-python@v5
         with:
