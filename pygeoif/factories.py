@@ -1,5 +1,5 @@
 #
-#   Copyright (C) 2012 -2022  Christian Ledermann
+#   Copyright (C) 2012 -2024 Christian Ledermann
 #
 #   This library is free software; you can redistribute it and/or
 #   modify it under the terms of the GNU Lesser General Public
@@ -15,6 +15,7 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Geometry Factories."""
+
 import re
 from typing import List
 from typing import Optional
@@ -53,10 +54,7 @@ wkt_regex: Pattern[str] = re.compile(
         "GEOMETRYCOLLECTION)"
         r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$"
     ),
-    flags=re.I,
-)
-gcre: Pattern[str] = re.compile(
-    r"POINT|LINESTRING|LINEARRING|POLYGON|MULTIPOINT|MULTILINESTRING|MULTIPOLYGON",
+    flags=re.IGNORECASE,
 )
 outer: Pattern[str] = re.compile(r"\((.+)\)")
 inner: Pattern[str] = re.compile(r"\([^)]*\)")
@@ -92,7 +90,7 @@ def box(
     """Return a rectangular polygon with configurable normal vector."""
     coords = [(maxx, miny), (maxx, maxy), (minx, maxy), (minx, miny)]
     if not ccw:
-        coords = coords[::-1]
+        coords.reverse()
     return Polygon(coords)
 
 
@@ -188,7 +186,7 @@ def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
     return LineString(
         cast(
-            LineType,  #
+            LineType,
             [tuple(num(c) for c in coord.split()) for coord in coords],
         ),
     )
@@ -279,13 +277,42 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
     return MultiPolygon(polygons)
 
 
+def split_wkt_components(wkt: str) -> List[str]:
+    """
+    Split a WKT (Well-Known Text) string into its individual components.
+
+    This function takes a WKT string and splits it into a list of components,
+    ensuring that commas within nested parentheses are not considered as split points.
+
+    Args:
+        wkt (str): The WKT string to be split.
+
+    Returns:
+        List[str]: A list of strings, each representing a component of the WKT string.
+
+    """
+    components = []
+    start = 0
+    open_count = 0
+
+    for i, char in enumerate(wkt):
+        if char == "(":
+            open_count += 1
+        elif char == ")":
+            open_count -= 1
+        elif char == "," and open_count == 0:
+            # Split only at commas outside parentheses
+            components.append(wkt[start:i].strip())
+            start = i + 1
+
+    # Add the final component
+    components.append(wkt[start:].strip())
+    return components
+
+
 def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
-    gc_types = gcre.findall(coordinates)
-    gc_coords = gcre.split(coordinates)[1:]
-    geometries: List[Geometry] = []
-    for gc_type, gc_coord in zip(gc_types, gc_coords):
-        gc_wkt = gc_type + gc_coord[: gc_coord.rfind(")") + 1]
-        geometries.append(cast(Geometry, from_wkt(gc_wkt)))
+    components = split_wkt_components(coordinates)
+    geometries = (cast(Geometry, from_wkt(gc_wkt)) for gc_wkt in components)
     return GeometryCollection(geometries)
 
 
@@ -382,9 +409,9 @@ def force_3d(
 
 
 __all__ = [
+    "box",
     "force_2d",
     "force_3d",
-    "box",
     "from_wkt",
     "mapping",
     "orient",

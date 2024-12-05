@@ -1,6 +1,21 @@
 Changelog
 =========
 
+1.6.0 (unreleased)
+------------------
+
+
+1.5.1 (2024/12/05)
+------------------
+
+- expose ``force_2d`` and ``force_3d`` factories in the top-level module.
+- fix WKT parsing for nested GeometryCollections.
+- fix WKT output for MultiPoints.
+- make hypothesis strategy for GeometryCollections recursive, so that it can generate
+  nested collections.
+- add Python 3.14 to test matrix.
+
+
 1.5.0 (2024/05/11)
 ------------------
 

@@ -15,6 +15,7 @@
 #   along with this library; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """Types for geometries."""
+
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -122,13 +123,13 @@ class GeoCollectionType(Protocol):
 __all__ = [
     "Bounds",
     "CoordinatesType",
-    "Interiors",
     "GeoCollectionInterface",
     "GeoCollectionType",
     "GeoFeatureCollectionInterface",
     "GeoFeatureInterface",
     "GeoInterface",
     "GeoType",
+    "Interiors",
     "LineType",
     "MultiCoordinatesType",
     "MultiGeometryType",

@@ -548,6 +548,7 @@ def geometry_collections(  # noqa: PLR0913
     max_points: int = 20,
     min_interiors: int = 0,
     max_interiors: int = 5,
+    max_leaves: int = 3,
     srs: Optional[Srs] = None,
     has_z: Optional[bool] = None,
 ) -> GeometryCollection:
@@ -557,17 +558,20 @@ def geometry_collections(  # noqa: PLR0913
     Args:
     ----
         draw (st.DrawFn): The Hypothesis draw function.
-        min_geoms (int, optional): The minimum number of geometries in the collection.
-        max_geoms (int, optional): The maximum number of geometries in the collection.
-        max_points (int, optional): The maximum number of points in each geometry.
-        min_interiors (int, optional): The minimum number of interiors in each polygon.
-        max_interiors (int, optional): The maximum number of interiors in each polygon.
+        min_geoms (int): The minimum number of geometries in the collection.
+        max_geoms (int): The maximum number of geometries in the collection.
+        max_points (int): The maximum number of points in each geometry.
+        min_interiors (int): The minimum number of interiors in each polygon.
+        max_interiors (int): The maximum number of interiors in each polygon.
         srs (Optional[Srs], optional): The spatial reference system of the geometries.
         has_z (Optional[bool], optional): Whether the geometries have Z coordinates.
+        max_leaves (int): The maximum recursion depth of the collection.
 
     Returns:
     -------
-        GeometryCollection: A randomly generated GeometryCollection object.
+        GeometryCollection: A randomly generated GeometryCollection object, that may
+           contain any of the following geometries: Point, LineString, LinearRing,
+           Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection.
 
     """
     if has_z is None:
@@ -600,6 +604,19 @@ def geometry_collections(  # noqa: PLR0913
                         max_polygons=max_geoms,
                         srs=srs,
                         has_z=has_z,
+                    ),
+                    st.recursive(
+                        geometry_collections(
+                            min_geoms=min_geoms,
+                            max_geoms=max_geoms,
+                            max_points=max_points,
+                            min_interiors=min_interiors,
+                            max_interiors=max_interiors,
+                            srs=srs,
+                            has_z=has_z,
+                        ),
+                        lambda children: children,
+                        max_leaves=max_leaves,
                     ),
                 ),
                 min_size=min_geoms,

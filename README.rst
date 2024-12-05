@@ -38,7 +38,7 @@ testing with Hypothesis_.
 
 It was written to provide clean and python only geometries for fastkml_
 
-|doc| |test| |cov| |hypothesis| |black| |mypy| |openhub| |factor| |commit| |py| |implement| |latest| |license| |downloads|
+|doc| |test| |cov| |hypothesis| |black| |mypy| |openhub| |factor| |commit| |py| |implement| |latest| |conda| |license| |downloads|
 
 .. |doc| image:: https://readthedocs.org/projects/pygeoif/badge/?version=latest
     :target: https://pygeoif.readthedocs.io/en/latest/?badge=latest
@@ -79,6 +79,9 @@ It was written to provide clean and python only geometries for fastkml_
 .. |py| image:: https://img.shields.io/pypi/pyversions/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
     :alt: Supported Python versions
+.. |conda| image:: https://img.shields.io/conda/vn/conda-forge/pygeoif.svg
+    :target: https://anaconda.org/conda-forge/pygeoif
+    :alt: Conda Version
 
 .. |implement| image:: https://img.shields.io/pypi/implementation/pygeoif.svg
     :target: https://pypi.python.org/pypi/pygeoif/
@@ -93,7 +96,7 @@ It was written to provide clean and python only geometries for fastkml_
     :alt: License
 
 .. |downloads| image:: https://img.shields.io/pypi/dm/pygeoif.svg
-    :target: https://pypi.python.org/pypi/pygeoif/
+    :target: https://www.pepy.tech/projects/pygeoif
     :alt: Downloads
 
 Installation
@@ -215,11 +218,6 @@ exterior : LinearRing
     The ring which bounds the positive space of the polygon.
 interiors : sequence
     A sequence of rings which bound all existing holes.
-maybe_valid: boolean
-    When a polygon has obvious problems such as self crossing
-    lines or holes that are outside the exterior bounds this will
-    return False. Even if this returns True the geometry may still be invalid,
-    but if this returns False you do have a problem.
 
 MultiPoint
 ----------

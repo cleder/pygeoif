@@ -17,9 +17,9 @@
 #
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Geometries in pure Python."""
+
 import math
 import warnings
-from itertools import chain
 from typing import Any
 from typing import Hashable
 from typing import Iterable
@@ -598,7 +598,8 @@ class Polygon(_Geometry):
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords  # noqa: SLF001
         ic = "".join(
-            f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
+            f",({interior._wkt_coords})"  # noqa: SLF001
+            for interior in self.interiors
         )
         return f"({ec}){ic}"
 
@@ -749,7 +750,10 @@ class MultiPoint(_MultiGeometry):
 
     @property
     def _wkt_coords(self) -> str:
-        return ", ".join(point._wkt_coords for point in self.geoms)  # noqa: SLF001
+        return ", ".join(
+            f"({point._wkt_coords})"  # noqa: SLF001
+            for point in self.geoms
+        )
 
     @property
     def __geo_interface__(self) -> GeoInterface:
@@ -828,7 +832,8 @@ class MultiLineString(_MultiGeometry):
     @property
     def _wkt_coords(self) -> str:
         return ",".join(
-            f"({linestring._wkt_coords})" for linestring in self.geoms  # noqa: SLF001
+            f"({linestring._wkt_coords})"  # noqa: SLF001
+            for linestring in self.geoms
         )
 
     @property
@@ -853,10 +858,8 @@ class MultiLineString(_MultiGeometry):
         return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return (
-            (pt.x, pt.y)
-            for pt in chain.from_iterable(line.geoms for line in self.geoms)
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 class MultiPolygon(_MultiGeometry):
@@ -964,10 +967,8 @@ class MultiPolygon(_MultiGeometry):
         return cls(cast(Sequence[PolygonType], coords))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return (
-            (pt.x, pt.y)
-            for pt in chain.from_iterable(poly.exterior.geoms for poly in self.geoms)
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 Geometry = Union[
@@ -1085,9 +1086,8 @@ class GeometryCollection(_MultiGeometry):
         }
 
     def _prepare_hull(self) -> Iterable[Point2D]:
-        return chain.from_iterable(
-            geom._prepare_hull() for geom in self.geoms  # noqa: SLF001
-        )
+        for geom in self.geoms:
+            yield from geom._prepare_hull()  # noqa: SLF001
 
 
 __all__ = [

@@ -84,7 +84,7 @@ def test_unique() -> None:
 def test_wkt() -> None:
     multipoint = geometry.MultiPoint([(0, 0), (1, 1), (1, 2), (2, 2)])
 
-    assert multipoint.wkt == "MULTIPOINT (0 0, 1 1, 1 2, 2 2)"
+    assert multipoint.wkt == "MULTIPOINT ((0 0), (1 1), (1 2), (2 2))"
 
 
 def test_repr() -> None:
