@@ -345,11 +345,7 @@ class TestWKT:
             (2.0, 3.0),
             (2.0, 2.0),
         )
-        assert (
-            p.wkt == "POLYGON ((1 1, 5 1, 5 5, "
-            "1 5, 1 1),(2 2, 3 2, "
-            "3 3, 2 3, 2 2))"
-        )
+        assert p.wkt == "POLYGON ((1 1, 5 1, 5 5, 1 5, 1 1),(2 2, 3 2, 3 3, 2 3, 2 2))"
 
     def test_polygon_2(self) -> None:
         p = factories.from_wkt("POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))")
@@ -389,11 +385,7 @@ class TestWKT:
         assert isinstance(p, geometry.MultiLineString)
         assert next(iter(p.geoms)).coords == ((3, 4), (10, 50), (20, 25))
         assert list(p.geoms)[1].coords == ((-5, -8), (-10, -8), (-15, -4))
-        assert (
-            p.wkt == "MULTILINESTRING ((3 4, 10 50, "
-            "20 25),(-5 -8, "
-            "-10 -8, -15 -4))"
-        )
+        assert p.wkt == "MULTILINESTRING ((3 4, 10 50, 20 25),(-5 -8, -10 -8, -15 -4))"
 
     def test_multilinestring_1(self) -> None:
         p = factories.from_wkt(
