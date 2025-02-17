@@ -426,9 +426,7 @@ class LineString(_Geometry):
         last_len = None
         for coord in dedupe(coordinates):
             if len(coord) != last_len and last_len is not None:
-                msg = (  # type: ignore [unreachable]
-                    "All coordinates must have the same dimension"
-                )
+                msg = "All coordinates must have the same dimension"
                 raise DimensionError(
                     msg,
                 )
