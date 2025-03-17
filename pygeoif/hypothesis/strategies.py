@@ -241,7 +241,7 @@ def line_coords(  # noqa: PLR0913
     if has_z is None:
         has_z = draw(st.booleans())
     return cast(
-        LineType,
+        "LineType",
         draw(
             st.lists(
                 point_coords(srs=srs, has_z=has_z),

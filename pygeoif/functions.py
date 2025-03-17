@@ -48,7 +48,7 @@ def signed_area(coords: LineType) -> float:
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
     return cast(
-        float,
+        "float",
         sum(xs[i] * (ys[i + 1] - ys[i - 1]) for i in range(1, len(coords))) / 2.0,
     )
 
@@ -76,12 +76,12 @@ def centroid(coords: LineType) -> Tuple[Point2D, float]:
     ans[0] = ans[0] / (3 * signed_area)
     ans[1] = ans[1] / (3 * signed_area)
 
-    return cast(Point2D, tuple(ans)), signed_area / 2.0
+    return cast("Point2D", tuple(ans)), signed_area / 2.0
 
 
 def dedupe(coords: LineType) -> LineType:
     """Remove duplicate Points from a LineString."""
-    return cast(LineType, tuple(coord for coord, _count in groupby(coords)))
+    return cast("LineType", tuple(coord for coord, _count in groupby(coords)))
 
 
 def _orientation(p: Point2D, q: Point2D, r: Point2D) -> float:
@@ -155,7 +155,7 @@ def compare_coordinates(
         )
     except TypeError:
         try:
-            return math.isclose(a=cast(float, coords), b=cast(float, other))
+            return math.isclose(a=cast("float", coords), b=cast("float", other))
         except TypeError:
             return False
 
@@ -202,11 +202,11 @@ def move_coordinate(
     """
     if len(coordinate) < len(move_by):
         return cast(
-            PointType,
+            "PointType",
             tuple(c + m for c, m in zip_longest(coordinate, move_by, fillvalue=0)),
         )
 
-    return cast(PointType, tuple(c + m for c, m in zip(coordinate, move_by)))
+    return cast("PointType", tuple(c + m for c, m in zip(coordinate, move_by)))
 
 
 def move_coordinates(
@@ -228,10 +228,12 @@ def move_coordinates(
     if not coordinates:
         return coordinates
     if isinstance(coordinates[0], (int, float)):
-        return move_coordinate(cast(PointType, coordinates), move_by)
+        return move_coordinate(cast("PointType", coordinates), move_by)
     return cast(
-        CoordinatesType,
-        tuple(move_coordinates(cast(CoordinatesType, c), move_by) for c in coordinates),
+        "CoordinatesType",
+        tuple(
+            move_coordinates(cast("CoordinatesType", c), move_by) for c in coordinates
+        ),
     )
 
 
