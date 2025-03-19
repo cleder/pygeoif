@@ -167,8 +167,8 @@ class _Geometry:
             msg = "Empty Geometry"
             raise AttributeError(msg)
         return {
-            "type": cast(GeomType, self.geom_type),
-            "bbox": cast(Bounds, self.bounds),
+            "type": cast("GeomType", self.geom_type),
+            "bbox": cast("Bounds", self.bounds),
             "coordinates": (),
         }
 
@@ -307,7 +307,7 @@ class Point(_Geometry):
     def __geo_interface__(self) -> GeoInterface:
         """Return the geo interface."""
         geo_interface = super().__geo_interface__
-        geo_interface["coordinates"] = cast(PointType, tuple(self._geoms))
+        geo_interface["coordinates"] = cast("PointType", tuple(self._geoms))
         return geo_interface
 
     @classmethod
@@ -374,7 +374,7 @@ class LineString(_Geometry):
     def coords(self) -> LineType:
         """Return the geometry coordinates."""
         return cast(
-            LineType,
+            "LineType",
             tuple(point.coords[0] for point in self.geoms if point.coords),
         )
 
@@ -412,13 +412,13 @@ class LineString(_Geometry):
     def from_points(cls, *args: Point) -> "LineString":
         """Create a linestring from points."""
         return cls(
-            cast(LineType, tuple(point.coords[0] for point in args if point.coords)),
+            cast("LineType", tuple(point.coords[0] for point in args if point.coords)),
         )
 
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "LineString":
         cls._check_dict(geo_interface)
-        return cls(cast(LineType, geo_interface["coordinates"]))
+        return cls(cast("LineType", geo_interface["coordinates"]))
 
     @staticmethod
     def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
@@ -579,13 +579,13 @@ class Polygon(_Geometry):
         """
         if self._geoms[1]:
             return cast(
-                PolygonType,
+                "PolygonType",
                 (
                     self.exterior.coords,
                     tuple(interior.coords for interior in self.interiors if interior),
                 ),
             )
-        return cast(PolygonType, (self.exterior.coords,))
+        return cast("PolygonType", (self.exterior.coords,))
 
     @property
     def has_z(self) -> Optional[bool]:
@@ -596,8 +596,7 @@ class Polygon(_Geometry):
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords  # noqa: SLF001
         ic = "".join(
-            f",({interior._wkt_coords})"  # noqa: SLF001
-            for interior in self.interiors
+            f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
         )
         return f"({ec}){ic}"
 
@@ -628,8 +627,8 @@ class Polygon(_Geometry):
         if not geo_interface["coordinates"]:
             return cls(shell=(), holes=())
         return cls(
-            shell=cast(LineType, geo_interface["coordinates"][0]),
-            holes=cast(Tuple[LineType], geo_interface["coordinates"][1:]),
+            shell=cast("LineType", geo_interface["coordinates"][0]),
+            holes=cast("Tuple[LineType]", geo_interface["coordinates"][1:]),
         )
 
     def _get_bounds(self) -> Bounds:
@@ -744,13 +743,12 @@ class MultiPoint(_MultiGeometry):
     @property
     def geoms(self) -> Iterator[Point]:
         """Iterate over the points."""
-        yield from (cast(Point, p) for p in super().geoms)
+        yield from (cast("Point", p) for p in super().geoms)
 
     @property
     def _wkt_coords(self) -> str:
         return ", ".join(
-            f"({point._wkt_coords})"  # noqa: SLF001
-            for point in self.geoms
+            f"({point._wkt_coords})" for point in self.geoms  # noqa: SLF001
         )
 
     @property
@@ -770,7 +768,7 @@ class MultiPoint(_MultiGeometry):
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiPoint":
         cls._check_dict(geo_interface)
-        return cls(cast(Sequence[PointType], geo_interface["coordinates"]))
+        return cls(cast("Sequence[PointType]", geo_interface["coordinates"]))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         return ((pt.x, pt.y) for pt in self.geoms)
@@ -825,13 +823,12 @@ class MultiLineString(_MultiGeometry):
     @property
     def geoms(self) -> Iterator[LineString]:
         """Iterate over the points."""
-        yield from (cast(LineString, line) for line in super().geoms)
+        yield from (cast("LineString", line) for line in super().geoms)
 
     @property
     def _wkt_coords(self) -> str:
         return ",".join(
-            f"({linestring._wkt_coords})"  # noqa: SLF001
-            for linestring in self.geoms
+            f"({linestring._wkt_coords})" for linestring in self.geoms  # noqa: SLF001
         )
 
     @property
@@ -853,7 +850,7 @@ class MultiLineString(_MultiGeometry):
     @classmethod
     def _from_dict(cls, geo_interface: GeoInterface) -> "MultiLineString":
         cls._check_dict(geo_interface)
-        return cls(cast(Sequence[LineType], geo_interface["coordinates"]))
+        return cls(cast("Sequence[LineType]", geo_interface["coordinates"]))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         for geom in self.geoms:
@@ -933,7 +930,7 @@ class MultiPolygon(_MultiGeometry):
     @property
     def geoms(self) -> Iterator[Polygon]:
         """Iterate over the points."""
-        yield from (cast(Polygon, p) for p in super().geoms)
+        yield from (cast("Polygon", p) for p in super().geoms)
 
     @property
     def _wkt_coords(self) -> str:
@@ -962,7 +959,7 @@ class MultiPolygon(_MultiGeometry):
             (poly[0], poly[1:])  # type: ignore [index]
             for poly in geo_interface["coordinates"]
         )
-        return cls(cast(Sequence[PolygonType], coords))
+        return cls(cast("Sequence[PolygonType]", coords))
 
     def _prepare_hull(self) -> Iterable[Point2D]:
         for geom in self.geoms:
