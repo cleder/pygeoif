@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14-dev']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14-dev']
 
     steps:
       - uses: actions/checkout@v5
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pypy-version: ['pypy-3.8', 'pypy-3.9', 'pypy-3.10']
+        pypy-version: ['pypy-3.9', 'pypy-3.10', 'pypy-3.11']
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.pypy-version }}
@@ -123,6 +123,27 @@ jobs:
       - name: Test with pytest, excluding hypothesis tests
         run: |
           pytest tests --ignore=tests/hypothesis
+
+  graalpy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        graalpy-version: ['graalpy']
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python ${{ matrix.graalpy-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.graalpy-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[tests]"
+      - name: Test with pytest, including hypothesis tests
+        run: |
+          pytest tests
+
+
 
   build-and-check-package:
     name: Build & inspect our package.

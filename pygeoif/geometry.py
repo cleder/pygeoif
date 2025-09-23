@@ -20,14 +20,13 @@
 
 import math
 import warnings
+from collections.abc import Hashable
+from collections.abc import Iterable
+from collections.abc import Iterator
+from collections.abc import Sequence
 from typing import Any
-from typing import Hashable
-from typing import Iterable
-from typing import Iterator
 from typing import NoReturn
 from typing import Optional
-from typing import Sequence
-from typing import Tuple
 from typing import Union
 from typing import cast
 
@@ -100,7 +99,7 @@ class _Geometry:
         return self.is_empty is False
 
     @property
-    def bounds(self) -> Union[Bounds, Tuple[()]]:
+    def bounds(self) -> Union[Bounds, tuple[()]]:
         """
         Return minimum bounding region (min x, min y, max x, max y).
 
@@ -290,7 +289,7 @@ class Point(_Geometry):
         raise DimensionError(msg)
 
     @property
-    def coords(self) -> Union[Tuple[PointType], Tuple[()]]:
+    def coords(self) -> Union[tuple[PointType], tuple[()]]:
         """Return the geometry coordinates."""
         return () if self.is_empty else (self._geoms,)
 
@@ -341,7 +340,7 @@ class LineString(_Geometry):
 
     """
 
-    _geoms: Tuple[Point, ...]
+    _geoms: tuple[Point, ...]
 
     def __init__(self, coordinates: LineType) -> None:
         """
@@ -366,7 +365,7 @@ class LineString(_Geometry):
         return f"{self.geom_type}({self.coords})"
 
     @property
-    def geoms(self) -> Tuple[Point, ...]:
+    def geoms(self) -> tuple[Point, ...]:
         """Return the underlying geometries."""
         return self._geoms
 
@@ -421,7 +420,7 @@ class LineString(_Geometry):
         return cls(cast("LineType", geo_interface["coordinates"]))
 
     @staticmethod
-    def _set_geoms(coordinates: LineType) -> Tuple[Point, ...]:
+    def _set_geoms(coordinates: LineType) -> tuple[Point, ...]:
         geoms = []
         last_len = None
         for coord in dedupe(coordinates):
@@ -513,7 +512,7 @@ class Polygon(_Geometry):
 
     """
 
-    _geoms: Tuple[LinearRing, ...]
+    _geoms: tuple[LinearRing, ...]
 
     def __init__(
         self,
@@ -629,7 +628,7 @@ class Polygon(_Geometry):
             return cls(shell=(), holes=())
         return cls(
             shell=cast("LineType", geo_interface["coordinates"][0]),
-            holes=cast("Tuple[LineType]", geo_interface["coordinates"][1:]),
+            holes=cast("tuple[LineType]", geo_interface["coordinates"][1:]),
         )
 
     def _get_bounds(self) -> Bounds:
@@ -701,7 +700,7 @@ class MultiPoint(_MultiGeometry):
 
     """
 
-    _geoms: Tuple[Point, ...]
+    _geoms: tuple[Point, ...]
 
     def __init__(self, points: Sequence[PointType], unique: bool = False) -> None:
         """
@@ -789,7 +788,7 @@ class MultiLineString(_MultiGeometry):
 
     """
 
-    _geoms: Tuple[LineString, ...]
+    _geoms: tuple[LineString, ...]
 
     def __init__(self, lines: Sequence[LineType], unique: bool = False) -> None:
         """
@@ -874,7 +873,7 @@ class MultiPolygon(_MultiGeometry):
 
     """
 
-    _geoms: Tuple[Polygon, ...]
+    _geoms: tuple[Polygon, ...]
 
     def __init__(self, polygons: Sequence[PolygonType], unique: bool = False) -> None:
         """
@@ -1010,7 +1009,7 @@ class GeometryCollection(_MultiGeometry):
 
     """
 
-    _geoms: Tuple[Union[Geometry, "GeometryCollection"], ...]
+    _geoms: tuple[Union[Geometry, "GeometryCollection"], ...]
 
     def __init__(
         self,

@@ -12,7 +12,7 @@ from pygeoif.hypothesis.strategies import polygons
 
 
 def test_max_points_lt_3() -> None:
-    with pytest.raises(ValueError, match="^max_points must be greater than 3"):
+    with pytest.raises(ValueError, match=r"^max_points must be greater than 3"):
         polygons(max_points=3).example()
 
 

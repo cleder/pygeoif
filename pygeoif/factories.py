@@ -17,10 +17,8 @@
 """Geometry Factories."""
 
 import re
-from typing import List
+from re import Pattern
 from typing import Optional
-from typing import Pattern
-from typing import Tuple
 from typing import Union
 from typing import cast
 
@@ -203,8 +201,8 @@ def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
 
 
 def _shell_holes_from_wkt_coords(
-    coords: List[str],
-) -> Tuple[LineType, Interiors]:
+    coords: list[str],
+) -> tuple[LineType, Interiors]:
     """Extract shell and holes from polygon wkt coordinates."""
     exterior: LineType = cast(
         "LineType",
@@ -260,7 +258,7 @@ def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
 
 
 def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
-    polygons: List[PolygonType] = []
+    polygons: list[PolygonType] = []
     m = mpre.split(coordinates)
     for polygon in m:
         if not polygon.strip(", "):
@@ -277,7 +275,7 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
     return MultiPolygon(polygons)
 
 
-def split_wkt_components(wkt: str) -> List[str]:
+def split_wkt_components(wkt: str) -> list[str]:
     """
     Split a WKT (Well-Known Text) string into its individual components.
 

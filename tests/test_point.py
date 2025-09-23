@@ -151,7 +151,7 @@ def test_geo_interface() -> None:
 def test_geo_interface_empty() -> None:
     point = geometry.Point(None, None)
 
-    with pytest.raises(AttributeError, match="^Empty Geometry$"):
+    with pytest.raises(AttributeError, match=r"^Empty Geometry$"):
         assert point.__geo_interface__
 
 
@@ -162,7 +162,7 @@ def test_from_dict() -> None:
 
 
 def test_from_dict_wrong_type() -> None:
-    with pytest.raises(ValueError, match="^You cannot assign Xoint to Point"):
+    with pytest.raises(ValueError, match=r"^You cannot assign Xoint to Point"):
         geometry.Point._from_dict(
             {"type": "Xoint", "coordinates": (0.0, 1.0, 2.0)},  # pragma: no mutate
         )

@@ -38,7 +38,7 @@ def test_set_geoms_raises() -> None:
 
     with pytest.raises(
         exceptions.DimensionError,
-        match="^All coordinates must have the same dimension$",
+        match=r"^All coordinates must have the same dimension$",
     ):
         line._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 

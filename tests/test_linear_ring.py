@@ -26,7 +26,7 @@ def test_set_geoms_raises() -> None:
 
     with pytest.raises(
         exceptions.DimensionError,
-        match="^All coordinates must have the same dimension$",
+        match=r"^All coordinates must have the same dimension$",
     ):
         ring._set_geoms([(0.0, 0.0, 0), (1.0, 1.0)])  # pragma: no mutate
 
@@ -174,7 +174,7 @@ def test_centroid_3d() -> None:
 
     with pytest.raises(
         exceptions.DimensionError,
-        match="^Centeroid is only implemented for 2D coordinates$",
+        match=r"^Centeroid is only implemented for 2D coordinates$",
     ):
         assert line.centroid
 

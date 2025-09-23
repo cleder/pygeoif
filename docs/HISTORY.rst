@@ -4,6 +4,7 @@ Changelog
 1.6.0 (unreleased)
 ------------------
 
+- drop Python 3.8 support
 
 1.5.1 (2024/12/05)
 ------------------

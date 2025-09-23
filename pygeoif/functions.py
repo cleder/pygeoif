@@ -18,11 +18,9 @@
 """Functions for geometries."""
 
 import math
+from collections.abc import Iterable
 from itertools import groupby
 from itertools import zip_longest
-from typing import Iterable
-from typing import List
-from typing import Tuple
 from typing import Union
 from typing import cast
 
@@ -53,9 +51,9 @@ def signed_area(coords: LineType) -> float:
     )
 
 
-def centroid(coords: LineType) -> Tuple[Point2D, float]:
+def centroid(coords: LineType) -> tuple[Point2D, float]:
     """Calculate the coordinates of the centroid and the area of a LineString."""
-    ans: List[float] = [0, 0]
+    ans: list[float] = [0, 0]
     n = len(coords)
     signed_area = 0.0
 
@@ -98,9 +96,9 @@ def _orientation(p: Point2D, q: Point2D, r: Point2D) -> float:
     return (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
 
 
-def _hull(points: Iterable[Point2D]) -> List[Point2D]:
+def _hull(points: Iterable[Point2D]) -> list[Point2D]:
     """Construct the upper/lower hull of a set of points."""
-    stack: List[Point2D] = []
+    stack: list[Point2D] = []
     for p in points:
         while (
             len(stack) >= 2  # noqa: PLR2004

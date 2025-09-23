@@ -3,7 +3,6 @@
 import itertools
 import math
 import random
-from typing import Tuple
 
 import pytest
 
@@ -300,7 +299,7 @@ def test_dedupe_line2() -> None:
         ((math.nan, math.nan), False),
     ],
 )
-def test_compare_numbers(numbers: Tuple[float, float], expected: bool) -> None:
+def test_compare_numbers(numbers: tuple[float, float], expected: bool) -> None:
     """Compare numbers for equality."""
     assert compare_coordinates(*numbers) is expected
 

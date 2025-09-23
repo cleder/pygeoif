@@ -1,5 +1,4 @@
 # noqa: D100, INP001
-# flake8: noqa
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:

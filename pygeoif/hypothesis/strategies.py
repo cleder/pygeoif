@@ -7,7 +7,6 @@ Coordinates are limited to 32 bit floats to avoid precision issues.
 from dataclasses import dataclass
 from functools import partial
 from typing import Optional
-from typing import Tuple
 from typing import cast
 
 import hypothesis.strategies as st
@@ -65,8 +64,8 @@ class Srs:
     """
 
     name: str
-    min_xyz: Tuple[Optional[float], Optional[float], Optional[float]]
-    max_xyz: Tuple[Optional[float], Optional[float], Optional[float]]
+    min_xyz: tuple[Optional[float], Optional[float], Optional[float]]
+    max_xyz: tuple[Optional[float], Optional[float], Optional[float]]
 
     def longitudes(self) -> st.SearchStrategy[float]:
         """

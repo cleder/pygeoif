@@ -67,7 +67,7 @@ def test_coords() -> None:
 
     with pytest.raises(
         NotImplementedError,
-        match="^Multi-part geometries do not provide a coordinate sequence$",
+        match=r"^Multi-part geometries do not provide a coordinate sequence$",
     ):
         assert multipoint.coords
 
