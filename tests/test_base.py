@@ -1,5 +1,6 @@
 """Test Baseclass."""
 
+import sys
 from unittest import mock
 
 import pytest
@@ -76,6 +77,10 @@ def test_get_bounds() -> None:
         assert base_geo._get_bounds()
 
 
+@pytest.mark.skipif(
+    sys.implementation.name == "graalpy",
+    reason="GraalPython specific behavior",
+)
 @pytest.mark.parametrize(
     ("attr_val", "expected_error", "expected_error_message"),
     [
@@ -110,6 +115,10 @@ def test_setattr(attr_val, expected_error, expected_error_message) -> None:
         setattr(base_geo, *attr_val)
 
 
+@pytest.mark.skipif(
+    sys.implementation.name == "graalpy",
+    reason="GraalPython specific behavior",
+)
 @pytest.mark.parametrize(
     ("attr", "expected_error", "expected_error_message"),
     [
