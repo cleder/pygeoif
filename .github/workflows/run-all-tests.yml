@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        graalpy-version: ['graalpy']
+        graalpy-version: ['graalpy-3.11']
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.graalpy-version }}
@@ -142,8 +142,6 @@ jobs:
       - name: Test with pytest, including hypothesis tests
         run: |
           pytest tests
-
-
 
   build-and-check-package:
     name: Build & inspect our package.
