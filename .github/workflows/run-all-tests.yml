@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        graalpy-version: ['graalpy-3.11']
+        graalpy-version: ['graalpy-24.1']
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.graalpy-version }}
