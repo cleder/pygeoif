@@ -595,7 +595,8 @@ class Polygon(_Geometry):
     def _wkt_coords(self) -> str:
         ec = self.exterior._wkt_coords  # noqa: SLF001
         ic = "".join(
-            f",({interior._wkt_coords})" for interior in self.interiors  # noqa: SLF001
+            f",({interior._wkt_coords})"
+            for interior in self.interiors  # noqa: SLF001
         )
         return f"({ec}){ic}"
 
@@ -747,7 +748,8 @@ class MultiPoint(_MultiGeometry):
     @property
     def _wkt_coords(self) -> str:
         return ", ".join(
-            f"({point._wkt_coords})" for point in self.geoms  # noqa: SLF001
+            f"({point._wkt_coords})"
+            for point in self.geoms  # noqa: SLF001
         )
 
     @property
@@ -827,7 +829,8 @@ class MultiLineString(_MultiGeometry):
     @property
     def _wkt_coords(self) -> str:
         return ",".join(
-            f"({linestring._wkt_coords})" for linestring in self.geoms  # noqa: SLF001
+            f"({linestring._wkt_coords})"
+            for linestring in self.geoms  # noqa: SLF001
         )
 
     @property
