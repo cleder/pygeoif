@@ -23,27 +23,14 @@ repos:
       - id: pretty-format-json
       - id: requirements-txt-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/ikamensh/flynt/
-    rev: '1.0.6'
-    hooks:
-      - id: flynt
   - repo: https://github.com/MarcoGorelli/absolufy-imports
     rev: v0.3.1
     hooks:
       - id: absolufy-imports
-  - repo: https://github.com/pycqa/isort
-    rev: 6.0.1
-    hooks:
-      - id: isort
-#   - repo: https://github.com/PyCQA/docformatter
-#     rev: v1.7.5
-#     hooks:
-#       - id: docformatter
-#         args: [--in-place, --make-summary-multi-line, --close-quotes-on-newline, --wrap-summaries, "88"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 'v0.13.1'
     hooks:
-      - id: ruff
+      - id: ruff-check
       - id: ruff-format
   - repo: https://github.com/PyCQA/flake8
     rev: 7.3.0
@@ -53,31 +40,18 @@ repos:
           - flake8-cognitive-complexity
           - flake8-comments
           - flake8-complex-f-strings
-          - flake8-continuation
           - flake8-dunder-all
           - flake8-encodings
           - flake8-expression-complexity
           - flake8-function-order
-          - flake8-implicit-str-concat
-          - flake8-literal
-          - flake8-pep3101
-          - flake8-print
           - flake8-rst-docstrings
           - flake8-simplify
-          - flake8-string-format
-          - flake8-super
-          - flake8-typing-imports
-          - flake8-use-fstring
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.18.2
     hooks:
       - id: mypy
         additional_dependencies:
           - hypothesis
-  # - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
-  #   rev: v1.0.1
-  #   hooks:
-  #     - id: rst-linter
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.24.1
     hooks:
