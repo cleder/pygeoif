@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - drop Python 3.8 support
+- add GraalPy to test matrix
 
 1.5.1 (2024/12/05)
 ------------------

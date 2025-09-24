@@ -4,6 +4,37 @@ requires = [
     "setuptools>=61.2",
 ]
 
+[dependency-groups]
+complexity = [
+    "lizard",
+    "radon",
+]
+dev = [
+    "pre-commit>=4.2.0",
+    { include-group = "complexity" },
+    { include-group = "hypothesis" },
+    { include-group = "linting" },
+    { include-group = "tests" },
+    { include-group = "typing" },
+]
+hypothesis = [
+    "hypothesis",
+]
+linting = [
+    "ruff",
+    "yamllint",
+]
+tests = [
+    "hypothesis",
+    "more_itertools",
+    "pytest",
+    "pytest-cov",
+]
+typing = [
+    "hypothesis",
+    "mypy",
+]
+
 [project]
 authors = [
     { email = "christian.ledermann@gmail.com", name = "Christian Ledermann" },
@@ -23,6 +54,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: GraalPy",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Scientific/Engineering :: GIS",
     "Typing :: Typed",
@@ -47,49 +79,6 @@ requires-python = ">=3.9"
 text = "LGPL"
 
 [project.optional-dependencies]
-complexity = [
-    "lizard",
-    "radon",
-]
-dev = [
-    "pre-commit",
-    "pygeoif[complexity]",
-    "pygeoif[linting]",
-    "pygeoif[tests]",
-    "pygeoif[typing]",
-]
-hypothesis = [
-    "hypothesis",
-]
-linting = [
-    "black",
-    "flake8",
-    "flake8-cognitive-complexity",
-    "flake8-comments",
-    "flake8-complex-f-strings",
-    "flake8-continuation",
-    "flake8-dunder-all",
-    "flake8-encodings",
-    "flake8-expression-complexity",
-    "flake8-function-order",
-    "flake8-length",
-    "flake8-pep3101",
-    "flake8-rst-docstrings",
-    "flake8-super",
-    "flake8-typing-imports",
-    "ruff",
-    "yamllint",
-]
-tests = [
-    "hypothesis",
-    "more_itertools",
-    "pytest",
-    "pytest-cov",
-]
-typing = [
-    "hypothesis",
-    "mypy",
-]
 
 [project.readme]
 content-type = "text/x-rst"

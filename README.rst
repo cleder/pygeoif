@@ -22,8 +22,8 @@ When you want to write your own geospatial library with support
 for this protocol you may use pygeoif as a starting point and build
 your functionality on top of it. It has no requirements outside the
 Python standard library and is therefore easy to integrate into your
-project. It is tested on `CPython <https://python.org>`_ and
-`PyPy <https://www.pypy.org/>`_, but it should work on alternative
+project. It is tested on `CPython <https://python.org>`_,
+`PyPy <https://www.pypy.org/>`_ and `GraalPy <https://www.graalvm.org/python/>`_, but it should work on alternative
 Python implementations (that implement the language specification *>=3.8*) as well.
 
 You may think of pygeoif as a 'shapely ultralight' which lets you
@@ -412,9 +412,8 @@ Run the unit and static tests with::
 
     pytest tests
     pytest --doctest-glob="README.rst"
-    black pygeoif
-    ruff pygeoif
-    flake8 pygeoif
+    ruff check pygeoif
+    ruff fmt pygeoif
     mypy pygeoif
 
 
