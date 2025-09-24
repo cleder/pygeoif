@@ -1,4 +1,5 @@
 sphinx
 sphinx-autodoc-typehints
+sphinx-copybutton
 sphinx-rtd-theme
 typing-extensions
