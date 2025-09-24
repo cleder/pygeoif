@@ -4,38 +4,6 @@ requires = [
     "setuptools>=61.2",
 ]
 
-[dependency-groups]
-complexity = [
-    "complexipy",
-    "lizard",
-    "radon",
-]
-dev = [
-    "pre-commit>=4.2.0",
-    { include-group = "complexity" },
-    { include-group = "hypothesis" },
-    { include-group = "linting" },
-    { include-group = "tests" },
-    { include-group = "typing" },
-]
-hypothesis = [
-    "hypothesis",
-]
-linting = [
-    "ruff",
-    "yamllint",
-]
-tests = [
-    "hypothesis",
-    "more_itertools",
-    "pytest",
-    "pytest-cov",
-]
-typing = [
-    "hypothesis",
-    "mypy",
-]
-
 [project]
 authors = [
     { email = "christian.ledermann@gmail.com", name = "Christian Ledermann" },
@@ -80,6 +48,35 @@ requires-python = ">=3.9"
 text = "LGPL"
 
 [project.optional-dependencies]
+complexity = [
+    "complexipy",
+    "lizard",
+    "radon",
+]
+dev = [
+    "pre-commit",
+    "pygeoif[complexity]",
+    "pygeoif[linting]",
+    "pygeoif[tests]",
+    "pygeoif[typing]",
+]
+hypothesis = [
+    "hypothesis",
+]
+linting = [
+    "ruff",
+    "yamllint",
+]
+tests = [
+    "hypothesis",
+    "more_itertools",
+    "pytest",
+    "pytest-cov",
+]
+typing = [
+    "hypothesis",
+    "mypy",
+]
 
 [project.readme]
 content-type = "text/x-rst"
