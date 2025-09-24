@@ -4,6 +4,9 @@
 name: Tests
 on: [push, pull_request]
 
+env:
+  UV_SYSTEM_PYTHON: 1
+
 jobs:
   cpython:
     runs-on: ubuntu-latest
@@ -99,9 +102,9 @@ jobs:
           mypy pygeoif tests
       - name: Linting
         run: |
-          flake8 pygeoif
           ruff format --check pygeoif tests
           ruff check --no-fix pygeoif tests
+          complexipy pygeoif
           yamllint .github/workflows/
       - name: Check complexity
         run: |

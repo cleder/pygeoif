@@ -6,6 +6,7 @@ requires = [
 
 [dependency-groups]
 complexity = [
+    "complexipy",
     "lizard",
     "radon",
 ]

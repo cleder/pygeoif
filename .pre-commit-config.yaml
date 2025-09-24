@@ -36,16 +36,9 @@ repos:
     rev: 7.3.0
     hooks:
       - id: flake8
+        exclude: ^docs/
         additional_dependencies:
           - flake8-cognitive-complexity
-          - flake8-comments
-          - flake8-complex-f-strings
-          - flake8-dunder-all
-          - flake8-encodings
-          - flake8-expression-complexity
-          - flake8-function-order
-          - flake8-rst-docstrings
-          - flake8-simplify
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.18.2
     hooks:
@@ -70,4 +63,8 @@ repos:
     rev: "5.0"
     hooks:
       - id: pyroma
+  - repo: https://github.com/rohaquinlop/complexipy-pre-commit
+    rev: v3.3.0
+    hooks:
+      - id: complexipy
 ...
