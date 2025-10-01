@@ -16,6 +16,9 @@ settings.register_profile(
 settings.register_profile(
     "coverage",
     max_examples=10,
-    suppress_health_check=[HealthCheck.too_slow],
+    suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
 )
-settings.register_profile("ci", suppress_health_check=[HealthCheck.too_slow])
+settings.register_profile(
+    "ci",
+    suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
+)

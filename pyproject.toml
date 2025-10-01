@@ -16,7 +16,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -24,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: GraalPy",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Scientific/Engineering :: GIS",
     "Typing :: Typed",
@@ -42,13 +42,14 @@ keywords = [
     "WKT",
 ]
 name = "pygeoif"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [project.license]
 text = "LGPL"
 
 [project.optional-dependencies]
 complexity = [
+    "complexipy",
     "lizard",
     "radon",
 ]
@@ -63,24 +64,6 @@ hypothesis = [
     "hypothesis",
 ]
 linting = [
-    "black",
-    "flake8",
-    "flake8-cognitive-complexity",
-    "flake8-comments",
-    "flake8-complex-f-strings",
-    "flake8-continuation",
-    "flake8-docstrings",
-    "flake8-dunder-all",
-    "flake8-encodings",
-    "flake8-expression-complexity",
-    "flake8-function-order",
-    "flake8-length",
-    "flake8-pep3101",
-    "flake8-rst-docstrings",
-    "flake8-string-format",
-    "flake8-super",
-    "flake8-typing-imports",
-    "flake8-use-fstring",
     "ruff",
     "yamllint",
 ]
@@ -162,16 +145,21 @@ reportMissingTypeStubs = true
 
 [tool.ruff]
 fix = true
-target-version = "py38"
 
 [tool.ruff.lint]
 ignore = [
     "D203",
     "D212",
     "FA100",
+    "PLW1641",
 ]
 select = [
     "ALL",
+]
+
+[tool.ruff.lint.flake8-builtins]
+builtins-allowed-modules = [
+    "types",
 ]
 
 [tool.ruff.lint.isort]

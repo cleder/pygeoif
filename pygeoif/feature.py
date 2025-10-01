@@ -18,12 +18,11 @@
 # file deepcode ignore inconsistent~equality: Python 3 only
 """Features."""
 
+from collections.abc import Generator
+from collections.abc import Iterator
+from collections.abc import Sequence
 from typing import Any
-from typing import Dict
-from typing import Generator
-from typing import Iterator
 from typing import Optional
-from typing import Sequence
 from typing import Union
 from typing import cast
 
@@ -82,7 +81,7 @@ class Feature:
     def __init__(
         self,
         geometry: Geometry,
-        properties: Optional[Dict[str, Any]] = None,
+        properties: Optional[dict[str, Any]] = None,
         feature_id: Optional[Union[str, int]] = None,
     ) -> None:
         """Initialize the feature."""
@@ -122,7 +121,7 @@ class Feature:
         return self._geometry
 
     @property
-    def properties(self) -> Dict[str, Any]:
+    def properties(self) -> dict[str, Any]:
         """Return a dictionary of properties."""
         return self._properties
 
@@ -131,7 +130,7 @@ class Feature:
         """Return the GeoInterface of the geometry with properties."""
         geo_interface: GeoFeatureInterface = {
             "type": "Feature",
-            "bbox": cast(Bounds, self._geometry.bounds),
+            "bbox": cast("Bounds", self._geometry.bounds),
             "geometry": self._geometry.__geo_interface__,
             "properties": self._properties,
         }

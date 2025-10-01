@@ -17,10 +17,8 @@
 """Geometry Factories."""
 
 import re
-from typing import List
+from re import Pattern
 from typing import Optional
-from typing import Pattern
-from typing import Tuple
 from typing import Union
 from typing import cast
 
@@ -186,7 +184,7 @@ def _line_from_wkt_coordinates(coordinates: str) -> LineString:
     coords = coordinates.split(",")
     return LineString(
         cast(
-            LineType,
+            "LineType",
             [tuple(num(c) for c in coord.split()) for coord in coords],
         ),
     )
@@ -196,27 +194,27 @@ def _ring_from_wkt_coordinates(coordinates: str) -> LinearRing:
     coords = coordinates.split(",")
     return LinearRing(
         cast(
-            LineType,
+            "LineType",
             [tuple(num(c) for c in coord.split()) for coord in coords],
         ),
     )
 
 
 def _shell_holes_from_wkt_coords(
-    coords: List[str],
-) -> Tuple[LineType, Interiors]:
+    coords: list[str],
+) -> tuple[LineType, Interiors]:
     """Extract shell and holes from polygon wkt coordinates."""
     exterior: LineType = cast(
-        LineType,
+        "LineType",
         [tuple(num(c) for c in coord.split()) for coord in coords[0]],
     )
     if len(coords) > 1:
         # we have a polygon with holes
         interiors = [
             cast(
-                LineType,
+                "LineType",
                 [
-                    cast(PointType, tuple(num(c) for c in coord.split()))
+                    cast("PointType", tuple(num(c) for c in coord.split()))
                     for coord in ext
                 ],
             )
@@ -241,14 +239,14 @@ def _polygon_from_wkt_coordinates(coordinates: str) -> Polygon:
 def _multipoint_from_wkt_coordinates(coordinates: str) -> MultiPoint:
     coords = [coord.strip().strip("()") for coord in coordinates.split(",")]
     return MultiPoint(
-        [cast(PointType, tuple(num(c) for c in coord.split())) for coord in coords],
+        [cast("PointType", tuple(num(c) for c in coord.split())) for coord in coords],
     )
 
 
 def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
     coords = [
         cast(
-            LineType,
+            "LineType",
             [
                 tuple(num(c) for c in coord.split())
                 for coord in lines.strip("()").split(",")
@@ -260,7 +258,7 @@ def _multiline_from_wkt_coordinates(coordinates: str) -> MultiLineString:
 
 
 def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
-    polygons: List[PolygonType] = []
+    polygons: list[PolygonType] = []
     m = mpre.split(coordinates)
     for polygon in m:
         if not polygon.strip(", "):
@@ -271,13 +269,13 @@ def _multipolygon_from_wkt_coordinates(coordinates: str) -> MultiPolygon:
         ]
         interior, exteriors = _shell_holes_from_wkt_coords(coords)
         if exteriors:
-            polygons.append(cast(PolygonType, [interior, exteriors]))
+            polygons.append(cast("PolygonType", [interior, exteriors]))
         else:
-            polygons.append(cast(PolygonType, [interior]))
+            polygons.append(cast("PolygonType", [interior]))
     return MultiPolygon(polygons)
 
 
-def split_wkt_components(wkt: str) -> List[str]:
+def split_wkt_components(wkt: str) -> list[str]:
     """
     Split a WKT (Well-Known Text) string into its individual components.
 
@@ -312,7 +310,7 @@ def split_wkt_components(wkt: str) -> List[str]:
 
 def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
     components = split_wkt_components(coordinates)
-    geometries = (cast(Geometry, from_wkt(gc_wkt)) for gc_wkt in components)
+    geometries = (cast("Geometry", from_wkt(gc_wkt)) for gc_wkt in components)
     return GeometryCollection(geometries)
 
 
