@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.6.0 (unreleased)
+1.6.0 (2025/10/01)
 ------------------
 
 - drop Python 3.8 support
