@@ -186,7 +186,7 @@ jobs:
       id-token: write
     steps:
       - name: Download packages built by build-and-check-package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: Packages
           path: dist
@@ -209,7 +209,7 @@ jobs:
       id-token: write
     steps:
       - name: Download packages built by build-and-check-package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: Packages
           path: dist
