@@ -46,7 +46,7 @@ def feature_geo_interface_equals(
             my_interface["geometry"]["type"] == other_interface["geometry"].get("type"),
             compare_coordinates(
                 coords=my_interface["geometry"]["coordinates"],
-                other=other_interface["geometry"].get(  # type: ignore [arg-type]
+                other=other_interface["geometry"].get(
                     "coordinates",
                 ),
             ),
