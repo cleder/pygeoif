@@ -38,7 +38,8 @@ class TestFeature:
         assert self.f1 != unittest.mock.Mock(__geo_interface__={"type": "Feature"})
 
     def test_feature(self) -> None:
-        pytest.raises(TypeError, feature.Feature)
+        with pytest.raises(TypeError):
+            feature.Feature()
         assert self.f1.__geo_interface__ == {
             "type": "Feature",
             "bbox": (0.0, 0.0, 1.0, 1.0),
@@ -101,8 +102,10 @@ class TestFeature:
         )
 
     def test_featurecollection(self) -> None:
-        pytest.raises(TypeError, feature.FeatureCollection)
-        pytest.raises(TypeError, feature.FeatureCollection, None)
+        with pytest.raises(TypeError):
+            feature.FeatureCollection()
+        with pytest.raises(TypeError):
+            feature.FeatureCollection(None)
         assert len(list(self.fc.features)) == 2
         assert len(self.fc) == 2
         assert self.fc.bounds == (0.0, 0.0, 2.0, 2.0)
