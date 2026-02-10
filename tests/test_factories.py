@@ -139,7 +139,8 @@ def test_force2d_collection() -> None:
 
 
 def test_force_2d_nongeo() -> None:
-    pytest.raises(AttributeError, factories.force_2d, (1, 2, 3))
+    with pytest.raises(AttributeError):
+        factories.force_2d((1, 2, 3))
 
 
 def test_force_3d_point() -> None:
@@ -178,7 +179,8 @@ def test_force_3d_point_noop() -> None:
 
 
 def test_force_3d_nongeo() -> None:
-    pytest.raises(AttributeError, factories.force_3d, (1, 2))
+    with pytest.raises(AttributeError):
+        factories.force_3d((1, 2))
 
 
 def test_orient_true() -> None:
@@ -484,11 +486,13 @@ class TestWKT:
 
     def test_wkt_fail(self) -> None:
         for wkt in self.wkt_fail:
-            pytest.raises(factories.WKTParserError, factories.from_wkt, wkt)
+            with pytest.raises(factories.WKTParserError):
+                factories.from_wkt(wkt)
 
     def test_wkt_tin(self) -> None:
         tin = "TIN (((0 0 0, 0 0 1, 0 1 0, 0 0 0)), ((0 0 0, 0 1 0, 1 1 0, 0 0 0)))"
-        pytest.raises(factories.WKTParserError, factories.from_wkt, tin)
+        with pytest.raises(factories.WKTParserError):
+            factories.from_wkt(tin)
 
 
 class TestAsShape:
@@ -562,14 +566,17 @@ class TestAsShape:
         assert f.__geo_interface__["geometries"][1] == line.__geo_interface__
 
     def test_nongeo(self) -> None:
-        pytest.raises(AttributeError, factories.shape, "a")
+        with pytest.raises(AttributeError):
+            factories.shape("a")
 
     def test_empty_dict(self) -> None:
-        pytest.raises(TypeError, factories.shape, {})
+        with pytest.raises(TypeError):
+            factories.shape({})
 
     def test_notimplemented_interface(self) -> None:
         f = {"type": "Tin", "geometries": (1, 2, 3)}
-        pytest.raises(NotImplementedError, factories.shape, f)
+        with pytest.raises(NotImplementedError):
+            factories.shape(f)
 
     def test_dict_as_shape(self) -> None:
         f = geometry.MultiLineString([[[0.0, 0.0], [1.0, 2.0]]])
