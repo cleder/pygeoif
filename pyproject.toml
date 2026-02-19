@@ -40,10 +40,13 @@ keywords = [
     "Spatial",
     "WKT",
 ]
+license = "LGPL-2.1-or-later"
+license-files = [
+    "LICENSE",
+    "docs/LICENSE.rst",
+]
 name = "pygeoif"
 requires-python = ">=3.9"
-license = "LGPL-2.1-or-later"
-license-files = ["LICENSE","docs/LICENSE.rst"]
 
 [project.optional-dependencies]
 complexity = [
