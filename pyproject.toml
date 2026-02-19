@@ -12,7 +12,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Hypothesis",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -41,11 +40,13 @@ keywords = [
     "Spatial",
     "WKT",
 ]
+license = "LGPL-2.1-or-later"
+license-files = [
+    "LICENSE",
+    "docs/LICENSE.rst",
+]
 name = "pygeoif"
 requires-python = ">=3.9"
-
-[project.license]
-text = "LGPL"
 
 [project.optional-dependencies]
 complexity = [
