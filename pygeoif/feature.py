@@ -22,8 +22,6 @@ from collections.abc import Generator
 from collections.abc import Iterator
 from collections.abc import Sequence
 from typing import Any
-from typing import Optional
-from typing import Union
 from typing import cast
 
 from pygeoif.functions import compare_coordinates
@@ -81,8 +79,8 @@ class Feature:
     def __init__(
         self,
         geometry: Geometry,
-        properties: Optional[dict[str, Any]] = None,
-        feature_id: Optional[Union[str, int]] = None,
+        properties: dict[str, Any] | None = None,
+        feature_id: str | int | None = None,
     ) -> None:
         """Initialize the feature."""
         self._geometry = geometry
@@ -111,7 +109,7 @@ class Feature:
         )
 
     @property
-    def id(self) -> Optional[Union[str, int]]:
+    def id(self) -> str | int | None:
         """Return the id of the feature."""
         return self._feature_id
 
@@ -184,6 +182,7 @@ class FeatureCollection:
                 for mine, other in zip(
                     self.__geo_interface__["features"],
                     other.__geo_interface__["features"],  # type: ignore [attr-defined]
+                    strict=True,
                 )
             ),
         )
@@ -209,7 +208,7 @@ class FeatureCollection:
     def bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         geom_bounds = list(
-            zip(*(feature.geometry.bounds for feature in self._features)),
+            zip(*(feature.geometry.bounds for feature in self._features), strict=True),
         )
         return (
             min(geom_bounds[0]),

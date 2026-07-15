@@ -7,7 +7,7 @@ maxy = (9, 8, 7, 6)
 
 
 def get_bounds():
-    return zip(minx, miny, maxx, maxy)
+    return zip(minx, miny, maxx, maxy, strict=True)
 
 
 def test_bounds() -> None:
@@ -31,11 +31,11 @@ def test_brute() -> None:
 
 
 def test_unzip() -> None:
-    assert list(zip(*get_bounds())) == [minx, miny, maxx, maxy]
+    assert list(zip(*get_bounds(), strict=True)) == [minx, miny, maxx, maxy]
 
 
 def test_bounds_unzipped() -> None:
-    tb = list(zip(*get_bounds()))
+    tb = list(zip(*get_bounds(), strict=True))
     new_bounds = (
         min(tb[0]),
         min(tb[1]),
@@ -47,7 +47,7 @@ def test_bounds_unzipped() -> None:
 
 
 def get_line():
-    return zip(minx, miny)
+    return zip(minx, miny, strict=True)
 
 
 def test_line() -> None:
@@ -60,11 +60,11 @@ def test_line() -> None:
 
 
 def test_unzip_line() -> None:
-    assert list(zip(*get_line())) == [(1, 2, 3, 4), (8, 7, 6, 5)]
+    assert list(zip(*get_line(), strict=True)) == [(1, 2, 3, 4), (8, 7, 6, 5)]
 
 
 def test_line_bounds() -> None:
-    xy = list(zip(*get_line()))
+    xy = list(zip(*get_line(), strict=True))
 
     bounds = (
         min(xy[0]),

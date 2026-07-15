@@ -18,42 +18,28 @@
 
 from collections.abc import Sequence
 from typing import Any
-from typing import Optional
+from typing import Literal
 from typing import Union
 
-from typing_extensions import Literal
 from typing_extensions import NotRequired
 from typing_extensions import Protocol
 from typing_extensions import TypedDict  # for Python <3.11 with (Not)Required
 
 Point2D = tuple[float, float]
 Point3D = tuple[float, float, float]
-PointType = Union[Point2D, Point3D]
+PointType = Point2D | Point3D
 Line2D = Sequence[Point2D]
 Line3D = Sequence[Point3D]
-LineType = Union[Line2D, Line3D]
-Interiors = Optional[Sequence[LineType]]
-Poly2d = Union[
-    tuple[Line2D, Sequence[Line2D]],
-    tuple[Line2D],
-]
-Poly3d = Union[
-    tuple[Line3D, Sequence[Line3D]],
-    tuple[Line3D],
-]
-PolygonType = Union[
-    Poly2d,
-    Poly3d,
-]
+LineType = Line2D | Line3D
+Interiors = Sequence[LineType] | None
+Poly2d = tuple[Line2D, Sequence[Line2D]] | tuple[Line2D]
+Poly3d = tuple[Line3D, Sequence[Line3D]] | tuple[Line3D]
+PolygonType = Poly2d | Poly3d
 
-MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
+MultiGeometryType = Sequence[PointType | LineType | PolygonType]
 Bounds = tuple[float, float, float, float]
 
-CoordinatesType = Union[
-    PointType,
-    LineType,
-    Sequence[LineType],
-]
+CoordinatesType = PointType | LineType | Sequence[LineType]
 MultiCoordinatesType = Sequence[CoordinatesType]
 
 GeomType = Literal[
@@ -71,7 +57,7 @@ class GeoInterface(TypedDict):
     """Required keys for the GeoInterface."""
 
     type: GeomType
-    coordinates: Union[CoordinatesType, MultiCoordinatesType]
+    coordinates: CoordinatesType | MultiCoordinatesType
     bbox: NotRequired[Bounds]
 
 
@@ -89,7 +75,7 @@ class GeoFeatureInterface(TypedDict):
     type: Literal["Feature"]
     bbox: NotRequired[Bounds]
     properties: NotRequired[dict[str, Any]]
-    id: NotRequired[Union[str, int]]
+    id: NotRequired[str | int]
     geometry: GeoInterface
 
 
@@ -99,7 +85,7 @@ class GeoFeatureCollectionInterface(TypedDict):
     type: Literal["FeatureCollection"]
     features: Sequence[GeoFeatureInterface]
     bbox: NotRequired[Bounds]
-    id: NotRequired[Union[str, int]]
+    id: NotRequired[str | int]
 
 
 class GeoType(Protocol):

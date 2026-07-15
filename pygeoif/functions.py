@@ -21,7 +21,6 @@ import math
 from collections.abc import Iterable
 from itertools import groupby
 from itertools import zip_longest
-from typing import Union
 from typing import cast
 
 from pygeoif.types import CoordinatesType
@@ -42,7 +41,7 @@ def signed_area(coords: LineType) -> float:
     """
     if len(coords) < 3:  # noqa: PLR2004
         return 0.0
-    xs, ys = map(list, zip(*(coord[:2] for coord in coords)))
+    xs, ys = map(list, zip(*(coord[:2] for coord in coords), strict=True))
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
     return cast(
@@ -138,8 +137,8 @@ def convex_hull(points: Iterable[Point2D]) -> LineType:
 
 
 def compare_coordinates(
-    coords: Union[float, CoordinatesType, MultiCoordinatesType],
-    other: Union[float, CoordinatesType, MultiCoordinatesType],
+    coords: float | CoordinatesType | MultiCoordinatesType,
+    other: float | CoordinatesType | MultiCoordinatesType,
 ) -> bool:
     """Compare two coordinate sequences."""
     try:
@@ -159,8 +158,8 @@ def compare_coordinates(
 
 
 def compare_geo_interface(
-    first: Union[GeoInterface, GeoCollectionInterface],
-    second: Union[GeoInterface, GeoCollectionInterface],
+    first: GeoInterface | GeoCollectionInterface,
+    second: GeoInterface | GeoCollectionInterface,
 ) -> bool:
     """Compare two geo interfaces."""
     try:
@@ -204,7 +203,10 @@ def move_coordinate(
             tuple(c + m for c, m in zip_longest(coordinate, move_by, fillvalue=0)),
         )
 
-    return cast("PointType", tuple(c + m for c, m in zip(coordinate, move_by)))
+    return cast(
+        "PointType",
+        tuple(c + m for c, m in zip(coordinate, move_by, strict=False)),
+    )
 
 
 def move_coordinates(
@@ -236,9 +238,9 @@ def move_coordinates(
 
 
 def move_geo_interface(
-    interface: Union[GeoInterface, GeoCollectionInterface],
+    interface: GeoInterface | GeoCollectionInterface,
     move_by: PointType,
-) -> Union[GeoInterface, GeoCollectionInterface]:
+) -> GeoInterface | GeoCollectionInterface:
     """Move the coordinates of the geo interface by the given vector."""
     if interface["type"] == "GeometryCollection":
         return {

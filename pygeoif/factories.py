@@ -18,8 +18,6 @@
 
 import re
 from re import Pattern
-from typing import Optional
-from typing import Union
 from typing import cast
 
 from pygeoif.exceptions import WKTParserError
@@ -93,13 +91,8 @@ def box(
 
 
 def shape(
-    context: Union[
-        GeoType,
-        GeoCollectionType,
-        GeoInterface,
-        GeoCollectionInterface,
-    ],
-) -> Union[Geometry, GeometryCollection]:
+    context: GeoType | GeoCollectionType | GeoInterface | GeoCollectionInterface,
+) -> Geometry | GeometryCollection:
     """
     Return a new geometry with coordinates *copied* from the context.
 
@@ -314,7 +307,7 @@ def _multigeometry_from_wkt_coordinates(coordinates: str) -> GeometryCollection:
     return GeometryCollection(geometries)
 
 
-def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
+def from_wkt(geo_str: str) -> Geometry | GeometryCollection | None:
     """Create a geometry from its WKT representation."""
     type_map = {
         "POINT": _point_from_wkt_coordinates,
@@ -346,8 +339,8 @@ def from_wkt(geo_str: str) -> Optional[Union[Geometry, GeometryCollection]]:
 
 
 def mapping(
-    ob: Union[GeoType, GeoCollectionType],
-) -> Union[GeoCollectionInterface, GeoInterface]:
+    ob: GeoType | GeoCollectionType,
+) -> GeoCollectionInterface | GeoInterface:
     """
     Return a GeoJSON-like mapping.
 
@@ -370,8 +363,8 @@ def mapping(
 
 
 def force_2d(
-    context: Union[GeoType, GeoCollectionType],
-) -> Union[Geometry, GeometryCollection]:
+    context: GeoType | GeoCollectionType,
+) -> Geometry | GeometryCollection:
     """
     Force the dimensionality of a geometry to 2D.
 
@@ -387,9 +380,9 @@ def force_2d(
 
 
 def force_3d(
-    context: Union[GeoType, GeoCollectionType],
+    context: GeoType | GeoCollectionType,
     z: float = 0,
-) -> Union[Geometry, GeometryCollection]:
+) -> Geometry | GeometryCollection:
     """
     Force the dimensionality of a geometry to 3D.
 

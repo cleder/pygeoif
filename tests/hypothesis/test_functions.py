@@ -4,7 +4,6 @@
 # and is provided under the Creative Commons Zero public domain dedication.
 
 import math
-import typing
 
 import more_itertools
 from hypothesis import given
@@ -34,10 +33,7 @@ import pygeoif.types
     ),
 )
 def test_fuzz_centroid(
-    coords: typing.Union[
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-    ],
+    coords: pygeoif.types.LineType,
 ) -> None:
     center, area = pygeoif.functions.centroid(coords=coords)
     if area == 0 or math.isnan(area):
@@ -106,60 +102,8 @@ def test_fuzz_centroid(
     ),
 )
 def test_fuzz_compare_coordinates(
-    coords: typing.Union[
-        float,
-        tuple[float, float],
-        tuple[float, float, float],
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-        typing.Sequence[
-            typing.Union[
-                typing.Sequence[tuple[float, float]],
-                typing.Sequence[tuple[float, float, float]],
-            ]
-        ],
-        typing.Sequence[
-            typing.Union[
-                tuple[float, float],
-                tuple[float, float, float],
-                typing.Sequence[tuple[float, float]],
-                typing.Sequence[tuple[float, float, float]],
-                typing.Sequence[
-                    typing.Union[
-                        typing.Sequence[tuple[float, float]],
-                        typing.Sequence[tuple[float, float, float]],
-                    ]
-                ],
-            ]
-        ],
-    ],
-    other: typing.Union[
-        float,
-        tuple[float, float],
-        tuple[float, float, float],
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-        typing.Sequence[
-            typing.Union[
-                typing.Sequence[tuple[float, float]],
-                typing.Sequence[tuple[float, float, float]],
-            ]
-        ],
-        typing.Sequence[
-            typing.Union[
-                tuple[float, float],
-                tuple[float, float, float],
-                typing.Sequence[tuple[float, float]],
-                typing.Sequence[tuple[float, float, float]],
-                typing.Sequence[
-                    typing.Union[
-                        typing.Sequence[tuple[float, float]],
-                        typing.Sequence[tuple[float, float, float]],
-                    ]
-                ],
-            ]
-        ],
-    ],
+    coords: float | pygeoif.types.CoordinatesType | pygeoif.types.MultiCoordinatesType,
+    other: float | pygeoif.types.CoordinatesType | pygeoif.types.MultiCoordinatesType,
 ) -> None:
     assert isinstance(
         pygeoif.functions.compare_coordinates(coords=coords, other=other),
@@ -229,10 +173,7 @@ def test_fuzz_convex_hull(points: list[tuple[float, float]]) -> None:
     ),
 )
 def test_fuzz_dedupe(
-    coords: typing.Union[
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-    ],
+    coords: pygeoif.types.LineType,
 ) -> None:
     deduped = pygeoif.functions.dedupe(coords=coords)
 
@@ -252,14 +193,8 @@ def test_fuzz_dedupe(
     ),
 )
 def test_fuzz_move_coordinate(
-    coordinate: typing.Union[
-        tuple[float, float],
-        tuple[float, float, float],
-    ],
-    move_by: typing.Union[
-        tuple[float, float],
-        tuple[float, float, float],
-    ],
+    coordinate: pygeoif.types.PointType,
+    move_by: pygeoif.types.PointType,
 ) -> None:
     moved = pygeoif.functions.move_coordinate(coordinate=coordinate, move_by=move_by)
 
@@ -285,22 +220,8 @@ def test_fuzz_move_coordinate(
     ),
 )
 def test_fuzz_move_coordinates(
-    coordinates: typing.Union[
-        tuple[float, float],
-        tuple[float, float, float],
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-        typing.Sequence[
-            typing.Union[
-                typing.Sequence[tuple[float, float]],
-                typing.Sequence[tuple[float, float, float]],
-            ]
-        ],
-    ],
-    move_by: typing.Union[
-        tuple[float, float],
-        tuple[float, float, float],
-    ],
+    coordinates: pygeoif.types.CoordinatesType,
+    move_by: pygeoif.types.PointType,
 ) -> None:
     moved = pygeoif.functions.move_coordinates(coordinates=coordinates, move_by=move_by)
 
@@ -314,9 +235,6 @@ def test_fuzz_move_coordinates(
     ),
 )
 def test_fuzz_signed_area(
-    coords: typing.Union[
-        typing.Sequence[tuple[float, float]],
-        typing.Sequence[tuple[float, float, float]],
-    ],
+    coords: pygeoif.types.LineType,
 ) -> None:
     assert isinstance(pygeoif.functions.signed_area(coords=coords), float)

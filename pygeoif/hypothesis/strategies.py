@@ -6,7 +6,6 @@ Coordinates are limited to 32 bit floats to avoid precision issues.
 
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional
 from typing import cast
 
 import hypothesis.strategies as st
@@ -64,8 +63,8 @@ class Srs:
     """
 
     name: str
-    min_xyz: tuple[Optional[float], Optional[float], Optional[float]]
-    max_xyz: tuple[Optional[float], Optional[float], Optional[float]]
+    min_xyz: tuple[float | None, float | None, float | None]
+    max_xyz: tuple[float | None, float | None, float | None]
 
     def longitudes(self) -> st.SearchStrategy[float]:
         """
@@ -106,7 +105,7 @@ epsg4326 = Srs(
 def _point_coords_2d(
     draw: st.DrawFn,
     *,
-    srs: Optional[Srs] = None,
+    srs: Srs | None = None,
 ) -> Point2D:
     """
     Generate 2D points using the given draw function.
@@ -133,7 +132,7 @@ def _point_coords_2d(
 def _point_coords_3d(
     draw: st.DrawFn,
     *,
-    srs: Optional[Srs] = None,
+    srs: Srs | None = None,
 ) -> Point3D:
     """
     Generate 3D points using the given draw function.
@@ -162,8 +161,8 @@ def _point_coords_3d(
 def point_coords(
     draw: st.DrawFn,
     *,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> PointType:
     """
     Generate a random point in either 2D or 3D space.
@@ -190,8 +189,8 @@ def point_coords(
 def points(
     draw: st.DrawFn,
     *,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> Point:
     """
     Generate a random point in either 2D or 3D space.
@@ -215,9 +214,9 @@ def line_coords(  # noqa: PLR0913
     draw: st.DrawFn,
     *,
     min_points: int,
-    max_points: Optional[int] = None,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    max_points: int | None = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
     unique: bool = False,
 ) -> LineType:
     """
@@ -256,9 +255,9 @@ def line_coords(  # noqa: PLR0913
 def line_strings(
     draw: st.DrawFn,
     *,
-    max_points: Optional[int] = None,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    max_points: int | None = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> LineString:
     """
     Generate a random linestring in either 2D or 3D space.
@@ -295,9 +294,9 @@ def line_strings(
 def linear_rings(
     draw: st.DrawFn,
     *,
-    max_points: Optional[int] = None,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    max_points: int | None = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> LinearRing:
     """
     Generate a linear ring using the provided draw function.
@@ -340,11 +339,11 @@ def linear_rings(
 def polygons(  # noqa: PLR0913
     draw: st.DrawFn,
     *,
-    max_points: Optional[int] = None,
+    max_points: int | None = None,
     min_interiors: int = 0,
     max_interiors: int = 5,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> Polygon:
     """
     Generate a random polygon using the given strategies.
@@ -407,9 +406,9 @@ def multi_points(
     draw: st.DrawFn,
     *,
     min_points: int = 1,
-    max_points: Optional[int] = None,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    max_points: int | None = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> MultiPoint:
     """
     Generate a MultiPoint geometry object with random coordinates.
@@ -449,8 +448,8 @@ def multi_line_strings(  # noqa: PLR0913
     min_lines: int = 1,
     max_lines: int = 5,
     max_points: int = 10,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> MultiLineString:
     """
     Generate a random MultiLineString object.
@@ -497,8 +496,8 @@ def multi_polygons(  # noqa: PLR0913
     max_points: int = 10,
     min_interiors: int = 0,
     max_interiors: int = 2,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> MultiPolygon:
     """
     Generate a random MultiPolygon object.
@@ -548,8 +547,8 @@ def geometry_collections(  # noqa: PLR0913
     min_interiors: int = 0,
     max_interiors: int = 5,
     max_leaves: int = 3,
-    srs: Optional[Srs] = None,
-    has_z: Optional[bool] = None,
+    srs: Srs | None = None,
+    has_z: bool | None = None,
 ) -> GeometryCollection:
     """
     Generate a random GeometryCollection object.

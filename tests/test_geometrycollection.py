@@ -105,7 +105,7 @@ def test_geoms() -> None:
     line = geometry.LineString([(0, 0), (1, 1)])
     gc = geometry.GeometryCollection([poly1, poly2, p0, p1, ring, line])
 
-    for k, v in zip(gc.geoms, [poly1, poly2, p0, p1, ring, line]):
+    for k, v in zip(gc.geoms, [poly1, poly2, p0, p1, ring, line], strict=True):
         assert k == v
 
 

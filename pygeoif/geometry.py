@@ -26,7 +26,6 @@ from collections.abc import Iterator
 from collections.abc import Sequence
 from typing import Any
 from typing import NoReturn
-from typing import Optional
 from typing import Union
 from typing import cast
 
@@ -99,7 +98,7 @@ class _Geometry:
         return self.is_empty is False
 
     @property
-    def bounds(self) -> Union[Bounds, tuple[()]]:
+    def bounds(self) -> Bounds | tuple[()]:
         """
         Return minimum bounding region (min x, min y, max x, max y).
 
@@ -108,7 +107,7 @@ class _Geometry:
         return () if self.is_empty else self._get_bounds()
 
     @property
-    def convex_hull(self) -> Optional[Union["Point", "LineString", "Polygon"]]:
+    def convex_hull(self) -> Union["Point", "LineString", "Polygon"] | None:
         """
         Return the Convex Hull.
 
@@ -138,7 +137,7 @@ class _Geometry:
         return self.__class__.__name__
 
     @property
-    def has_z(self) -> Optional[bool]:
+    def has_z(self) -> bool | None:
         """
         Return True if the geometry's coordinate sequence(s) have z values.
 
@@ -238,7 +237,7 @@ class Point(_Geometry):
 
     _geoms: PointType
 
-    def __init__(self, x: float, y: float, z: Optional[float] = None) -> None:
+    def __init__(self, x: float, y: float, z: float | None = None) -> None:
         """
         Initialize a Point.
 
@@ -281,7 +280,7 @@ class Point(_Geometry):
         return self._geoms[1]
 
     @property
-    def z(self) -> Optional[float]:
+    def z(self) -> float | None:
         """Return z coordinate."""
         if self.has_z:
             return self._geoms[2]  # type: ignore [misc]
@@ -289,7 +288,7 @@ class Point(_Geometry):
         raise DimensionError(msg)
 
     @property
-    def coords(self) -> Union[tuple[PointType], tuple[()]]:
+    def coords(self) -> tuple[PointType] | tuple[()]:
         """Return the geometry coordinates."""
         return () if self.is_empty else (self._geoms,)
 
@@ -387,7 +386,7 @@ class LineString(_Geometry):
         return len(self._geoms) == 0
 
     @property
-    def has_z(self) -> Optional[bool]:
+    def has_z(self) -> bool | None:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._geoms[0].has_z if self.geoms else None
 
@@ -437,7 +436,7 @@ class LineString(_Geometry):
 
     def _get_bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
-        xy = list(zip(*((p.x, p.y) for p in self._geoms)))
+        xy = list(zip(*((p.x, p.y) for p in self._geoms), strict=True))
         return (
             min(xy[0]),
             min(xy[1]),
@@ -474,7 +473,7 @@ class LinearRing(LineString):
             object.__setattr__(self, "_geoms", (*self._geoms, self._geoms[0]))
 
     @property
-    def centroid(self) -> Optional[Point]:
+    def centroid(self) -> Point | None:
         """Return the centroid of the ring."""
         if self.has_z:
             msg = "Centeroid is only implemented for 2D coordinates"
@@ -517,7 +516,7 @@ class Polygon(_Geometry):
     def __init__(
         self,
         shell: LineType,
-        holes: Optional[Sequence[LineType]] = None,
+        holes: Sequence[LineType] | None = None,
     ) -> None:
         """
         Initialize the polygon.
@@ -587,7 +586,7 @@ class Polygon(_Geometry):
         return cast("PolygonType", (self.exterior.coords,))
 
     @property
-    def has_z(self) -> Optional[bool]:
+    def has_z(self) -> bool | None:
         """Return True if the geometry's coordinate sequence(s) have z values."""
         return self._geoms[0].has_z
 
@@ -658,7 +657,7 @@ class _MultiGeometry(_Geometry):
         )
 
     @property
-    def has_z(self) -> Optional[bool]:
+    def has_z(self) -> bool | None:
         """Return True if any geometry of the collection have z values."""
         return any(geom.has_z for geom in self.geoms) if self._geoms else None
 
@@ -679,7 +678,7 @@ class _MultiGeometry(_Geometry):
     def _get_bounds(self) -> Bounds:
         """Return the X-Y bounding box."""
         geom_bounds = list(
-            zip(*(geom.bounds for geom in self.geoms)),
+            zip(*(geom.bounds for geom in self.geoms), strict=True),
         )
         return (
             min(geom_bounds[0]),
@@ -968,15 +967,15 @@ class MultiPolygon(_MultiGeometry):
             yield from geom._prepare_hull()  # noqa: SLF001
 
 
-Geometry = Union[
-    Point,
-    LineString,
-    LinearRing,
-    Polygon,
-    MultiPoint,
-    MultiLineString,
-    MultiPolygon,
-]
+Geometry = (
+    Point
+    | LineString
+    | LinearRing
+    | Polygon
+    | MultiPoint
+    | MultiLineString
+    | MultiPolygon
+)
 
 
 class GeometryCollection(_MultiGeometry):
