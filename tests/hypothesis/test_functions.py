@@ -46,6 +46,45 @@ def test_fuzz_centroid(
 
 
 @given(
+    vertices=st.integers(min_value=3, max_value=24),
+    radius=st.floats(min_value=1.0, max_value=1_000.0),
+    center=st.tuples(
+        st.floats(min_value=-100.0, max_value=100.0),
+        st.floats(min_value=-100.0, max_value=100.0),
+    ),
+    offset=st.sampled_from([0.0, 1e3, 1e5, 1e7, 1e9, 1e10]),
+)
+def test_centroid_of_a_regular_polygon_is_its_center(
+    vertices: int,
+    radius: float,
+    center: tuple[float, float],
+    offset: float,
+) -> None:
+    """
+    The centroid of a regular polygon is its center by symmetry.
+
+    A closed form expectation that does not share any arithmetic with the
+    implementation, so unlike a shape-only assertion it detects a centroid
+    that has silently lost its significant digits.
+    """
+    expected_x, expected_y = center[0] + offset, center[1] + offset
+    coords = [
+        (
+            expected_x + radius * math.cos(2 * math.pi * step / vertices),
+            expected_y + radius * math.sin(2 * math.pi * step / vertices),
+        )
+        for step in range(vertices)
+    ]
+    coords.append(coords[0])
+
+    computed, _ = pygeoif.functions.centroid(coords=coords)
+
+    tolerance = 32 * math.ulp(max(abs(value) for point in coords for value in point))
+    assert abs(computed[0] - expected_x) <= tolerance
+    assert abs(computed[1] - expected_y) <= tolerance
+
+
+@given(
     coords=st.one_of(
         st.floats(),
         st.lists(st.tuples(st.floats(), st.floats())),

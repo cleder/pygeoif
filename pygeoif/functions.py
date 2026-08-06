@@ -32,6 +32,27 @@ from pygeoif.types import Point2D
 from pygeoif.types import PointType
 
 
+def _relative_coordinates(
+    coords: LineType,
+) -> tuple[list[float], list[float], Point2D]:
+    """
+    Return the x and y coordinates as offsets from the first vertex.
+
+    Shoelace sums are translation invariant in exact arithmetic but not in
+    floating point: the individual terms grow with the square of the coordinate
+    magnitude while their sum only grows with the area, so for a ring that sits
+    far from the origin the significant digits are cancelled away. Accumulating
+    relative to a vertex of the ring keeps the terms the size of the ring
+    itself. The origin is returned so a result can be shifted back.
+    """
+    origin_x, origin_y = coords[0][0], coords[0][1]
+    return (
+        [coord[0] - origin_x for coord in coords],
+        [coord[1] - origin_y for coord in coords],
+        (origin_x, origin_y),
+    )
+
+
 def signed_area(coords: LineType) -> float:
     """
     Return the signed area enclosed by a ring.
@@ -41,37 +62,39 @@ def signed_area(coords: LineType) -> float:
     """
     if len(coords) < 3:  # noqa: PLR2004
         return 0.0
-    xs, ys = map(list, zip(*(coord[:2] for coord in coords), strict=True))
+    xs, ys, _ = _relative_coordinates(coords)
     xs.append(xs[1])  # pragma: no mutate
     ys.append(ys[1])  # pragma: no mutate
-    return cast(
-        "float",
-        sum(xs[i] * (ys[i + 1] - ys[i - 1]) for i in range(1, len(coords))) / 2.0,
-    )
+    return sum(xs[i] * (ys[i + 1] - ys[i - 1]) for i in range(1, len(coords))) / 2.0
 
 
 def centroid(coords: LineType) -> tuple[Point2D, float]:
     """Calculate the coordinates of the centroid and the area of a LineString."""
+    if not coords:
+        return ((math.nan, math.nan), 0.0)
+
+    xs, ys, (origin_x, origin_y) = _relative_coordinates(coords)
     ans: list[float] = [0, 0]
     n = len(coords)
     signed_area = 0.0
 
     # For all vertices
-    for i, coord in enumerate(coords):
-        next_coord = coords[(i + 1) % n]
+    for i in range(n):
+        j = (i + 1) % n
         # Calculate area using shoelace formula
-        area = (coord[0] * next_coord[1]) - (next_coord[0] * coord[1])
+        area = (xs[i] * ys[j]) - (xs[j] * ys[i])
         signed_area += area
 
         # Calculate coordinates of centroid of polygon
-        ans[0] += (coord[0] + next_coord[0]) * area
-        ans[1] += (coord[1] + next_coord[1]) * area
+        ans[0] += (xs[i] + xs[j]) * area
+        ans[1] += (ys[i] + ys[j]) * area
 
     if signed_area == 0 or math.isnan(signed_area):
         return ((math.nan, math.nan), signed_area)
 
-    ans[0] = ans[0] / (3 * signed_area)
-    ans[1] = ans[1] / (3 * signed_area)
+    # Shift the result back out of the local coordinate system.
+    ans[0] = ans[0] / (3 * signed_area) + origin_x
+    ans[1] = ans[1] / (3 * signed_area) + origin_y
 
     return cast("Point2D", tuple(ans)), signed_area / 2.0
 
