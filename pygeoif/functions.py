@@ -70,7 +70,7 @@ def signed_area(coords: LineType) -> float:
 
 def centroid(coords: LineType) -> tuple[Point2D, float]:
     """Calculate the coordinates of the centroid and the area of a LineString."""
-    if not coords:
+    if len(coords) == 0:
         return ((math.nan, math.nan), 0.0)
 
     xs, ys, (origin_x, origin_y) = _relative_coordinates(coords)

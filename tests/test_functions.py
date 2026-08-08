@@ -3,6 +3,7 @@
 import itertools
 import math
 import random
+from collections.abc import Sequence
 from fractions import Fraction
 
 import pytest
@@ -200,6 +201,24 @@ def test_signed_area_far_from_the_origin() -> None:
 
 def test_centroid_empty() -> None:
     center, area = centroid([])
+
+    assert math.isnan(center[0])
+    assert math.isnan(center[1])
+    assert area == 0
+
+
+def test_centroid_empty_sequence_with_ambiguous_truthiness() -> None:
+    class EmptySequence(Sequence[tuple[float, float]]):
+        def __getitem__(self, index: int) -> tuple[float, float]:
+            raise IndexError(index)
+
+        def __len__(self) -> int:
+            return 0
+
+        def __bool__(self) -> bool:
+            raise AssertionError
+
+    center, area = centroid(EmptySequence())
 
     assert math.isnan(center[0])
     assert math.isnan(center[1])
