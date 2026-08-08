@@ -210,13 +210,13 @@ def test_centroid_empty() -> None:
 def test_centroid_empty_sequence_with_ambiguous_truthiness() -> None:
     class EmptySequence(Sequence[tuple[float, float]]):
         def __getitem__(self, index: int) -> tuple[float, float]:
-            raise IndexError(index)
+            raise IndexError(index)  # pragma: no cover
 
         def __len__(self) -> int:
             return 0
 
         def __bool__(self) -> bool:
-            raise AssertionError
+            raise AssertionError  # pragma: no cover
 
     center, area = centroid(EmptySequence())
 
