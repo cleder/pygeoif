@@ -44,6 +44,7 @@ You can bridge custom classes into `pygeoif` as long as they expose a conforming
 ```python
 from pygeoif import shape
 
+
 class VendorPolygon:
     @property
     def __geo_interface__(self):
@@ -51,6 +52,7 @@ class VendorPolygon:
             "type": "Polygon",
             "coordinates": (((0, 0), (2, 0), (2, 1), (0, 1), (0, 0)),),
         }
+
 
 polygon = shape(VendorPolygon())
 print(polygon.wkt)
