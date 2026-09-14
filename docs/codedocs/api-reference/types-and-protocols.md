@@ -16,8 +16,12 @@ PointType = Union[Point2D, Point3D]
 LineType = Union[Sequence[Point2D], Sequence[Point3D]]
 Interiors = Optional[Sequence[LineType]]
 PolygonType = Union[
-    Union[tuple[Sequence[Point2D], Sequence[Sequence[Point2D]]], tuple[Sequence[Point2D]]],
-    Union[tuple[Sequence[Point3D], Sequence[Sequence[Point3D]]], tuple[Sequence[Point3D]]],
+    Union[
+        tuple[Sequence[Point2D], Sequence[Sequence[Point2D]]], tuple[Sequence[Point2D]]
+    ],
+    Union[
+        tuple[Sequence[Point3D], Sequence[Sequence[Point3D]]], tuple[Sequence[Point3D]]
+    ],
 ]
 MultiGeometryType = Sequence[Union[PointType, LineType, PolygonType]]
 Bounds = tuple[float, float, float, float]
@@ -33,10 +37,12 @@ class GeoInterface(TypedDict):
     coordinates: Union[CoordinatesType, MultiCoordinatesType]
     bbox: NotRequired[Bounds]
 
+
 class GeoCollectionInterface(TypedDict):
     type: Literal["GeometryCollection"]
     geometries: Sequence[Union[GeoInterface, "GeoCollectionInterface"]]
     bbox: NotRequired[Bounds]
+
 
 class GeoFeatureInterface(TypedDict):
     type: Literal["Feature"]
@@ -44,6 +50,7 @@ class GeoFeatureInterface(TypedDict):
     properties: NotRequired[dict[str, Any]]
     id: NotRequired[Union[str, int]]
     geometry: GeoInterface
+
 
 class GeoFeatureCollectionInterface(TypedDict):
     type: Literal["FeatureCollection"]
@@ -58,6 +65,7 @@ class GeoFeatureCollectionInterface(TypedDict):
 class GeoType(Protocol):
     @property
     def __geo_interface__(self) -> GeoInterface: ...
+
 
 class GeoCollectionType(Protocol):
     @property
@@ -76,8 +84,10 @@ class GeoCollectionType(Protocol):
 from pygeoif import shape
 from pygeoif.types import GeoInterface
 
+
 def build_geometry(payload: GeoInterface):
     return shape(payload)
+
 
 point = build_geometry({"type": "Point", "coordinates": (1, 2)})
 print(point.wkt)
