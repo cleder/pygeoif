@@ -191,6 +191,37 @@ def test_centroid_valid() -> None:
     assert line.centroid == geometry.Point(2, 1)
 
 
+def test_centroid_valid_far_from_the_origin() -> None:
+    # a valid ring must not lose its centroid to a large false easting/northing
+    for exponent in range(13):
+        offset = 10.0**exponent
+        line = geometry.LinearRing(
+            [
+                (offset, offset),
+                (offset + 4, offset),
+                (offset + 4, offset + 2),
+                (offset, offset + 2),
+            ],
+        )
+
+        assert line.centroid == geometry.Point(offset + 2, offset + 1)
+
+
+def test_centroid_thin_ring_far_from_the_origin() -> None:
+    # a 10 m long, 1 mm thick wall in a metre based projected coordinate system
+    offset = 10_000.0
+    line = geometry.LinearRing(
+        [
+            (offset, offset),
+            (offset + 10, offset),
+            (offset + 10, offset + 0.001),
+            (offset, offset + 0.001),
+        ],
+    )
+
+    assert line.centroid == geometry.Point(offset + 5, offset + 0.0005)
+
+
 def test_empty() -> None:
     ring = geometry.LinearRing([])
 

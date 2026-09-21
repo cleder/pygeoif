@@ -4,6 +4,10 @@ Changelog
 1.7.0 (unreleased)
 --------------------
 
+- fix ``centroid`` and ``signed_area`` losing precision for coordinates far from the
+  origin, which made ``LinearRing.centroid`` silently inaccurate or ``None`` for valid
+  rings in projected coordinate systems with a large false easting/northing.
+
 
 
 1.6.0 (2025/10/01)

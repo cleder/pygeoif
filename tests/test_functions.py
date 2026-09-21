@@ -3,6 +3,8 @@
 import itertools
 import math
 import random
+from collections.abc import Sequence
+from fractions import Fraction
 
 import pytest
 
@@ -105,6 +107,122 @@ def test_signed_area_circle_ish() -> None:
             assert 3.0 * r**2 < area1 < 3.2 * r**2
         if steps > 30:
             assert 3.1 * r**2 < area1 < 3.2 * r**2
+
+
+def exact_centroid_and_area(coords):
+    """
+    Centroid and area of a ring in exact rational arithmetic.
+
+    Independent oracle for the floating point implementation: the vertices are
+    the same but no rounding takes place anywhere in the computation.
+    """
+    points = [(Fraction(coord[0]), Fraction(coord[1])) for coord in coords]
+    double_area = Fraction(0)
+    acc_x = Fraction(0)
+    acc_y = Fraction(0)
+    for (x0, y0), (x1, y1) in zip(points, points[1:] + points[:1], strict=True):
+        cross = x0 * y1 - x1 * y0
+        double_area += cross
+        acc_x += (x0 + x1) * cross
+        acc_y += (y0 + y1) * cross
+    return acc_x / (3 * double_area), acc_y / (3 * double_area), double_area / 2
+
+
+def offset_ring(ring, offset):
+    return [(x + offset, y + offset) for x, y in ring]
+
+
+def ulp_tolerance(ring, ulps=32):
+    return ulps * math.ulp(max(abs(value) for point in ring for value in point))
+
+
+SQUARE = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0), (0.0, 0.0)]
+TRIANGLE = [(0.0, 0.0), (10.0, 0.0), (0.0, 10.0), (0.0, 0.0)]
+L_SHAPE = [
+    (0.0, 0.0),
+    (10.0, 0.0),
+    (10.0, 5.0),
+    (5.0, 5.0),
+    (5.0, 10.0),
+    (0.0, 10.0),
+    (0.0, 0.0),
+]
+# a 10 m long, 1 mm thick wall
+WALL = [(0.0, 0.0), (10.0, 0.0), (10.0, 0.001), (0.0, 0.001), (0.0, 0.0)]
+RINGS = (SQUARE, TRIANGLE, L_SHAPE, WALL)
+# 1e12 is the last decade where the 1 mm thick wall is still representable
+OFFSETS = [10.0**exponent for exponent in range(13)]
+
+
+def test_centroid_far_from_the_origin() -> None:
+    for ring in RINGS:
+        for offset in OFFSETS:
+            moved = offset_ring(ring, offset)
+
+            center, area = centroid(moved)
+            expected_x, expected_y, expected_area = exact_centroid_and_area(moved)
+
+            tolerance = ulp_tolerance(moved)
+            assert abs(center[0] - float(expected_x)) <= tolerance
+            assert abs(center[1] - float(expected_y)) <= tolerance
+            assert math.isclose(area, float(expected_area))
+
+
+def test_centroid_is_translation_invariant() -> None:
+    for ring in RINGS:
+        base, _ = centroid(ring)
+        for offset in OFFSETS:
+            moved = offset_ring(ring, offset)
+
+            center, _ = centroid(moved)
+
+            tolerance = ulp_tolerance(moved)
+            assert abs(center[0] - (base[0] + offset)) <= tolerance
+            assert abs(center[1] - (base[1] + offset)) <= tolerance
+
+
+def test_centroid_area_agrees_with_signed_area_far_from_the_origin() -> None:
+    for ring in RINGS:
+        for offset in OFFSETS:
+            moved = offset_ring(ring, offset)
+
+            assert math.isclose(centroid(moved)[1], signed_area(moved))
+
+
+def test_signed_area_far_from_the_origin() -> None:
+    ring = circle_ish(0, 0, 10, 24)
+    for offset in OFFSETS:
+        moved = offset_ring(ring, offset)
+
+        *_, expected_area = exact_centroid_and_area(moved)
+
+        assert math.isclose(signed_area(moved), float(expected_area), rel_tol=1e-15)
+
+
+def test_centroid_empty() -> None:
+    center, area = centroid([])
+
+    assert math.isnan(center[0])
+    assert math.isnan(center[1])
+    assert area == 0
+
+
+def test_centroid_empty_sequence_with_ambiguous_truthiness() -> None:
+    class EmptySequence(Sequence[tuple[float, float]]):
+        def __getitem__(self, index: int) -> tuple[float, float]:
+            raise IndexError(index)  # pragma: no cover
+
+        def __len__(self) -> int:
+            return 0
+
+        def __bool__(self) -> bool:
+            raise AssertionError  # pragma: no cover
+
+    center, area = centroid(EmptySequence())
+
+    assert math.isnan(center[0])
+    assert math.isnan(center[1])
+    assert area == 0
 
 
 def test_signed_area_crescent_ish() -> None:
