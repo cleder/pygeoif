@@ -237,7 +237,10 @@ class TestFeature:
         "interface",
         [{}, {"type": "FeatureCollection"}, {"type": "Feature", "features": []}],
     )
-    def test_empty_featurecollection_invalid_interface(self, interface) -> None:
+    def test_empty_featurecollection_invalid_interface(
+        self,
+        interface: dict[str, object],
+    ) -> None:
         assert feature.FeatureCollection([]) != unittest.mock.Mock(
             __geo_interface__=interface,
         )
