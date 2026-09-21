@@ -205,8 +205,10 @@ class FeatureCollection:
         yield from self._features
 
     @property
-    def bounds(self) -> Bounds:
-        """Return the X-Y bounding box."""
+    def bounds(self) -> Bounds | tuple[()]:
+        """Return the X-Y bounding box, or an empty tuple for an empty collection."""
+        if not self._features:
+            return ()
         geom_bounds = list(
             zip(*(feature.geometry.bounds for feature in self._features), strict=True),
         )
@@ -220,11 +222,13 @@ class FeatureCollection:
     @property
     def __geo_interface__(self) -> GeoFeatureCollectionInterface:
         """Return the GeoInterface of the feature."""
-        return {
+        geo_interface: GeoFeatureCollectionInterface = {
             "type": "FeatureCollection",
-            "bbox": self.bounds,
             "features": tuple(feature.__geo_interface__ for feature in self._features),
         }
+        if bounds := self.bounds:
+            geo_interface["bbox"] = bounds
+        return geo_interface
 
     def _check_interface(self, other: object) -> bool:
         try:
@@ -233,12 +237,9 @@ class FeatureCollection:
             ) and len(
                 self.__geo_interface__["features"],
             ) == len(
-                other.__geo_interface__.get(  # type: ignore [attr-defined]
-                    "features",
-                    [],
-                ),
+                other.__geo_interface__["features"],  # type: ignore [attr-defined]
             )
-        except AttributeError:
+        except (AttributeError, KeyError):
             return False
 
 
