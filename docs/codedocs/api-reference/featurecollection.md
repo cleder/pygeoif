@@ -22,7 +22,7 @@ FeatureCollection(features: Sequence[Feature]) -> None
 | Name | Type | Description |
 |---|---|---|
 | `features` | `Generator[Feature, None, None]` | Yields features in stored order. |
-| `bounds` | `Bounds` | Aggregate XY extent across member geometries. |
+| `bounds` | `Bounds \| tuple[()]` | Aggregate XY extent across member geometries, or `()` for an empty collection. |
 | `__geo_interface__` | `GeoFeatureCollectionInterface` | GeoJSON-like feature collection mapping. |
 | `__len__()` | `int` | Number of features. |
 | `__iter__()` | `Iterator[Feature]` | Iterates over stored features. |
@@ -64,12 +64,13 @@ print(collection.__geo_interface__)
 ## Notes
 
 - Bounds are computed from `feature.geometry.bounds`, not from feature properties.
+- Empty collections return `()` for bounds and omit the optional `bbox` member from `__geo_interface__`.
 - Equality is order-sensitive because the implementation zips features in sequence order.
 - The collection itself is immutable in structure because stored features are converted to a tuple.
 
 ## Source Behavior
 
-`FeatureCollection.bounds` in `pygeoif/feature.py` aggregates bounds by zipping the `(minx, miny, maxx, maxy)` tuples from every member geometry and then taking the min or max of each column. The implementation is simple and fast for normal collections, but it assumes you are storing features with meaningful geometry bounds. In other words, `FeatureCollection` is designed as a transport and grouping layer for actual spatial data, not as a generic list container that happens to accept features.
+`FeatureCollection.bounds` in `pygeoif/feature.py` returns `()` when the collection has no features. Otherwise, it aggregates bounds by zipping the `(minx, miny, maxx, maxy)` tuples from every member geometry and then taking the min or max of each column. This aggregation assumes that the member geometries have meaningful bounds.
 
 ## Related API
 

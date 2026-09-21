@@ -1,11 +1,17 @@
 """Test Feature and FeatureCollection."""
 
+import json
 import unittest
+from types import SimpleNamespace
 
 import pytest
+from hypothesis import example
+from hypothesis import given
+from hypothesis import strategies as st
 
 from pygeoif import feature
 from pygeoif import geometry
+from pygeoif.hypothesis.strategies import points
 
 
 class TestFeature:
@@ -201,3 +207,53 @@ class TestFeature:
         fc = feature.FeatureCollection([feature.Feature(ls1), feature.Feature(ls2)])
 
         assert fc.bounds == (0, 1, 3, 4)
+
+    def test_empty_featurecollection_bounds(self) -> None:
+        assert feature.FeatureCollection([]).bounds == ()
+
+    def test_empty_featurecollection_geo_interface(self) -> None:
+        collection = feature.FeatureCollection([])
+
+        assert collection.__geo_interface__ == {
+            "type": "FeatureCollection",
+            "features": (),
+        }
+        assert json.loads(json.dumps(collection.__geo_interface__)) == {
+            "type": "FeatureCollection",
+            "features": [],
+        }
+
+    def test_empty_featurecollection_equality(self) -> None:
+        collection = feature.FeatureCollection([])
+
+        assert collection == feature.FeatureCollection(())
+        assert collection == unittest.mock.Mock(
+            __geo_interface__={"type": "FeatureCollection", "features": []},
+        )
+        assert collection != self.fc
+        assert self.fc != collection
+
+    @pytest.mark.parametrize(
+        "interface",
+        [{}, {"type": "FeatureCollection"}, {"type": "Feature", "features": []}],
+    )
+    def test_empty_featurecollection_invalid_interface(
+        self,
+        interface: dict[str, object],
+    ) -> None:
+        assert feature.FeatureCollection([]) != unittest.mock.Mock(
+            __geo_interface__=interface,
+        )
+
+
+@given(st.lists(points(), max_size=10))
+@example([])
+def test_featurecollection_json_roundtrip(geometries: list[geometry.Point]) -> None:
+    collection = feature.FeatureCollection(
+        [feature.Feature(point, feature_id=i) for i, point in enumerate(geometries)],
+    )
+    interface = json.loads(json.dumps(collection.__geo_interface__))
+
+    assert collection == SimpleNamespace(__geo_interface__=interface)
+    assert len(interface["features"]) == len(geometries)
+    assert ("bbox" in interface) == bool(geometries)
