@@ -21,6 +21,7 @@ pip install "pygeoif[hypothesis]"
 from hypothesis import given
 from pygeoif.hypothesis.strategies import points, polygons
 
+
 @given(points(has_z=False), polygons(max_points=8, has_z=False))
 def test_bounds_are_ordered(point, polygon):
     minx, miny, maxx, maxy = point.bounds
@@ -47,6 +48,7 @@ web_mercator_like = Srs(
     max_xyz=(1000.0, 1000.0, 500.0),
 )
 
+
 @given(point_coords(srs=web_mercator_like, has_z=True))
 def test_points_stay_in_range(coord):
     assert -1000.0 <= coord[0] <= 1000.0
@@ -61,6 +63,7 @@ def test_points_stay_in_range(coord):
 ```python
 from hypothesis import given
 from pygeoif.hypothesis.strategies import geometry_collections
+
 
 @given(geometry_collections(max_geoms=4, max_points=6, max_leaves=2))
 def test_collection_serializes(collection):
@@ -78,6 +81,7 @@ Complete example:
 from hypothesis import given
 from pygeoif import mapping, shape
 from pygeoif.hypothesis.strategies import multi_polygons
+
 
 @given(multi_polygons(max_polygons=2, max_points=6, min_interiors=0, max_interiors=1))
 def test_round_trip_via_protocol(geom):

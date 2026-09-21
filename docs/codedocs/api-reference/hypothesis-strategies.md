@@ -104,6 +104,7 @@ Basic usage:
 from hypothesis import given
 from pygeoif.hypothesis.strategies import points
 
+
 @given(points(has_z=False))
 def test_points_are_never_empty(point):
     assert not point.is_empty
@@ -116,6 +117,7 @@ from hypothesis import given
 from pygeoif.hypothesis.strategies import Srs, point_coords
 
 srs = Srs("Bounds", (-5.0, -10.0, 0.0), (5.0, 10.0, 100.0))
+
 
 @given(point_coords(srs=srs, has_z=True))
 def test_local_points(coord):
