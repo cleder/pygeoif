@@ -28,12 +28,12 @@ repos:
     hooks:
       - id: absolufy-imports
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.16.7'
+    rev: 'v0.16.9'
     hooks:
       - id: ruff-check
       - id: ruff-format
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: 7.4.1
     hooks:
       - id: flake8
         exclude: ^docs/
@@ -54,7 +54,7 @@ repos:
     hooks:
       - id: pyprojectsort
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: "0.38.0"
+    rev: "0.38.2"
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
