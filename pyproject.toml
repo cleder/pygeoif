@@ -149,6 +149,7 @@ fix = true
 
 [tool.ruff.lint]
 ignore = [
+    "CPY001",
     "D203",
     "D212",
     "FA100",

@@ -21,6 +21,7 @@ repos:
         args: ['--django']
       - id: no-commit-to-branch
       - id: pretty-format-json
+        args: ['--autofix']
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/MarcoGorelli/absolufy-imports
