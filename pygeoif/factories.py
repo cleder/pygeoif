@@ -48,7 +48,7 @@ wkt_regex: Pattern[str] = re.compile(
         "(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
         "MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|"
         "GEOMETRYCOLLECTION)"
-        r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$"
+        r"[ACEGIMLONPSRUTYZ\d,\.+\-\(\) ]+)$"
     ),
     flags=re.IGNORECASE,
 )

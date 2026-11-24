@@ -4,7 +4,7 @@ Changelog
 1.7.0 (unreleased)
 --------------------
 
-
+- fix WKT parsing for coordinates with a plus sign.
 
 1.6.0 (2025/10/01)
 ------------------
