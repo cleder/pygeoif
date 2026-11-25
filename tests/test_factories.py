@@ -495,6 +495,11 @@ class TestWKT:
 
         assert line == geometry.LineString([(1, -2), (3500, 0.4)])
 
+    @pytest.mark.parametrize("number", ["+", "1+2", "1+", "++1", "-", "1-2"])
+    def test_wkt_misplaced_sign(self, number: str) -> None:
+        with pytest.raises(factories.WKTParserError):
+            factories.from_wkt(f"POINT ({number} 1)")
+
     def test_wkt_geometrycollection_exponent_with_plus_sign(self) -> None:
         collection = geometry.GeometryCollection(
             [geometry.Point(1e22, 1), geometry.LineString([(0, 0), (1, -1e25)])],
