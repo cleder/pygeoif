@@ -48,7 +48,7 @@ wkt_regex: Pattern[str] = re.compile(
         "(?P<type>POINT|LINESTRING|LINEARRING|POLYGON|"
         "MULTIPOINT|MULTILINESTRING|MULTIPOLYGON|"
         "GEOMETRYCOLLECTION)"
-        r"[ACEGIMLONPSRUTYZ\d,\.\-\(\) ]+)$"
+        r"[ACEGIMLONPSRUTYZ\d,\.+\-\(\) ]+)$"
     ),
     flags=re.IGNORECASE,
 )
@@ -333,7 +333,7 @@ def from_wkt(geo_str: str) -> Geometry | GeometryCollection | None:
     constructor = type_map[geometry_type]
     try:
         return constructor(coordinates)  # type: ignore [return-value]
-    except TypeError as exc:
+    except (TypeError, ValueError) as exc:
         msg = f"Cannot parse {wkt}"
         raise WKTParserError(msg) from exc
 

@@ -484,6 +484,29 @@ class TestWKT:
         for wkt in self.wkt_ok:
             factories.from_wkt(wkt)
 
+    def test_wkt_exponent_with_plus_sign(self) -> None:
+        point = geometry.Point(1e22, 1)
+
+        assert point.wkt == "POINT (1e+22 1)"
+        assert factories.from_wkt(point.wkt) == point
+
+    def test_wkt_signed_coordinates(self) -> None:
+        line = factories.from_wkt("LINESTRING (+1 -2, 3.5E+3 4e-1)")
+
+        assert line == geometry.LineString([(1, -2), (3500, 0.4)])
+
+    @pytest.mark.parametrize("number", ["+", "1+2", "1+", "++1", "-", "1-2"])
+    def test_wkt_misplaced_sign(self, number: str) -> None:
+        with pytest.raises(factories.WKTParserError):
+            factories.from_wkt(f"POINT ({number} 1)")
+
+    def test_wkt_geometrycollection_exponent_with_plus_sign(self) -> None:
+        collection = geometry.GeometryCollection(
+            [geometry.Point(1e22, 1), geometry.LineString([(0, 0), (1, -1e25)])],
+        )
+
+        assert factories.from_wkt(collection.wkt) == collection
+
     def test_wkt_fail(self) -> None:
         for wkt in self.wkt_fail:
             with pytest.raises(factories.WKTParserError):
